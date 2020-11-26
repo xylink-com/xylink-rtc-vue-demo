@@ -132,13 +132,7 @@ export default {
           !this.playStatus) &&
         this.index >= 1;
 
-      // 画中画
-      if (this.operate.isPicture) {
-        status = {
-          ...status,
-          picture: true,
-        };
-      } else if (isContent) {
+      if (isContent) {
         const request = videoTxMute ? false : isShowLoading;
         // content共享
         // 仅音频共享: videoTxMute === true
@@ -215,13 +209,6 @@ export default {
     return {
       streamStatus: "enabled",
       playStatus: false,
-      operate: {
-        isPicture: false,
-        isDisabled:
-          /Safari/.test(navigator.userAgent) &&
-          !/Chrome/.test(navigator.userAgent),
-        isCoverMode: true,
-      }, // safari 关闭画中画功能
       isFullScreen: false, // 是否全屏
       video: this.item.stream && this.item.stream.video,
     };

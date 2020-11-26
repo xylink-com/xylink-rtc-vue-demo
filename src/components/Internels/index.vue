@@ -41,7 +41,7 @@
         <tbody>
           <tr v-for="(item, key) in sender" :key="key">
             <td>{{ item.type }}</td>
-            <td>{{ item.frameWidth * item.frameHeight }}</td>
+            <td>{{ item.frameWidth}}*{{item.frameHeight}}</td>
             <td>{{ item.expBandwidth }}</td>
             <td>{{ item.bytesSentSecond }}</td>
             <td>{{ item.framesEncodedSecond }}</td>
