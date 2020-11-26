@@ -5,7 +5,7 @@
   "author": "chengfei",
   "email": "",
   "bugs": {
-    "url": "https://github.com/xylink-com/xylink-rtc-demo/issues"
+    "url": "https://github.com/xylink-com/xylink-rtc-vue-demo/issues"
   },
   "scripts": {
     "start": "vue-cli-service serve",
