@@ -1,15 +1,14 @@
 <template>
-  <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef">
+  <div
+    class="wrap-video"
+    :style="videoWrapStyle"
+    ref="videoWrapRef"
+    :id="wrapVideoId"
+    @dblclick="toggleFullScreen"
+  >
     <div class="video">
-      <div class="video-content" :style="border">
+      <div class="video-content" :style="{border}">
         <div class="video-model">
-          <div class="status">
-            <p :style="{ display: 'none' }">
-              streamId:
-              {{ item.stream && item.stream.video && item.stream.video.id }}
-            </p>
-          </div>
-
           <div :class="audioOnlyClass">
             <div class="center">
               <div class="displayname">{{ item.roster.displayName || "" }}</div>
@@ -19,7 +18,7 @@
 
           <div :class="videoMuteClass">
             <div class="center">
-              <div v-if="index === 0">视频暂停</div>
+              <div v-if="item.roster.isLocal">视频暂停</div>
               <div v-else>对方忙，暂时关闭视频</div>
             </div>
           </div>
@@ -30,7 +29,7 @@
             </div>
           </div>
 
-          <div :class="videoMsgClass">
+          <div class="video-status">
             <div
               v-if="!item.roster.isContent"
               :class="
@@ -46,28 +45,19 @@
         </div>
       </div>
 
-      <video
-        v-if="item.stream.video"
-        ref="videoRef"
-        :style="videoStyle"
-        autoPlay
-        :controls="false"
-        playsInline
-        :id="videoId"
-        :muted="index === 0"
-        @canplay="onLoadCanPlay"
-        @loadstart="onLoadStart"
-        @error="onError"
-        @emptied="onEmptied"
-        @loadedmetadata="onLoadedMetadata"
-      ></video>
+      <video :style="videoStyle" autoPlay></video>
     </div>
   </div>
 </template>
 <script>
+import { fscreen } from "../../utils/screen";
+
 export default {
-  props: ["item", "isRefresh", "index", "model", "videoId"],
+  props: ["item", "model", "id", "client"],
   computed: {
+    state() {
+      return this.item.state;
+    },
     videoWrapStyle() {
       let wrapStyle = {};
       const positionStyle = this.item.positionStyle;
@@ -99,175 +89,79 @@ export default {
         };
       }
 
-      if (this.index > 0) {
-        style = this.item.rotate;
+      style = this.item.rotate;
 
-        if (this.item.roster.isContent || this.isFullScreen) {
-          style = {
-            ...style,
-            ...fullStyle,
-          };
-        }
-      } else {
+      if (this.item.roster.isContent || this.isFullScreen) {
         style = {
-          ...this.item.rotate,
-          transform: "rotateY(180deg)",
+          ...style,
+          ...fullStyle,
         };
       }
 
       return style;
     },
-    videoStatus() {
-      let status = {
-        picture: false,
-        audioOnly: false,
-        mute: false,
-        request: false,
-        normal: false,
-      };
-      const { deviceType, videoTxMute, isContent } = this.item.roster;
-      const isShowLoading =
-        (!this.item.stream.video ||
-          this.streamStatus === "comming" ||
-          !this.playStatus) &&
-        this.index >= 1;
-
-      if (isContent) {
-        const request = videoTxMute ? false : isShowLoading;
-        // content共享
-        // 仅音频共享: videoTxMute === true
-        status = {
-          ...status,
-          audioOnly: videoTxMute,
-          normal: !videoTxMute,
-          request,
-        };
-      } else if (videoTxMute) {
-        // 画面暂停
-        status = {
-          ...status,
-          mute: true,
-        };
-      } else if (deviceType === "tel" || deviceType === "pstngw") {
-        // pstn/tel 入会，显示语音通话中
-        status = {
-          ...status,
-          audioOnly: true,
-        };
-      } else if (isShowLoading) {
-        // 请求中
-        status = {
-          ...status,
-          request: true,
-        };
-      } else {
-        // 正常模式
-        status = {
-          ...status,
-          normal: true,
-        };
-      }
-
-      return status;
-    },
-    videoPictureClass() {
-      return `video-bg ${
-        this.videoStatus.picture ? "video-show" : "video-hidden"
-      } `;
-    },
     audioOnlyClass() {
       return `video-bg ${
-        this.videoStatus.audioOnly ? "video-show" : "video-hidden"
-      } `;
-    },
-    videoMuteClass() {
-      return `video-bg ${
-        this.videoStatus.mute ? "video-show" : "video-hidden"
-      } `;
-    },
-    videoRequestClass() {
-      return `video-bg ${
-        this.videoStatus.request ? "video-show" : "video-hidden"
-      } `;
-    },
-    videoMsgClass() {
-      return `video-status video-animote ${
-        this.videoStatus.normal ||
-        this.videoStatus.mute ||
-        this.videoStatus.request ||
-        this.videoStatus.picture
+        this.state === "AUDIO_TEL" ||
+        this.state === "AUDIO_CONTENT" ||
+        this.state === "AUDIO_ONLY"
           ? "video-show"
           : "video-hidden"
       }`;
     },
-
-    renderVideoName() {
-      return <div>hello word</div>;
+    videoMuteClass() {
+      return `video-bg ${
+        this.state === "MUTE" || this.state === "INVALID"
+          ? "video-show"
+          : "video-hidden"
+      }`;
+    },
+    videoRequestClass() {
+      return `video-bg ${
+        this.state === "REQUEST" ? "video-show" : "video-hidden"
+      }`;
     },
   },
   data() {
     return {
-      streamStatus: "enabled",
-      playStatus: false,
       isFullScreen: false, // 是否全屏
-      video: this.item.stream && this.item.stream.video,
+      wrapVideoId: "wrap-" + this.id,
     };
   },
   mounted() {
-    this.renderVideo(this.video);
+    const videoWrapEle = this.$refs["videoWrapRef"];
+
+    // 监听全屏状态change事件
+    fscreen.init(videoWrapEle, (e) => {
+      this.isFullScreen = e.isFullScreen;
+    });
+
+    this.renderVideo(this.id);
   },
   beforeDestroy() {
-    const videoEle = this.$refs["videoRef"];
+    const videoWrapEle = this.$refs["videoWrapRef"];
 
-    if (videoEle) {
-      videoEle.pause();
-      videoEle.srcObject = null;
-    }
+    videoWrapEle && fscreen.clear(videoWrapEle);
   },
   methods: {
-    renderVideo(newValue) {
-      const videoEle = this.$refs["videoRef"];
-      if (videoEle && !videoEle.srcObject && newValue) {
-        videoEle.srcObject = newValue;
-
-        if (videoEle.paused) {
-          videoEle.play();
-        }
+    toggleFullScreen() {
+      const videoWrapEle = this.$refs["videoWrapRef"];
+      if (this.isFullScreen) {
+        fscreen.exit(videoWrapEle);
+      } else {
+        fscreen.request(videoWrapEle);
       }
     },
-    onLoadCanPlay() {
-      console.log(this.videoId + " enabled");
-      this.playStatus = true;
-    },
-    onLoadStart() {
-      console.log(this.videoId + " onLoadStart");
-      this.playStatus = false;
-    },
-    onError() {
-      console.log(this.videoId + " onError");
-    },
-    onEmptied() {
-      console.log(this.videoId + " onEmptied");
-    },
-    onLoadedMetadata() {
-      console.log(this.videoId + " onLoadedMetadata");
+    renderVideo(newValue) {
+      if (newValue && this.client) {
+        this.client.setVideoRenderer(newValue, "wrap-" + newValue);
+      }
     },
   },
   watch: {
-    isRefresh: {
+    id: {
       handler(newValue) {
-        const current = this.$refs["videoWrapRef"];
-        if (newValue && current) {
-          const realWidth = parseInt(current.style.width);
-
-          current.style.width = `${realWidth}px`;
-        }
-      },
-    },
-    video: {
-      handler(newValue) {
-        console.log("newValue::", newValue);
-        newValue && this.renderVideo(newValue);
+        this.renderVideo(newValue);
       },
       deep: true,
     },

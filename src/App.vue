@@ -12,7 +12,7 @@
         <el-link
           class="operate-item"
           icon="el-icon-setting"
-          @click="onToggleSetting"
+          @click="onOpenSetting"
           >设置</el-link
         >
       </div>
@@ -22,29 +22,14 @@
       <div class="copyright">版本：{{ this.version }}</div>
     </div>
 
-    <div v-if="callMeeting && callLoading" class="loading">
-      <div class="loading-content">
-        <div class="avatar">
-          <img
-            src="https://cdn.xylink.com/wechatMP/images/device_cm_ios%402x.png"
-            alt="nemo-avatar"
-          />
-        </div>
-        <div class="name">正在呼叫 {{ user.meeting }}</div>
-        <div class="stop" @click="stop('OK')">
-          <img
-            src="https://cdn.xylink.com/wechatMP/images/end.png"
-            alt="end-call"
-          />
-        </div>
-        <audio
-          ref="bgmAudioRef"
-          autoPlay
-          loop
-          src="https://cdn.xylink.com/wechatMP/ring.ogg"
-        ></audio>
-      </div>
-    </div>
+    <Loading
+      v-if="callMeeting && callLoading"
+      :meeting="user.meeting"
+      :audioOutputValue="selectedDevice.audioOutput.deviceId"
+      :callStatus="callStatus"
+      @stop="stop"
+    />
+
     <div v-if="callMeeting && !callLoading">
       <div class="meeting-header">
         <span> {{ user.meeting }}-({{ participantsCount }}人) </span>
@@ -52,22 +37,21 @@
       <div class="meeting-content">
         <div class="meeting-layout" :style="layoutStyle">
           <Video
-            v-for="(item, index) in newLayout"
+            v-for="item in newLayout"
             :model="layoutModel"
             :item="item"
-            :key="item.key"
-            :index="index"
-            :videoId="item.key"
-            :isRefresh="item.isRefresh"
+            :key="item.roster.id"
+            :id="item.roster.id"
+            :client="client"
           ></Video>
         </div>
         <div class="audio-list">
           <Audio
             v-for="item in audioList"
             :key="item.data.streams[0].id"
-            :item="item"
             :muted="item.status === 'local'"
-            :audioOutput="audioOutput"
+            :streamId="item.data.streams[0].id"
+            :client="client"
           />
         </div>
         <Barrage
@@ -121,6 +105,11 @@
             声量：{{ micLevel }}
           </el-button>
         </div>
+        <div>
+          <el-button type="primary" size="small" @click="onOpenSetting"
+            >设置
+          </el-button>
+        </div>
       </div>
 
       <Internels
@@ -130,12 +119,19 @@
       ></Internels>
     </div>
 
-    <Setting :visible="settingVisible" />
+    <Setting
+      v-if="settingVisible"
+      :setting="{ localHide: user.localHide, selectedDevice }"
+      :visible="settingVisible"
+      @cancel="onCancelSetting"
+      @setting="onSaveSetting"
+    />
   </div>
 </template>
 
 <script>
 import Login from "./components/Login/index.vue";
+import Loading from "./components/Loading/index.vue";
 import Setting from "./components/Setting/index.vue";
 import Barrage from "./components/Barrage/index.vue";
 import Audio from "./components/Audio/index.vue";
@@ -144,13 +140,12 @@ import Internels from "./components/Internels/index.vue";
 import xyRTC from "@xylink/xy-rtc-sdk";
 import { Message } from "element-ui";
 import store from "@/utils/store";
-import { USER_INFO, DEFAULT_DEVICES } from "@/utils/enum";
+import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE } from "@/utils/enum";
 import { ENV, SERVER, ACCOUNT } from "@/utils/config";
 
-let client;
 let stream;
 let audioLevelTimmer;
-const user = store.get("xy-user") || USER_INFO;
+const user = store.get("xy-user") || DEFAULT_LOCAL_USER;
 
 const message = {
   info: (message) => {
@@ -162,11 +157,12 @@ export default {
   name: "App",
   components: {
     Login,
-    Setting,
+    Loading,
     Barrage,
     Audio,
     Video,
     Internels,
+    Setting,
   },
   computed: {
     layoutStyle() {
@@ -177,25 +173,14 @@ export default {
         height: rateHeight + "px",
       };
 
-      if (
-        this.layout[0] &&
-        this.layout[0].position[2] === 1 &&
-        this.layout[0].position[3] === 1
-      ) {
-        style = {
-          width: "100%",
-          height: "100%",
-        };
-      }
-
       return style;
     },
     audioStatus() {
       let status = "取消静音";
 
-      if (this.audio === "unmute") {
+      if (this.audio === "unmuteAudio") {
         status = this.disableAudio ? "结束发言" : "静音";
-      } else if (this.audio === "mute") {
+      } else if (this.audio === "muteAudio") {
         if (this.disableAudio) {
           status = this.handStatus ? "取消举手" : "举手发言";
         } else {
@@ -205,29 +190,7 @@ export default {
       return status;
     },
     newLayout() {
-      const layoutLen = this.layout.length;
-      return this.layout
-        .filter((item) => item.roster.participantId)
-        .map((item, index) => {
-          const id = item.roster.endpointId;
-          const mediagroupid = item.roster.mediagroupid;
-          const streamId =
-            (item.stream && item.stream.video && item.stream.video.id) || "";
-          const key = id + streamId + mediagroupid;
-          const isRefresh = layoutLen > 1 && layoutLen === index + 1;
-          return {
-            ...item,
-            key,
-            isRefresh,
-            id,
-          };
-        });
-    },
-    audioOutput() {
-      const devices = store.get("xy-devices") || {
-        audioOutputValue: "default",
-      };
-      return devices.audioOutputValue || "";
+      return this.layout.filter((item) => item.roster.participantId);
     },
     callStatus() {
       return {
@@ -238,6 +201,8 @@ export default {
   },
   data() {
     return {
+      client: null,
+      stream: null,
       user, // 登录者信息
       callMeeting: false, // 呼叫状态
       callLoading: false, // 是否呼叫中
@@ -245,7 +210,7 @@ export default {
       screenInfo: { rateWidth: 0, rateHeight: 0 }, // screen容器信息
       audioList: [], // 所有声源列表
       video: user.muteVideo ? "muteVideo" : "unmuteVideo", // 摄像头状态
-      audio: user.muteAudio ? "mute" : "unmute", // 麦克风状态
+      audio: user.muteAudio ? "muteAudio" : "unmuteAudio", // 麦克风状态
       disableAudio: false, // 是否强制静音
       handStatus: false, // 举手状态
       subTitle: { action: "cancel", content: "" }, // 是否有字幕或点名
@@ -257,7 +222,7 @@ export default {
       debug: false, // 是否是调试模式（开启则显示所有画面的呼叫数据）
       env: ENV, // 配置环境，第三方集成不需要配置，默认是线上环境
       settingVisible: false, // 设置
-      preDevicesRef: null, // pre device
+      selectedDevice: DEFAULT_DEVICE.nextDevice, // 选择的设备信息
       version: xyRTC.version,
     };
   },
@@ -297,7 +262,7 @@ export default {
         // 这里三方可以根据环境修改sdk log等级
         // xyRTC.logger.setLogLevel("NONE");
 
-        client = xyRTC.createClient({
+        this.client = xyRTC.createClient({
           // 注意，第三方集成时，默认是prd环境，不需要配置wss/http/log server地址；
           wssServer,
           httpServer,
@@ -305,11 +270,11 @@ export default {
           muteAudio,
           muteVideo,
           container: {
-            offsetHeight: 92,
+            offset: [32, 60, 0, 0], // 上 下 左 右
           },
         });
 
-        this.initEventListener(client);
+        this.initEventListener(this.client);
 
         /**
          * 重要提示
@@ -323,7 +288,7 @@ export default {
         let result;
         const { extId, clientId, clientSecret } = ACCOUNT(this.env);
 
-        result = await client.loginExternalAccount({
+        result = await this.client.loginExternalAccount({
           // 用户名自行填写
           displayName: "thirdName",
           extId,
@@ -345,9 +310,10 @@ export default {
           return;
         }
 
-        const token = result.data.token || result.data.access_token;
+        const token =
+          result.data.token?.access_token || result.data.access_token;
 
-        callStatus = await client.makeCall({
+        callStatus = await this.client.makeCall({
           token,
           confNumber: meeting,
           password: meetingPassword,
@@ -357,38 +323,46 @@ export default {
         if (callStatus) {
           stream = xyRTC.createStream();
 
-          const devices = store.get("xy-devices") || {
-            audioInputValue: "default",
-            videoInValue: "",
-          };
+          this.initStreamEventListener(stream);
 
-          await stream.init({ devices });
+          const { audioInput, audioOutput, videoInput } = this.selectedDevice;
 
-          client.publish(stream, { isSharePeople: true });
+          await stream.init({
+            devices: {
+              audioInputValue: audioInput.deviceId || "default",
+              audioOutputValue: audioOutput.deviceId || "default",
+              videoInValue: videoInput.deviceId || "",
+            },
+          });
 
-          // 记录入会时的设备信息
-          this.updateDevicesByStream(stream);
+          this.client.publish(stream, { isSharePeople: true });
         }
       } catch (err) {
         console.log("入会失败: ", err);
 
-        this.disconnected(
-          err.msg || "呼叫异常，请稍后重试",
-          "PEER_NET_DISCONNECT"
-        );
+        this.disconnected(err.msg || "呼叫异常，请稍后重试");
       }
     },
+    initStreamEventListener(stream) {
+      stream.on("stream-status", (e) => {
+        const { type } = e;
+
+        if (type === "SEND_ONLY") {
+          setTimeout(() => {
+            message.info("当前仅接收远端画面模式", 5);
+          }, 3000);
+        }
+      });
+    },
     // 挂断会议
-    disconnected(msg = "", reason) {
+    disconnected(msg = "") {
       message.info(msg);
 
-      this.stop(reason);
+      this.stop();
     },
 
     // 结束会议操作
-    stop(reason = "OK") {
-      this.clearStorage();
-
+    stop() {
       // 重置audio、video状态
       this.audio = this.user.muteAudio ? "mute" : "unmute";
       this.video = this.user.muteVideo ? "muteVideo" : "unmuteVideo";
@@ -397,8 +371,7 @@ export default {
       this.subTitle = { action: "cancel", content: "" };
 
       // sdk清理操作
-      stream && stream.close();
-      client && client.close(reason);
+      this.client && this.client.destory();
 
       // 清理组件状
       this.callMeeting = false;
@@ -407,19 +380,17 @@ export default {
       this.debug = false;
       this.layout = [];
       this.micLevel = 0;
+      this.settingVisible = false;
 
       // 清理定时器
       this.clearTimmer();
-      client = null;
+      this.client = null;
       stream = null;
-    },
-    clearStorage() {
-      store.remove("xy-devices");
-      store.remove("xy-deviceList");
     },
     clearTimmer() {
       audioLevelTimmer && clearInterval(audioLevelTimmer);
       audioLevelTimmer = null;
+      this.micLevel = 0;
     },
     // 监听client的内部事件
     initEventListener(client) {
@@ -428,7 +399,7 @@ export default {
         const showMessage =
           (e.detail && e.detail.message) || "呼叫异常，请稍后重试";
 
-        this.disconnected(showMessage, "EXPIRED");
+        this.disconnected(showMessage);
       });
 
       // 会议成员数量数据
@@ -471,28 +442,34 @@ export default {
       });
 
       // 麦克风状态
-      client.on("audio-status", (e) => {
+      client.on("meeting-control", (e) => {
         const { disableMute, muteOperation } = e;
-        // if (disableMute) {
-        //   setDisableAudio(disableMute);
-        // }
+
         this.disableAudio = disableMute;
 
-        if (muteOperation) {
-          this.audio = muteOperation;
-        }
-
-        if (muteOperation === "mute" && disableMute) {
+        if (muteOperation === "muteAudio" && disableMute) {
           message.info("主持人已强制静音，如需发言，请点击“举手发言”");
+
           this.handStatus = false;
-        } else if (muteOperation === "mute" && !disableMute) {
+        } else if (muteOperation === "muteAudio" && !disableMute) {
           message.info("您已被主持人静音");
-        } else if (muteOperation === "unmute" && disableMute) {
+        } else if (muteOperation === "unmuteAudio" && disableMute) {
           message.info("主持人已允许您发言");
+
           this.handStatus = false;
-        } else if (muteOperation === "unmute" && !disableMute) {
+        } else if (muteOperation === "unmuteAudio" && !disableMute) {
           message.info("您已被主持人取消静音");
         }
+      });
+
+      // 麦克风状态
+      client.on("audio-status", (e) => {
+        this.audio = e.status;
+      });
+
+      // 摄像头状态
+      client.on("video-status", (e) => {
+        this.video = e.status;
       });
 
       // 分享content消息
@@ -514,159 +491,226 @@ export default {
       // 清除举手
       client.on("cancel-handup", (e) => {
         if (e) {
-          this.onHandDown();
+          this.onHand("handdown");
         }
       });
 
       // 设备切换
       client.on("devices", async (e) => {
-        if (e && e.detail) {
-          const nextDevices = e.detail || DEFAULT_DEVICES;
-          const preDevices = store.get("xy-deviceList") || DEFAULT_DEVICES;
-          // pre 设备
-          // @ts-ignore
-          const {
-            videoIn: preVideoIn,
-            audioInput: preAudioInput,
-          } = this.preDevicesRef;
-          // 当前连接设备
-          const {
-            videoIn: nextVideoIn,
-            audioInput: nextAudioInput,
-            audioOutput,
-          } = xyRTC.diffDevices(preDevices, nextDevices);
+        const { audioInput, videoInput, audioOutput } = e.nextDevice;
 
-          nextVideoIn &&
-            message.info(`视频设备已自动切换至 ${nextVideoIn.label}`);
-          nextAudioInput &&
-            message.info(`音频输入设备已自动切换至 ${nextAudioInput.label}`);
-          audioOutput &&
+        videoInput?.label &&
+          message.info(`视频设备已自动切换至 ${videoInput.label}`);
+        audioInput?.label &&
+          message.info(`音频输入设备已自动切换至 ${audioInput.label}`);
+        setTimeout(() => {
+          audioOutput?.label &&
             message.info(`音频输出设备已自动切换至 ${audioOutput.label}`);
-
-          if (
-            nextAudioInput &&
-            nextAudioInput.deviceId !== preAudioInput.deviceId
-          ) {
-            console.log("switch audio device:::", nextAudioInput.deviceId);
-            try {
-              stream.switchDevice("audio", nextAudioInput.deviceId);
-              // @ts-ignore
-              this.preDevicesRef.audioInput = nextAudioInput;
-            } catch (err) {
-              stream.switchDevice("audio", undefined);
-            }
-          }
-
-          if (nextVideoIn && nextVideoIn.deviceId !== preVideoIn.deviceId) {
-            console.log("switch video device:::", nextVideoIn.deviceId);
-            try {
-              stream.switchDevice("video", nextVideoIn.deviceId);
-              // @ts-ignore
-              this.preDevicesRef.videoIn = nextVideoIn;
-            } catch (err) {
-              stream.switchDevice("video", undefined);
-            }
-          }
-
-          if (audioOutput) {
-            const devices = store.get("xy-devices");
-
-            store.set("xy-devices", {
-              ...devices,
-              audioOutputValue: audioOutput.deviceId,
-            });
-          }
-
-          store.set("xy-deviceList", nextDevices);
-        }
+        }, 500);
       });
     },
-    // 通过stream获取设备信息
-    async updateDevicesByStream(stream) {
-      if (stream && stream.localStream && stream.localStream.stream) {
-        const tempLocalStream = stream.localStream.stream.clone();
+    // 摄像头操作
+    async videoOperate() {
+      try {
+        let result = "muteVideo";
 
-        const audioTrack = tempLocalStream.getAudioTracks()[0];
-        const videoTrack = tempLocalStream.getVideoTracks()[0];
+        if (this.video === "unmuteVideo") {
+          result = await this.client.muteVideo();
+        } else {
+          result = await this.client.unmuteVideo();
+        }
+        this.video = result;
+      } catch (err) {
+        const msg = err?.detail?.msg || "禁止操作";
+        const code = err?.detail?.code;
 
-        const audioInput = audioTrack.getSettings();
-        const videoIn = videoTrack.getSettings();
-
-        // @ts-ignore
-        this.preDevicesRef = {
-          audioInput: {
-            ...audioInput,
-            label: audioTrack.label,
-          },
-          videoIn: {
-            ...videoIn,
-            label: videoTrack.label,
-          },
-        };
-        const deviceList = await xyRTC.getDevices();
-        store.set("xy-deviceList", deviceList);
+        if (code === 401) {
+          message.error("当前摄像头或麦克风设备异常，请切换其他设备");
+        } else {
+          message.error("操作失败: " + msg);
+        }
       }
     },
-    // 摄像头操作
-    videoOperate() {
-      if (this.video === "unmuteVideo") {
-        client.muteVideo();
 
-        this.video = "muteVideo";
-      } else {
-        client.unmuteVideo();
+    // 麦克风操作
+    async onAudioOperate() {
+      try {
+        let result = "muteAudio";
 
-        this.video = "unmuteVideo";
+        if (this.audio === "unmuteAudio") {
+          result = await this.client.muteAudio();
+
+          message.info("麦克风已静音");
+        } else {
+          result = await this.client.unmuteAudio();
+        }
+        this.audio = result;
+      } catch (err) {
+        const msg = err?.detail?.msg || "禁止操作";
+        const code = err?.detail?.code;
+
+        if (code === 401) {
+          message.error("当前摄像头或麦克风设备异常，请切换其他设备");
+        } else {
+          message.error("操作失败: " + msg);
+        }
+      }
+    },
+
+    // 取消举手
+    async onHand(type) {
+      const funcMap = {
+        handup: {
+          func: "onHandUp",
+          msg: "发言请求已发送",
+        },
+        handdown: {
+          func: "onHandDown",
+          msg: "",
+        },
+        mute: {
+          func: "onMute",
+          msg: "",
+        },
+      };
+
+      try {
+        const { func, msg } = funcMap[type];
+        const handStatus = await this.client[func]();
+
+        this.handStatus = handStatus;
+        if (msg) {
+          message.info(msg);
+        }
+      } catch (err) {
+        message.info("操作失败");
       }
     },
 
     // 麦克风操作
     async audioOperate() {
-      if (this.audio === "mute" && this.disableAudio && !this.handStatus) {
-        const isHandStatus = await client.onHandUp();
-        this.handStatus = isHandStatus;
-        message.info("发言请求已发送");
+      if (this.audio === "muteAudio" && this.disableAudio && !this.handStatus) {
+        await this.onHand("handup");
         return;
       }
 
-      if (this.audio === "mute" && this.disableAudio && this.handStatus) {
-        await this.onHandDown();
+      if (this.audio === "muteAudio" && this.disableAudio && this.handStatus) {
+        await this.onHand("handdown");
         return;
       }
 
-      if (this.audio === "unmute" && this.disableAudio) {
-        const isHandStatus = await client.onMute();
-        this.handStatus = isHandStatus;
+      if (this.audio === "unmuteAudio" && this.disableAudio) {
+        await this.onHand("mute");
         return;
       }
 
-      if (this.audio === "unmute") {
-        client.muteAudio();
-
-        this.audio = "mute";
-
-        message.info("麦克风已静音");
-      } else {
-        client.unmuteAudio();
-
-        this.audio = "unmute";
-      }
+      this.onAudioOperate();
     },
+
     // 切换布局
-    switchLayout() {
-      const modal = client.switchLayout().toLowerCase();
+    async switchLayout() {
+      const modal = await this.client.switchLayout();
 
-      this.layoutModel = modal;
+      this.layoutModel = modal.toLowerCase();
     },
-    // 取消举手
-    async onHandDown() {
-      const isHandStatus = await client.onHandDown();
-      this.handStatus = isHandStatus;
-    },
+
     // 设置
-    onToggleSetting() {
-      message.info("设置");
+    onOpenSetting() {
+      this.settingVisible = true;
     },
+
+    async toggleLocal() {
+      const { status } = await this.client.toggleLocal();
+      const msg = status ? "已开启隐藏本地画面模式" : "已关闭隐藏本地画面模式";
+      message.info(msg);
+    },
+
+    async switchDevice(key, device) {
+      const deviceMap = {
+        audioInput: {
+          key: "audio",
+          zh_text: "音频输入设备",
+        },
+        audioOutput: {
+          key: "video",
+          zh_text: "音频输出设备",
+        },
+        videoInput: {
+          key: "video",
+          zh_text: "视频设备",
+        },
+      };
+
+      const { deviceId, label } = device;
+      try {
+        if (key === "audioOutput") {
+          await stream.setAudioOutput(deviceId);
+        } else if (key === "audioInput" || key === "videoInput") {
+          await stream.switchDevice(deviceMap[key]["key"], deviceId);
+        }
+        message.info(`${deviceMap[key]["zh_text"]}已自动切换至 ${label}`);
+      } catch (err) {
+        message.error("设备切换失败");
+        return Promise.reject(err);
+      }
+    },
+
+    async onSwitchDevice(nextDevice) {
+      const { audioInput, videoInput, audioOutput } =
+        nextDevice || DEFAULT_DEVICE.nextDevice;
+
+      try {
+        if (
+          audioInput?.deviceId !== this.selectedDevice?.audioInput?.deviceId
+        ) {
+          await this.switchDevice("audioInput", audioInput);
+        }
+
+        if (
+          audioOutput?.deviceId !== this.selectedDevice?.audioOutput?.deviceId
+        ) {
+          await this.switchDevice("audioOutput", audioOutput);
+        }
+
+        if (
+          videoInput?.deviceId !== this.selectedDevice?.videoInput?.deviceId
+        ) {
+          await this.switchDevice("videoInput", videoInput);
+        }
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+
+    onCancelSetting() {
+      this.settingVisible = false;
+    },
+
+    async onSaveSetting(data) {
+      if (data["selectedDevice"]) {
+        this.settingVisible = false;
+
+        try {
+          if (stream) {
+            await this.onSwitchDevice(data["selectedDevice"]);
+          }
+          this.selectedDevice = data.selectedDevice;
+        } catch (err) {
+          console.log("switch device err:", err);
+        }
+      }
+
+      if (Object.prototype.hasOwnProperty.call(data, "localHide")) {
+        const xyUser = { ...this.user, localHide: data["localHide"] };
+        store.set("xy-user", xyUser);
+        this.user = xyUser;
+
+        if (this.client) {
+          this.toggleLocal();
+        }
+      }
+    },
+
     // 上传日志
     async upload() {
       const result = await xyRTC.logger.uploadLog(this.user.meetingName);
@@ -685,7 +729,7 @@ export default {
 
     // 停止分享content
     stopShareContent() {
-      client.stopShareContent();
+      this.client.stopShareContent();
       this.shareContentStatus = false;
     },
 
@@ -695,24 +739,23 @@ export default {
         const result = await stream.createContentStream();
 
         // 创建分享屏幕stream成功
-        if (result.code === 518) {
+        if (result) {
           this.shareContentStatus = true;
 
           stream.on("start-share-content", () => {
-            client.publish(stream, { isShareContent: true });
+            this.client.publish(stream, { isShareContent: true });
           });
 
           stream.on("stop-share-content", () => {
             this.stopShareContent();
           });
         } else {
-          if (result && result.code !== 500) {
-            message.info(result.msg || "分享屏幕失败");
-            return;
-          }
+          message.info("分享屏幕失败");
         }
       } catch (err) {
-        console.log("share screen error: ", err);
+        if (err && err.code !== 500) {
+          message.info(err.msg || "分享屏幕失败");
+        }
       }
     },
     // debug
@@ -720,24 +763,27 @@ export default {
       const status = !this.debug;
       this.debug = status;
 
-      client.switchDebug(status);
+      this.client.switchDebug(status);
     },
     // 设置音量
     setMicLevel(audio) {
-      if (audio === "unmute") {
+      if (audio === "unmuteAudio") {
         if (!audioLevelTimmer) {
-          audioLevelTimmer = setInterval(() => {
+          audioLevelTimmer = setInterval(async () => {
             if (stream) {
-              const level = stream.getAudioLevel();
+              try {
+                const level = await stream.getAudioLevel();
 
-              // 更新Audio的实时音量显示
-              this.micLevel = level;
+                // 更新Audio的实时音量显示
+                this.micLevel = level;
+              } catch (err) {
+                this.clearTimmer();
+              }
             }
           }, 500);
         }
       } else {
         this.clearTimmer();
-        this.micLevel = 0;
       }
     },
   },
@@ -749,20 +795,20 @@ export default {
           this.setMicLevel(this.audio);
         }
 
-        if (!callLoading && this.$refs["bgmAudioRef"]) {
-          this.$refs["bgmAudioRef"].pause();
-        }
+        // const bgmAudioEle = this.$refs["bgmAudioRef"];
 
-        if (callMeeting && callLoading) {
-          const devices = store.get("xy-devices") || {
-            audioOutputValue: "default",
-          };
-          xyRTC.setOutputAudioDevice(
-            this.$refs["bgmAudioRef"],
-            devices.audioOutputValue
-          );
-        }
+        // if (!callLoading && bgmAudioEle) {
+        //   bgmAudioEle.pause();
+        // }
+
+        // if (callMeeting && callLoading) {
+        //   xyRTC.setOutputAudioDevice(
+        //     bgmAudioEle,
+        //     this.selectedDevice.audioOutput.deviceId || "default"
+        //   );
+        // }
       },
+      deep: true,
     },
     audio: {
       handler(newValue) {

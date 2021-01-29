@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="barrage-title-wrapper"
-    :style="wrapperStyle"
-  >
+  <div class="barrage-title-wrapper" :style="wrapperStyle">
     <div class="barrage-title-bg" :style="titleBgStyle"></div>
     <span :class="titleClass" ref="subTitleRef">
       {{ subTitle.content }}
@@ -67,7 +64,7 @@ export default {
 
         const render = () => {
           current.style.transform = `translate3d(${transformX}px, 0, 0)`;
-          
+
           transformX -= 0.5;
           if (transformX + objWidth < 0) {
             cancelAnimationFrame(intervalTimer.current);
@@ -75,7 +72,7 @@ export default {
           }
           intervalTimer = requestAnimationFrame(render);
         };
-        
+
         if (newValue.scroll === "1") {
           current.style.visibility = "initial";
 
@@ -100,6 +97,7 @@ export default {
         this.setScrollTitle(newValue);
       },
       deep: true,
+      immediate: true,
     },
   },
 };
