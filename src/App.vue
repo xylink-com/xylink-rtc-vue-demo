@@ -752,7 +752,7 @@ export default {
           message.info("分享屏幕失败");
         }
       } catch (err) {
-        if (err && err.code !== 500) {
+        if (err && err.code !== 20500) {
           message.info(err.msg || "分享屏幕失败");
         }
       }

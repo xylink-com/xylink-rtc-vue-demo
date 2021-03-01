@@ -490,7 +490,7 @@ export default {
       const deviceManager = this.$refs["deviceManager"];
 
       if (deviceManager) {
-        deviceManager.destory();
+        deviceManager.destroy();
       }
 
       this.clearStream();
