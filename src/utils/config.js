@@ -8,7 +8,7 @@
 import store from "./store";
 
 // 默认第三方是prd环境
-export const ENV = store.get("sdk-env") || "TXDEV";
+export const ENV = store.get("sdk-env") || "PRD";
 export const THIRD = true;
 
 const SERVER_MAP = {
@@ -44,15 +44,15 @@ const SERVER_MAP = {
  * 重要提示
  */
 const PRODUCTION_ACCOUNT = {
-  extId: "",
-  clientId: "",
-  clientSecret: "",
+  extId: '',
+  clientId: '',
+  clientSecret: ''
 };
 
 const THIRD_ACCOUNT_MAP = {
   TXDEV: {
-    extId: '8bea008225dd82616e1f43dcc5c8e3bbbab0d9e5', // a8659e5d496283c5d5ed18b9b51f263bfeeebc79
-    clientId: 'Dx9AiLgQEOboyidOWxGoQRSi',
+    extId: '',
+    clientId: '',
     clientSecret: ''
   },
   PRE: {

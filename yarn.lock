@@ -1514,10 +1514,10 @@
   resolved "https://registry.npm.taobao.org/@xtuc/long/download/@xtuc/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha1-0pHGpOl5ibXGHZrPOWrk/hM6cY0=
 
-"@xylink/xy-rtc-sdk@1.4.1-beta.22":
-  version "1.4.1-beta.22"
-  resolved "https://registry.yarnpkg.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-1.4.1-beta.22.tgz#bde9dc66fdbc6dd97096e03c6479fa4378d0e59e"
-  integrity sha512-wXCAH5cHd8EQKh5luEBgg0pJjHB1k/GzcKQ0RMkia2J8acJUaV/Ue0Q23ohmtScFPWI1xuCLxRDwo/5s0SEiPQ==
+"@xylink/xy-rtc-sdk@2.0.0":
+  version "2.0.0"
+  resolved "http://10.80.84.176:4873/@xylink%2fxy-rtc-sdk/-/xy-rtc-sdk-2.0.0.tgz#46aca27dd1b12c140b5feab62d17ae9c797423c3"
+  integrity sha512-Wm7EKLkU2pugxENnZ9G4n5xyHi4SU3RFTek20TMfpAvxujTRZT6h6GvgwrilfjThqnNNjKK9MFJ/DTQgrruc3w==
   dependencies:
     crypto-js "^4.0.0"
     dexie "^2.0.4"

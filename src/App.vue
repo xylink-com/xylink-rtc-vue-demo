@@ -258,6 +258,7 @@ export default {
           muteVideo,
         } = this.user;
         const { wssServer, httpServer, logServer } = SERVER(this.env);
+        const { clientId } = ACCOUNT(this.env);
 
         // 这里三方可以根据环境修改sdk log等级
         // xyRTC.logger.setLogLevel("NONE");
@@ -272,6 +273,7 @@ export default {
           container: {
             offset: [32, 60, 0, 0], // 上 下 左 右
           },
+          clientId,
         });
 
         this.initEventListener(this.client);
@@ -286,14 +288,12 @@ export default {
          * 重要提示
          */
         let result;
-        const { extId, clientId, clientSecret } = ACCOUNT(this.env);
+        const { extId } = ACCOUNT(this.env);
 
         result = await this.client.loginExternalAccount({
           // 用户名自行填写
           displayName: "thirdName",
           extId,
-          clientId,
-          clientSecret,
         });
 
         if (result.code === 10104) {
@@ -310,8 +310,7 @@ export default {
           return;
         }
 
-        const token =
-          result.data.token?.access_token || result.data.access_token;
+        const token = result.detail.access_token;
 
         callStatus = await this.client.makeCall({
           token,
@@ -371,7 +370,7 @@ export default {
       this.subTitle = { action: "cancel", content: "" };
 
       // sdk清理操作
-      this.client && this.client.destory();
+      this.client && this.client.destroy();
 
       // 清理组件状
       this.callMeeting = false;
