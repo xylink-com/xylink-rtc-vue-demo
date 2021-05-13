@@ -36,31 +36,30 @@ const SERVER_MAP = {
  * 重要提示
  * 重要提示
  * 重要提示
- * PRODUCTION_ACCOUNT需要自行配置
- * 第三方登录，需要填写extId、clientId、clientSecret
+ * 登录配置 THIRD_ACCOUNT_MAP -> PRD 中的extId和clientId字段，1.3.4 版本以上，clientSecret不再使用，可不用配置，忽略TXDEV和PRE属性
  * 此值需要从对接负责人处获取
  * 重要提示
  * 重要提示
  * 重要提示
  */
-const PRODUCTION_ACCOUNT = {
-  extId: '',
-  clientId: '',
-  clientSecret: ''
-};
 
 const THIRD_ACCOUNT_MAP = {
   TXDEV: {
-    extId: '',
-    clientId: '',
-    clientSecret: ''
+    extId: "",
+    clientId: "",
+    clientSecret: "",
   },
   PRE: {
-    extId: '',
-    clientId: '',
-    clientSecret: ''
+    extId: "",
+    clientId: "",
+    clientSecret: "",
   },
-  PRD: PRODUCTION_ACCOUNT,
+  PRD: {
+    extId: "ddbbb1b45ff2834056886746cb715fae5079d18c",
+    clientId: "pV2w8Qs8PJkTJDjdO9zUsk2W",
+    // 1.3.4 版本以上，clientSecret不再使用，可不用配置，忽略TXDEV和PRE属性
+    clientSecret: "",
+  },
 };
 
 export const SERVER = (env = ENV) => SERVER_MAP[env];

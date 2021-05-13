@@ -8,9 +8,8 @@
 
 1. 注意在`src/utils/config.js`中配置第三方登录所需的
 
-- extId
-- clientId
-- clientSecret
+- extId：企业id
+- clientId： Client id
 
 ### 运行
 

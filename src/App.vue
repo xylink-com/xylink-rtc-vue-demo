@@ -1,122 +1,147 @@
 <template>
   <div id="app">
-    <div class="login" v-if="!callMeeting && !callLoading">
-      <h1>XY RTC DEMO</h1>
-      <div class="operate">
-        <el-link class="operate-item" icon="el-icon-upload2" @click="upload"
-          >上传日志</el-link
-        >
-        <el-link class="operate-item" icon="el-icon-download" @click="download"
-          >下载日志</el-link
-        >
-        <el-link
-          class="operate-item"
-          icon="el-icon-setting"
-          @click="onOpenSetting"
-          >设置</el-link
-        >
-      </div>
+    <div id="container" class="container">
+      <div class="login" v-if="!callMeeting && !callLoading">
+        <h1>XY RTC Vue DEMO</h1>
+        <div class="operate">
+          <el-row type="flex" class="row-bg">
+            <div class="header-container">
+              <span>布局模式：</span>
+              <el-select
+                v-model="templateMode"
+                size="mini"
+                placeholder="请选择"
+                class="template-mode"
+              >
+                <el-option
+                  v-for="item in templateModeOption"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+            </div>
 
-      <Login :user="user" @submitForm="submitForm" />
-
-      <div class="copyright">版本：{{ this.version }}</div>
-    </div>
-
-    <Loading
-      v-if="callMeeting && callLoading"
-      :meeting="user.meeting"
-      :audioOutputValue="selectedDevice.audioOutput.deviceId"
-      :callStatus="callStatus"
-      @stop="stop"
-    />
-
-    <div v-if="callMeeting && !callLoading">
-      <div class="meeting-header">
-        <span> {{ user.meeting }}-({{ participantsCount }}人) </span>
-      </div>
-      <div class="meeting-content">
-        <div class="meeting-layout" :style="layoutStyle">
-          <Video
-            v-for="item in newLayout"
-            :model="layoutModel"
-            :item="item"
-            :key="item.roster.id"
-            :id="item.roster.id"
-            :client="client"
-          ></Video>
+            <el-link class="operate-item" icon="el-icon-upload2" @click="upload"
+              >上传日志</el-link
+            >
+            <el-link
+              class="operate-item"
+              icon="el-icon-download"
+              @click="download"
+              >下载日志</el-link
+            >
+            <el-link
+              class="operate-item"
+              icon="el-icon-setting"
+              @click="onOpenSetting"
+              >设置</el-link
+            >
+          </el-row>
         </div>
-        <div class="audio-list">
-          <Audio
-            v-for="item in audioList"
-            :key="item.data.streams[0].id"
-            :muted="item.status === 'local'"
-            :streamId="item.data.streams[0].id"
-            :client="client"
+
+        <Login :user="user" @submitForm="submitForm" />
+
+        <div class="copyright">版本：{{ this.version }}</div>
+      </div>
+
+      <Loading
+        v-if="callMeeting && callLoading"
+        :meeting="user.meeting"
+        :audioOutputValue="selectedDevice.audioOutput.deviceId"
+        :callStatus="callStatus"
+        @stop="stop"
+      />
+
+      <div v-if="callMeeting && !callLoading">
+        <div class="meeting-header">
+          <span> {{ user.meeting }}-({{ participantsCount }}人) </span>
+        </div>
+        <div class="meeting-content">
+          <div class="meeting-layout" :style="layoutStyle">
+            <Video
+              v-for="item in newLayout"
+              :model="layoutModel"
+              :item="item"
+              :key="item.roster.id"
+              :id="item.roster.id"
+              :client="client"
+            ></Video>
+          </div>
+          <div class="audio-list">
+            <Audio
+              v-for="item in audioList"
+              :key="item.data.streams[0].id"
+              :muted="item.status === 'local'"
+              :streamId="item.data.streams[0].id"
+              :client="client"
+            />
+          </div>
+          <Barrage
+            v-if="subTitle.content && subTitle.action === 'push'"
+            :subTitle="subTitle"
           />
         </div>
-        <Barrage
-          v-if="subTitle.content && subTitle.action === 'push'"
-          :subTitle="subTitle"
-        />
-      </div>
-      <div class="meeting-footer">
-        <div>
-          <el-button type="danger" size="small" @click="stop('OK')"
-            >挂断</el-button
-          >
+        <div class="meeting-footer">
+          <div>
+            <el-button type="danger" size="small" @click="stop('OK')"
+              >挂断</el-button
+            >
+          </div>
+          <div>
+            <el-button type="primary" size="small" @click="audioOperate"
+              >{{ audioStatus }}
+            </el-button>
+          </div>
+          <div>
+            <el-button type="primary" size="small" @click="videoOperate"
+              >{{ video === "unmuteVideo" ? "关闭摄像头" : "开启摄像头" }}
+            </el-button>
+          </div>
+          <div>
+            <el-button type="primary" size="small" @click="switchLayout"
+              >切换布局</el-button
+            >
+          </div>
+          <div>
+            <el-button type="primary" size="small" @click="switchDebug"
+              >调试：{{ debug ? "Yes" : "No" }}</el-button
+            >
+          </div>
+          <div v-if="shareContentStatus">
+            <el-button type="primary" size="small" @click="stopShareContent"
+              >结束共享
+            </el-button>
+          </div>
+          <div v-else>
+            <el-button type="primary" size="small" @click="shareContent"
+              >共享
+            </el-button>
+          </div>
+          <div>
+            <el-button
+              style="{ width: '90px' }"
+              type="primary"
+              size="small"
+              @click="shareContent"
+            >
+              声量：{{ micLevel }}
+            </el-button>
+          </div>
+          <div>
+            <el-button type="primary" size="small" @click="onOpenSetting"
+              >设置
+            </el-button>
+          </div>
         </div>
-        <div>
-          <el-button type="primary" size="small" @click="audioOperate"
-            >{{ audioStatus }}
-          </el-button>
-        </div>
-        <div>
-          <el-button type="primary" size="small" @click="videoOperate"
-            >{{ video === "unmuteVideo" ? "关闭摄像头" : "开启摄像头" }}
-          </el-button>
-        </div>
-        <div>
-          <el-button type="primary" size="small" @click="switchLayout"
-            >切换布局</el-button
-          >
-        </div>
-        <div>
-          <el-button type="primary" size="small" @click="switchDebug"
-            >调试：{{ debug ? "Yes" : "No" }}</el-button
-          >
-        </div>
-        <div v-if="shareContentStatus">
-          <el-button type="primary" size="small" @click="stopShareContent"
-            >结束共享
-          </el-button>
-        </div>
-        <div v-else>
-          <el-button type="primary" size="small" @click="shareContent"
-            >共享
-          </el-button>
-        </div>
-        <div>
-          <el-button
-            style="{ width: '90px' }"
-            type="primary"
-            size="small"
-            @click="shareContent"
-          >
-            声量：{{ micLevel }}
-          </el-button>
-        </div>
-        <div>
-          <el-button type="primary" size="small" @click="onOpenSetting"
-            >设置
-          </el-button>
-        </div>
-      </div>
 
-      <Internels
-        v-if="debug"
-        :senderStatus="senderStatus"
-        @switchDebug="switchDebug"
-      ></Internels>
+        <Internels
+          v-if="debug"
+          :senderStatus="senderStatus"
+          @switchDebug="switchDebug"
+        ></Internels>
+      </div>
     </div>
 
     <Setting
@@ -137,21 +162,36 @@ import Barrage from "./components/Barrage/index.vue";
 import Audio from "./components/Audio/index.vue";
 import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
-import xyRTC from "@xylink/xy-rtc-sdk";
+import xyRTC, { getLayoutRotateInfo } from "@xylink/xy-rtc-sdk";
 import { Message } from "element-ui";
 import store from "@/utils/store";
 import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE } from "@/utils/enum";
 import { ENV, SERVER, ACCOUNT } from "@/utils/config";
+import { TEMPLATE } from "@/utils/template";
+import cloneDeep from "clone-deep";
+import {
+  getLayoutIndexByRotateInfo,
+  getScreenInfo,
+  calculateBaseLayoutList,
+  getOrderLayoutList,
+} from "@/utils/index";
 
 let stream;
 let audioLevelTimmer;
 const user = store.get("xy-user") || DEFAULT_LOCAL_USER;
+
+// AUTO/CUSTOM 两种模式
+const LAYOUT = "AUTO";
+const elementId = "container";
 
 const message = {
   info: (message) => {
     Message.info({ message, duration: 2000, center: true });
   },
 };
+
+let rotationInfoRef = [];
+let nextLayoutListRef = [];
 
 export default {
   name: "App",
@@ -224,6 +264,17 @@ export default {
       settingVisible: false, // 设置
       selectedDevice: DEFAULT_DEVICE.nextDevice, // 选择的设备信息
       version: xyRTC.version,
+      templateModeOption: [
+        {
+          value: "AUTO",
+          label: "AUTO",
+        },
+        {
+          value: "CUSTOM",
+          label: "CUSTOM",
+        },
+      ],
+      templateMode: store.get("xy-sdk-template-mode") || LAYOUT,
     };
   },
   beforeDestroy() {
@@ -268,10 +319,18 @@ export default {
           wssServer,
           httpServer,
           logServer,
+          // 入会是否是自动静音
           muteAudio,
+          // 入会是否是关闭摄像头
           muteVideo,
+          // 使用哪一种布局方式：
+          // AUTO：自动布局，第三方只需要监听layout回调消息即可渲染布局和视频画面
+          // CUSTOM：自定义布局，灵活性更高，但是实现较为复杂，自定义控制参会成员的位置、大小和画面质量
+          layout: this.templateMode,
           container: {
-            offset: [32, 60, 0, 0], // 上 下 左 右
+            // AUTO布局时，Layout容器相对于elementId元素空间的偏移量，四个值分别对应：[上、下、左、右]
+            // 如果没有配置elementId元素，默认使用Body空间大小计算信息
+            offset: [32, 60, 20, 20],
           },
           clientId,
         });
@@ -290,6 +349,7 @@ export default {
         let result;
         const { extId } = ACCOUNT(this.env);
 
+        // 第三方企业用户登录
         result = await this.client.loginExternalAccount({
           // 用户名自行填写
           displayName: "thirdName",
@@ -406,9 +466,90 @@ export default {
         this.participantsCount = e.participantsNum;
       });
 
-      // 会议layout数据
+      client.on("roster", (e) => {
+        console.log("demo get roster message: ", e);
+
+        // 自动布局不需要处理此数据
+        if (this.templateMode === "AUTO") {
+          return;
+        }
+
+        const tempLength = TEMPLATE.length;
+        const rosters = e.rosters;
+        const reqList = [];
+        // 演讲者模式最多请8路流即可
+        // requestLayout请求最多请9路画面流（包含本地Local流）
+        // 如果请求超过9路，SDK内部会自动截断后面的数据
+        const len = rosters.length > tempLength ? 8 : rosters.length;
+
+        for (let i = 0; i < len; i++) {
+          const item = rosters[i];
+          const { endpointId, isContent } = item;
+
+          const reqObj = {
+            isContent,
+            callUri: endpointId,
+            resolution: 1,
+            quality: 1,
+          };
+
+          // 3: 720P
+          // 4: 1080P
+          // 首位一般是权重最高的共享 Content 内容设备
+          // 如果是 Content 应该请720P或1080P
+          // 如果是 People 最多请720P画面
+          if (i === 0) {
+            reqObj["resolution"] = isContent ? 4 : 3;
+          }
+
+          reqList.push(reqObj);
+        }
+
+        console.log("reqList-====: ", reqList);
+
+        client.requestLayout(reqList);
+      });
+
+      // AUTO 自动布局 会议layout数据
       client.on("layout", (e) => {
         this.layout = e;
+      });
+
+      // CUSTOM 自定义布局处理此数据
+      // 通过 requestLayout 请求视频流之后，会通过此回调返回所有的参会者列表数据
+      // 通过处理处理此数据，展示画面
+      client.on("custom-layout", (e) => {
+        console.log("demo get custom layout data:", e);
+
+        // 此处渲染没有排序处理，需要自行将回调数据排序并展示
+        // 此示例程序通过配置一个一组 TEMPLATE 模版数据，来计算layout container容器大小和layout item position/size/rotate 信息
+        // 如果不想通过此方式实现，第三方获取到customLayoutList数据后，自行处理数据即可
+        // @ts-ignore
+        const nextTemplateRate = TEMPLATE.rate[e.length] || 0.5625;
+        const { rateWidth, rateHeight } = getScreenInfo(
+          elementId,
+          nextTemplateRate
+        );
+
+        // 设置layout container容器的大小
+        this.screenInfo = { rateWidth, rateHeight };
+
+        // 按照优先级排序layout数据，便于统一通过tempalte模版来处理数据
+        const orderLayoutList = getOrderLayoutList(e);
+        // 计算初始layoutList数据
+        // 包含计算每个参会成员的大小、位置
+        // 如果不需要做上述的getOrderLayoutList的排序操作，那么直接在calculateBaseLayoutList中的第一个参数配置e即可
+        // @ts-ignore
+        nextLayoutListRef = calculateBaseLayoutList(
+          orderLayoutList,
+          rateWidth,
+          rateHeight
+        );
+
+        // 计算屏幕旋转信息
+        nextLayoutListRef = this.calculateRotate();
+
+        this.layout = nextLayoutListRef;
       });
 
       // 动态计算的显示容器信息
@@ -494,6 +635,23 @@ export default {
         }
       });
 
+      // 设备旋转信息
+      // 自定义布局需要处理
+      client.on("rotation-change", (e) => {
+        console.log("demo get rotation-change: ", e);
+
+        // 当手机竖屏入会，或者分享的竖屏的内容时
+        // 自定义布局需要手动计算视频画面的旋转信息
+        if (this.templateMode === "CUSTOM") {
+          rotationInfoRef = e;
+          // 计算屏幕旋转信息
+          nextLayoutListRef = this.calculateRotate();
+
+          // 更新layout布局列表数据
+          this.layout = nextLayoutListRef;
+        }
+      });
+
       // 设备切换
       client.on("devices", async (e) => {
         const { audioInput, videoInput, audioOutput } = e.nextDevice;
@@ -508,6 +666,37 @@ export default {
         }, 500);
       });
     },
+
+    // 计算 layout 成员渲染
+    calculateRotate() {
+      const rotationInfo = rotationInfoRef;
+      const cacheNextLayoutList = cloneDeep(nextLayoutListRef);
+
+      rotationInfo.forEach((item) => {
+        let rotateInfo = {};
+        const { participantId, mediagroupid } = item;
+        const index = getLayoutIndexByRotateInfo(
+          nextLayoutListRef,
+          participantId,
+          mediagroupid
+        );
+
+        if (index >= 0) {
+          const layoutItem = cacheNextLayoutList[index];
+          const { width, height } = layoutItem?.positionInfo;
+
+          // 调用 xy-rtc-sdk 库提供的 helper 函数【getLayoutRotateInfo】方便第三方计算旋转信息
+          // 提供 item 和 layoutItemContainerWidth 和 height 计算旋转信息
+          // 返回旋转角度和宽高样式，此数据和AUTO布局的计算结果一致
+          rotateInfo = getLayoutRotateInfo(item, width, height);
+          // @ts-ignore
+          cacheNextLayoutList[index]["rotate"] = rotateInfo;
+        }
+      });
+
+      return cacheNextLayoutList;
+    },
+
     // 摄像头操作
     async videoOperate() {
       try {
@@ -608,9 +797,13 @@ export default {
 
     // 切换布局
     async switchLayout() {
-      const modal = await this.client.switchLayout();
+      try {
+        const modal = await this.client.switchLayout();
 
-      this.layoutModel = modal.toLowerCase();
+        this.layoutModel = modal.toLowerCase();
+      } catch (err) {
+        console.log("switch layout error: ", err);
+      }
     },
 
     // 设置
@@ -809,6 +1002,9 @@ export default {
       },
       deep: true,
     },
+    templateMode: (nextValue) => {
+      store.set("xy-sdk-template-mode", nextValue);
+    },
     audio: {
       handler(newValue) {
         if (this.callMeeting && !this.callLoading) {
@@ -820,6 +1016,31 @@ export default {
 };
 </script>
 <style scoped>
+body {
+  padding: 0px;
+  width: 100vw;
+  height: 100vh;
+
+  overflow: hidden;
+  user-select: none;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+#container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+
+  position: relative;
+}
+
 .login {
   width: 100%;
   height: 100%;
@@ -829,13 +1050,26 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 .login h1 {
   margin: 20px 0;
 }
+
 .login .operate {
   margin: 20px 0 50px;
 }
+
 .login .operate-item {
   margin: 0 10px;
+}
+
+.template-mode {
+  width: 100px;
+  margin-right: 15px;
+}
+
+.header-container {
+  font-size: 14px;
+  color: #333;
 }
 </style>
