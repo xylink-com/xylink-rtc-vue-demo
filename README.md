@@ -37,4 +37,4 @@ $ npm run start
 
 ## 文档
 
-[小鱼易连 WebRTC SDK 文档](http://openapi.xylink.com/doc_web/product/description/)
+[小鱼易连 WebRTC SDK 文档](http://openapi.xylink.com/api_web/api/)
