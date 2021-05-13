@@ -55,8 +55,8 @@ const THIRD_ACCOUNT_MAP = {
     clientSecret: "",
   },
   PRD: {
-    extId: "ddbbb1b45ff2834056886746cb715fae5079d18c",
-    clientId: "pV2w8Qs8PJkTJDjdO9zUsk2W",
+    extId: "",
+    clientId: "",
     // 1.3.4 版本以上，clientSecret不再使用，可不用配置，忽略TXDEV和PRE属性
     clientSecret: "",
   },
