@@ -59,6 +59,21 @@
           <span> {{ user.meeting }}-({{ participantsCount }}人) </span>
         </div>
         <div class="meeting-content">
+          <div
+            v-if="layout.length > 1 && pageStatus.status && pageStatus.previous"
+            class="previous-box"
+          >
+            <div class="previous-button" @click="switchPage('previous')">
+              <span class="svg-icon previous" />
+            </div>
+            <div
+              v-if="pageInfo.currentPage > 1"
+              class="home-button"
+              @click="switchPage('home')"
+            >
+              回首页
+            </div>
+          </div>
           <div class="meeting-layout" :style="layoutStyle">
             <Video
               v-for="item in newLayout"
@@ -66,8 +81,25 @@
               :item="item"
               :key="item.roster.id"
               :id="item.roster.id"
+              :forceLayoutId="forceLayoutId"
               :client="client"
+              :setForceLayoutId="setForceLayoutId"
             ></Video>
+          </div>
+          <div
+            v-if="layout.length > 1 && pageStatus.status && pageStatus.next"
+            class="next-box"
+          >
+            <div class="next-button" @click="switchPage('next')">
+              <span class="svg-icon next" />
+              <div
+                v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0"
+                class="page-number"
+              >
+                {{ pageInfo.currentPage }} /
+                {{ pageInfo.totalPage > 100 ? "..." : pageInfo.totalPage }}
+              </div>
+            </div>
           </div>
           <div class="audio-list">
             <Audio
@@ -79,9 +111,11 @@
             />
           </div>
           <Barrage
-            v-if="subTitle.content && subTitle.action === 'push'"
+            v-if="!onhold && subTitle.content && subTitle.action === 'push'"
             :subTitle="subTitle"
           />
+
+          <InOutReminder v-if="!onhold" :reminders="reminders" />
         </div>
         <div class="meeting-footer">
           <div>
@@ -159,6 +193,7 @@ import Login from "./components/Login/index.vue";
 import Loading from "./components/Loading/index.vue";
 import Setting from "./components/Setting/index.vue";
 import Barrage from "./components/Barrage/index.vue";
+import InOutReminder from "./components/InOutReminder/index.vue";
 import Audio from "./components/Audio/index.vue";
 import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
@@ -199,6 +234,7 @@ export default {
     Login,
     Loading,
     Barrage,
+    InOutReminder,
     Audio,
     Video,
     Internels,
@@ -275,6 +311,24 @@ export default {
         },
       ],
       templateMode: store.get("xy-sdk-template-mode") || LAYOUT,
+      permission: {
+        camera: "",
+        microphone: "",
+      },
+      onhold: false,
+      reminders: [],
+      pageInfo: {
+        pageSize: 8,
+        currentPage: 0,
+        totalPage: 0,
+      },
+      pageStatus: {
+        status: true, // 是否分页
+        previous: false, // 上一页
+        next: true, // 下一页
+      },
+      confChangeInfo: {},
+      forceLayoutId: "", // 全屏 roster id
     };
   },
   beforeDestroy() {
@@ -382,8 +436,6 @@ export default {
         if (callStatus) {
           stream = xyRTC.createStream();
 
-          this.initStreamEventListener(stream);
-
           const { audioInput, audioOutput, videoInput } = this.selectedDevice;
 
           await stream.init({
@@ -401,17 +453,6 @@ export default {
 
         this.disconnected(err.msg || "呼叫异常，请稍后重试");
       }
-    },
-    initStreamEventListener(stream) {
-      stream.on("stream-status", (e) => {
-        const { type } = e;
-
-        if (type === "SEND_ONLY") {
-          setTimeout(() => {
-            message.info("当前仅接收远端画面模式", 5);
-          }, 3000);
-        }
-      });
     },
     // 挂断会议
     disconnected(msg = "") {
@@ -466,51 +507,24 @@ export default {
         this.participantsCount = e.participantsNum;
       });
 
-      client.on("roster", (e) => {
-        console.log("demo get roster message: ", e);
+      // 从v2.0.2版本开始，需要监听conf-change-info来请求Layout数据。以前版本不兼容
+      // 接收到conf-change-info后，需要基于此列表数据计算想要请求的参会成员和共享Content画面流
+      // client.requestNewLayout请求后，会回调custom-layout数据，包含有请求的视频画面数据
+      client.on("conf-change-info", (e) => {
+        console.log("demo get conf change info: ", e);
 
-        // 自动布局不需要处理此数据
-        if (this.templateMode === "AUTO") {
-          return;
+        this.confChangeInfo = e;
+
+        // CUSTOM 模式
+        if (this.templateMode === "CUSTOM") {
+          const cacheCustomPageInfo = this.calcPageInfo();
+
+          this.customRequestLayout(cacheCustomPageInfo);
         }
-
-        const tempLength = TEMPLATE.length;
-        const rosters = e.rosters;
-        const reqList = [];
-        // 演讲者模式最多请8路流即可
-        // requestLayout请求最多请9路画面流（包含本地Local流）
-        // 如果请求超过9路，SDK内部会自动截断后面的数据
-        const len = rosters.length > tempLength ? 8 : rosters.length;
-
-        for (let i = 0; i < len; i++) {
-          const item = rosters[i];
-          const { endpointId, isContent } = item;
-
-          const reqObj = {
-            isContent,
-            callUri: endpointId,
-            resolution: 1,
-            quality: 1,
-          };
-
-          // 3: 720P
-          // 4: 1080P
-          // 首位一般是权重最高的共享 Content 内容设备
-          // 如果是 Content 应该请720P或1080P
-          // 如果是 People 最多请720P画面
-          if (i === 0) {
-            reqObj["resolution"] = isContent ? 4 : 3;
-          }
-
-          reqList.push(reqObj);
-        }
-
-        console.log("reqList-====: ", reqList);
-
-        client.requestLayout(reqList);
       });
 
-      // AUTO 自动布局 会议layout数据
+      // AUTO 布局回调layout数据，使用此数据直接渲染画面即可
+      // CUSTOM 布局不需要监听此数据
       client.on("layout", (e) => {
         this.layout = e;
       });
@@ -584,21 +598,25 @@ export default {
       // 麦克风状态
       client.on("meeting-control", (e) => {
         const { disableMute, muteOperation } = e;
-
+        let info = "";
         this.disableAudio = disableMute;
 
         if (muteOperation === "muteAudio" && disableMute) {
-          message.info("主持人已强制静音，如需发言，请点击“举手发言”");
+          info = "主持人已强制静音，如需发言，请点击“举手发言”";
 
           this.handStatus = false;
         } else if (muteOperation === "muteAudio" && !disableMute) {
-          message.info("您已被主持人静音");
+          info = "您已被主持人静音";
         } else if (muteOperation === "unmuteAudio" && disableMute) {
-          message.info("主持人已允许您发言");
-
+          info = "主持人已允许您发言";
           this.handStatus = false;
         } else if (muteOperation === "unmuteAudio" && !disableMute) {
-          message.info("您已被主持人取消静音");
+          info = "您已被主持人取消静音";
+        }
+
+        // 在等候室时，不做提示
+        if (!this.onhold && info) {
+          message.info(info);
         }
       });
 
@@ -665,8 +683,141 @@ export default {
             message.info(`音频输出设备已自动切换至 ${audioOutput.label}`);
         }, 500);
       });
-    },
 
+      // 设备权限
+      client.on("permission", async (e) => {
+        this.permission = e;
+      });
+
+      // 被移入等候室
+      client.on("onhold", (e) => {
+        this.onhold = e;
+        
+        if (e) {
+          setTimeout(() => {
+            message.info("该会议室已开启等候室，请等待主持人审核");
+          }, 1000);
+        }
+      });
+
+      // AUTO布局 当前模板类型
+      client.on("template-mode", (mode) => {
+        this.layoutModel = mode;
+      });
+
+      // 出入会消息
+      client.on("in-out-reminder", (e) => {
+        this.reminders = e;
+      });
+
+      // 分页信息
+      client.on("page-info", (pageInfo) => {
+        let next = true;
+        let previous = false;
+        const { currentPage = 0, totalPage = 0 } = pageInfo;
+
+        if (currentPage !== 0) {
+          previous = true;
+        }
+
+        if (currentPage >= totalPage) {
+          next = false;
+        }
+
+        this.pageStatus = {
+          ...this.pageStatus,
+          next,
+          previous,
+        };
+        this.pageInfo = pageInfo;
+      });
+    },
+    // CUSTOM布局 计算页码信息
+    calcPageInfo() {
+      const { participantCount } = this.confChangeInfo;
+      let { pageSize, currentPage } = this.pageInfo;
+      let cacheCustomPageInfo = JSON.parse(JSON.stringify(this.pageInfo));
+
+      // 会议产生变动，那么就重新计算总页数
+      // participantCount + contentPartCount 代表people + content的总个数
+      let totalPage = Math.ceil((participantCount - 1) / pageSize);
+      totalPage = totalPage > 0 ? totalPage : 0;
+
+      // 如果当前的页码大于最新最大的页码，就更新到最后一页
+      if (currentPage > totalPage) {
+        currentPage = totalPage;
+      }
+
+      cacheCustomPageInfo = {
+        ...cacheCustomPageInfo,
+        totalPage,
+        currentPage,
+      };
+
+      this.confChangeInfo = cacheCustomPageInfo;
+
+      console.log("cacheCustomPageInfo: ", cacheCustomPageInfo);
+
+      return cacheCustomPageInfo;
+    },
+    // CUSTOM布局 请流
+    customRequestLayout(cacheCustomPageInfo) {
+      const { chairManUrl, contentUri, participantCount } = this.confChangeInfo;
+      let reqList = [];
+      let extReqList = [];
+
+      if (chairManUrl) {
+        extReqList.push({
+          calluri: chairManUrl,
+          mediagroupid: 0,
+          resolution: 3,
+          quality: 2,
+        });
+      }
+
+      if (contentUri) {
+        extReqList.push({
+          calluri: contentUri,
+          mediagroupid: 1,
+          resolution: 4,
+          quality: 2,
+        });
+      }
+
+      let realLen = participantCount - 1;
+      const { pageSize, currentPage } = cacheCustomPageInfo;
+
+      // 如果真实请流大于每页最大数量
+      if (realLen > pageSize) {
+        if (realLen < currentPage * pageSize) {
+          realLen = realLen - (currentPage - 1) * pageSize;
+        } else {
+          realLen = pageSize;
+        }
+      }
+
+      for (let i = 0; i < realLen; i++) {
+        reqList.push({
+          calluri: "",
+          mediagroupid: 0,
+          resolution: 1,
+          quality: 1,
+        });
+      }
+
+      console.log("reqlist: ", reqList);
+      console.log("extReqList: ", extReqList);
+
+      this.client?.requestNewLayout(
+        reqList,
+        pageSize,
+        currentPage,
+        extReqList,
+        {
+          uiShowLocalWhenPageMode: false,
+        }
+      );
+    },
     // 计算 layout 成员渲染
     calculateRotate() {
       const rotationInfo = rotationInfoRef;
@@ -804,6 +955,36 @@ export default {
       } catch (err) {
         console.log("switch layout error: ", err);
       }
+    },
+
+    // 分页
+    switchPage(type) {
+      this.forceLayoutId = ""; // 退出全屏
+
+      if (this.templateMode === "CUSTOM") {
+        // TODO: 第三方自己实现
+        return;
+      }
+
+      const { currentPage, totalPage } = this.pageInfo;
+      let nextPage = currentPage;
+
+      if (type === "next") {
+        nextPage += 1;
+      } else if (type === "previous") {
+        nextPage -= 1;
+      } else if (type === "home") {
+        nextPage = 0;
+      }
+
+      nextPage = Math.max(nextPage, 0);
+      nextPage = Math.min(nextPage, totalPage);
+
+      this.client?.setPageInfo(nextPage);
+    },
+
+    setForceLayoutId(id) {
+      this.forceLayoutId = id;
     },
 
     // 设置

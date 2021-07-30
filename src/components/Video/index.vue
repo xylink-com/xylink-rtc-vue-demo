@@ -7,7 +7,7 @@
     @dblclick="toggleFullScreen"
   >
     <div class="video">
-      <div class="video-content" :style="{border}">
+      <div class="video-content" :style="{ border }">
         <div class="video-model">
           <div :class="audioOnlyClass">
             <div class="center">
@@ -50,7 +50,6 @@
   </div>
 </template>
 <script>
-import { fscreen } from "../../utils/screen";
 
 export default {
   props: ["item", "model", "id", "client"],
@@ -60,6 +59,17 @@ export default {
     },
     videoWrapStyle() {
       let wrapStyle = {};
+      // 全屏
+     if (this.isFullScreen) {
+       return (wrapStyle = {
+         position: 'fixed',
+         width: '100%',
+         height: '100%',
+         left: '0',
+         top: '0',
+         zIndex: '101'
+       });
+     }
       const positionStyle = this.item.positionStyle;
 
       if (positionStyle && positionStyle.width) {
@@ -129,27 +139,20 @@ export default {
     };
   },
   mounted() {
-    const videoWrapEle = this.$refs["videoWrapRef"];
-
-    // 监听全屏状态change事件
-    fscreen.init(videoWrapEle, (e) => {
-      this.isFullScreen = e.isFullScreen;
-    });
-
     this.renderVideo(this.id);
   },
-  beforeDestroy() {
-    const videoWrapEle = this.$refs["videoWrapRef"];
-
-    videoWrapEle && fscreen.clear(videoWrapEle);
-  },
   methods: {
-    toggleFullScreen() {
-      const videoWrapEle = this.$refs["videoWrapRef"];
+    async toggleFullScreen() {
+      await this.client.forceFullScreen(!this.isFullScreen && this.id);
+
       if (this.isFullScreen) {
-        fscreen.exit(videoWrapEle);
+        setTimeout(() => {
+          this.isFullScreen = false;
+          this.$emit("setForceLayoutId", "");
+        }, 1000);
       } else {
-        fscreen.request(videoWrapEle);
+        this.isFullScreen = true;
+        this.$emit("setForceLayoutId", this.id);
       }
     },
     renderVideo(newValue) {
