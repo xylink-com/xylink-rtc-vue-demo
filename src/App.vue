@@ -201,7 +201,7 @@ import xyRTC, { getLayoutRotateInfo } from "@xylink/xy-rtc-sdk";
 import { Message } from "element-ui";
 import store from "@/utils/store";
 import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE } from "@/utils/enum";
-import { ENV, SERVER, ACCOUNT } from "@/utils/config";
+import { SERVER, ACCOUNT } from "@/utils/config";
 import { TEMPLATE } from "@/utils/template";
 import cloneDeep from "clone-deep";
 import {
@@ -296,7 +296,6 @@ export default {
       shareContentStatus: false, // 开启content的状态
       senderStatus: { sender: {}, receiver: {} }, // 呼叫数据统计
       debug: false, // 是否是调试模式（开启则显示所有画面的呼叫数据）
-      env: ENV, // 配置环境，第三方集成不需要配置，默认是线上环境
       settingVisible: false, // 设置
       selectedDevice: DEFAULT_DEVICE.nextDevice, // 选择的设备信息
       version: xyRTC.version,
@@ -362,8 +361,8 @@ export default {
           muteAudio,
           muteVideo,
         } = this.user;
-        const { wssServer, httpServer, logServer } = SERVER(this.env);
-        const { clientId } = ACCOUNT(this.env);
+        const { wssServer, httpServer, logServer } = SERVER;
+        const { clientId } = ACCOUNT;
 
         // 这里三方可以根据环境修改sdk log等级
         // xyRTC.logger.setLogLevel("NONE");
@@ -401,7 +400,7 @@ export default {
          * 重要提示
          */
         let result;
-        const { extId } = ACCOUNT(this.env);
+        const { extId } = ACCOUNT;
 
         // 第三方企业用户登录
         result = await this.client.loginExternalAccount({
@@ -692,7 +691,7 @@ export default {
       // 被移入等候室
       client.on("onhold", (e) => {
         this.onhold = e;
-        
+
         if (e) {
           setTimeout(() => {
             message.info("该会议室已开启等候室，请等待主持人审核");
@@ -765,6 +764,8 @@ export default {
       const { chairManUrl, contentUri, participantCount } = this.confChangeInfo;
       let reqList = [];
       let extReqList = [];
+      let realLen = participantCount - 1;
+      const { pageSize, currentPage } = cacheCustomPageInfo;
 
       if (chairManUrl) {
         extReqList.push({
@@ -773,6 +774,8 @@ export default {
           resolution: 3,
           quality: 2,
         });
+
+        realLen -= 1;
       }
 
       if (contentUri) {
@@ -782,10 +785,9 @@ export default {
           resolution: 4,
           quality: 2,
         });
-      }
 
-      let realLen = participantCount - 1;
-      const { pageSize, currentPage } = cacheCustomPageInfo;
+        realLen -= 1;
+      }
 
       // 如果真实请流大于每页最大数量
       if (realLen > pageSize) {
