@@ -1530,10 +1530,10 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@2.0.2-beta.13":
-  version "2.0.2-beta.13"
-  resolved "http://10.80.84.176:4873/@xylink%2fxy-rtc-sdk/-/xy-rtc-sdk-2.0.2-beta.13.tgz#7dc3a4399b469bd3e6c5b6ec9c8e2a11bed57075"
-  integrity sha512-Qx8zTrp0rSH7MySfj7+I0wzL6LlgRJikQICwFy+Xr2Z1iCApmJ1Wr7UuK4f3uYL8kyU72ski6stk+KiLwjUNTQ==
+"@xylink/xy-rtc-sdk@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.0.2.tgz#da2444a5a9b8cc174b8367c08418298278c6d427"
+  integrity sha512-HXhar8mePbKdeXgEu/xaFMtPxnUl1kGoB40jkSnkYoRtC31wLnkBlcVn3AmTM8xSzU/sdE6DosjnF8lm0M2LCg==
   dependencies:
     crypto-js "^4.0.0"
     dexie "^2.0.4"
