@@ -753,7 +753,7 @@ export default {
         currentPage,
       };
 
-      this.confChangeInfo = cacheCustomPageInfo;
+      this.pageInfo = cacheCustomPageInfo;
 
       console.log("cacheCustomPageInfo: ", cacheCustomPageInfo);
 
@@ -965,6 +965,7 @@ export default {
 
       if (this.templateMode === "CUSTOM") {
         // TODO: 第三方自己实现
+        message.info("自定义布局不支持此方法")
         return;
       }
 
