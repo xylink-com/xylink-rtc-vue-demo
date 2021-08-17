@@ -964,8 +964,8 @@ export default {
       this.forceLayoutId = ""; // 退出全屏
 
       if (this.templateMode === "CUSTOM") {
+        message.info("自定义布局模式不支持切换布局");
         // TODO: 第三方自己实现
-        message.info("自定义布局不支持此方法")
         return;
       }
 
