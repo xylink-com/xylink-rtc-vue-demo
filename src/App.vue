@@ -546,8 +546,6 @@ export default {
         // 设置layout container容器的大小
         this.screenInfo = { rateWidth, rateHeight };
 
-        // 按照优先级排序layout数据，便于统一通过tempalte模版来处理数据
-        // const orderLayoutList = getOrderLayoutList(e);
         // 计算初始layoutList数据
         // 包含计算每个参会成员的大小、位置
         // 如果不需要做上述的getOrderLayoutList的排序操作，那么直接在calculateBaseLayoutList中的第一个参数配置e即可
