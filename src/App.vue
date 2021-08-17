@@ -208,7 +208,6 @@ import {
   getLayoutIndexByRotateInfo,
   getScreenInfo,
   calculateBaseLayoutList,
-  getOrderLayoutList,
 } from "@/utils/index";
 
 let stream;
@@ -317,8 +316,8 @@ export default {
       onhold: false,
       reminders: [],
       pageInfo: {
-        pageSize: 8,
-        currentPage: 0,
+        pageSize: 3,
+        currentPage: 1,
         totalPage: 0,
       },
       pageStatus: {
@@ -548,16 +547,12 @@ export default {
         this.screenInfo = { rateWidth, rateHeight };
 
         // 按照优先级排序layout数据，便于统一通过tempalte模版来处理数据
-        const orderLayoutList = getOrderLayoutList(e);
+        // const orderLayoutList = getOrderLayoutList(e);
         // 计算初始layoutList数据
         // 包含计算每个参会成员的大小、位置
         // 如果不需要做上述的getOrderLayoutList的排序操作，那么直接在calculateBaseLayoutList中的第一个参数配置e即可
         // @ts-ignore
-        nextLayoutListRef = calculateBaseLayoutList(
-          orderLayoutList,
-          rateWidth,
-          rateHeight
-        );
+        nextLayoutListRef = calculateBaseLayoutList(e, rateWidth, rateHeight);
 
         // 计算屏幕旋转信息
         nextLayoutListRef = this.calculateRotate();
@@ -958,14 +953,52 @@ export default {
         console.log("switch layout error: ", err);
       }
     },
+    // 自定义布局分页
+    customSwitchPage(type) {
+      const { currentPage, totalPage } = this.pageInfo;
+      let nextPage = currentPage;
+      let next = true;
+      let previous = false;
+
+      if (type === "next") {
+        nextPage += 1;
+      } else if (type === "previous") {
+        nextPage -= 1;
+      } else if (type === "home") {
+        nextPage = 1;
+      }
+
+      nextPage = Math.max(nextPage, 1);
+      nextPage = Math.min(nextPage, totalPage);
+
+      if (nextPage !== 1) {
+        previous = true;
+      }
+
+      if (nextPage >= totalPage) {
+        next = false;
+      }
+
+      this.pageStatus = {
+        ...this.pageStatus,
+        next,
+        previous,
+      };
+
+      this.pageInfo = {
+        ...this.pageInfo,
+        currentPage: nextPage,
+      };
+
+      this.customRequestLayout(this.pageInfo);
+    },
 
     // 分页
     switchPage(type) {
       this.forceLayoutId = ""; // 退出全屏
 
       if (this.templateMode === "CUSTOM") {
-        message.info("自定义布局模式不支持切换布局");
-        // TODO: 第三方自己实现
+        this.customSwitchPage(type);
         return;
       }
 
