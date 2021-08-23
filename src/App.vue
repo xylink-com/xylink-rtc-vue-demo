@@ -283,14 +283,8 @@ export default {
           Base64.encode(password)
         );
 
-        if (result.code === 10104) {
-          message.info("登录密码错误");
-
-          this.callMeeting = false;
-          this.callLoading = false;
-          return;
-        } else if (result.code !== 200) {
-          message.info("登录失败");
+        if (result.code !== 200) {
+           message.info("登录失败");
 
           this.callMeeting = false;
           this.callLoading = false;
