@@ -9,12 +9,6 @@
         <el-link class="operate-item" icon="el-icon-download" @click="download"
           >下载日志</el-link
         >
-        <el-link
-          class="operate-item"
-          icon="el-icon-setting"
-          @click="onToggleSetting"
-          >设置</el-link
-        >
       </div>
 
       <Login :user="user" @submitForm="submitForm" />
@@ -67,13 +61,8 @@
             :key="item.data.streams[0].id"
             :item="item"
             :muted="item.status === 'local'"
-            :audioOutput="audioOutput"
           />
         </div>
-        <Barrage
-          v-if="subTitle.content && subTitle.action === 'push'"
-          :subTitle="subTitle"
-        />
       </div>
       <div class="meeting-footer">
         <div>
@@ -129,23 +118,20 @@
         @switchDebug="switchDebug"
       ></Internels>
     </div>
-
-    <Setting :visible="settingVisible" />
   </div>
 </template>
 
 <script>
 import Login from "./components/Login/index.vue";
-import Setting from "./components/Setting/index.vue";
-import Barrage from "./components/Barrage/index.vue";
 import Audio from "./components/Audio/index.vue";
 import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
-import xyRTC from "@xylink/xy-rtc-sdk";
+import xyRTC from "xy-rtc-sdk-beta";
 import { Message } from "element-ui";
 import store from "@/utils/store";
-import { USER_INFO, DEFAULT_DEVICES } from "@/utils/enum";
-import { ENV, SERVER, ACCOUNT } from "@/utils/config";
+import { USER_INFO } from "@/utils/enum";
+import { SERVER } from "@/utils/config";
+import { Base64 } from "js-base64";
 
 let client;
 let stream;
@@ -162,8 +148,6 @@ export default {
   name: "App",
   components: {
     Login,
-    Setting,
-    Barrage,
     Audio,
     Video,
     Internels,
@@ -223,12 +207,6 @@ export default {
           };
         });
     },
-    audioOutput() {
-      const devices = store.get("xy-devices") || {
-        audioOutputValue: "default",
-      };
-      return devices.audioOutputValue || "";
-    },
     callStatus() {
       return {
         callMeeting: this.callMeeting,
@@ -244,20 +222,15 @@ export default {
       layout: [], // 参会成员数据，包含stream，roster，postion等信息，最终依赖layout的数据进行画面布局、渲染、播放、状态显示
       screenInfo: { rateWidth: 0, rateHeight: 0 }, // screen容器信息
       audioList: [], // 所有声源列表
-      video: user.muteVideo ? "muteVideo" : "unmuteVideo", // 摄像头状态
-      audio: user.muteAudio ? "mute" : "unmute", // 麦克风状态
+      video: "unmuteVideo", // 摄像头状态
+      audio: "unmute", // 麦克风状态
       disableAudio: false, // 是否强制静音
-      handStatus: false, // 举手状态
-      subTitle: { action: "cancel", content: "" }, // 是否有字幕或点名
       layoutModel: "speaker", // 桌面布局模式(语音激励模式、画廊模式)
       participantsCount: 0, // 会议成员数量
       micLevel: 0, // 音量等级
       shareContentStatus: false, // 开启content的状态
       senderStatus: { sender: {}, receiver: {} }, // 呼叫数据统计
       debug: false, // 是否是调试模式（开启则显示所有画面的呼叫数据）
-      env: ENV, // 配置环境，第三方集成不需要配置，默认是线上环境
-      settingVisible: false, // 设置
-      preDevicesRef: null, // pre device
       version: xyRTC.version,
     };
   },
@@ -285,14 +258,8 @@ export default {
       let callStatus = true;
 
       try {
-        const {
-          meeting,
-          meetingPassword,
-          meetingName,
-          muteAudio,
-          muteVideo,
-        } = this.user;
-        const { wssServer, httpServer, logServer } = SERVER(this.env);
+        const { meeting, meetingPwd, username, password } = this.user;
+        const { wssServer, httpServer, logServer } = SERVER;
 
         // 这里三方可以根据环境修改sdk log等级
         // xyRTC.logger.setLogLevel("NONE");
@@ -302,8 +269,6 @@ export default {
           wssServer,
           httpServer,
           logServer,
-          muteAudio,
-          muteVideo,
           container: {
             offsetHeight: 92,
           },
@@ -311,25 +276,12 @@ export default {
 
         this.initEventListener(client);
 
-        /**
-         * 重要提示
-         * 重要提示
-         * 重要提示
-         * 第三方登录，请在config配置文件里面配置企业账户信息
-         * 重要提示
-         * 重要提示
-         * 重要提示
-         */
         let result;
-        const { extId, clientId, clientSecret } = ACCOUNT(this.env);
 
-        result = await client.loginExternalAccount({
-          // 用户名自行填写
-          displayName: "thirdName",
-          extId,
-          clientId,
-          clientSecret,
-        });
+        result = await client.loginXYlinkAccount(
+          username,
+          Base64.encode(password)
+        );
 
         if (result.code === 10104) {
           message.info("登录密码错误");
@@ -348,26 +300,18 @@ export default {
         const token = result.data.token || result.data.access_token;
 
         callStatus = await client.makeCall({
-          token,
-          confNumber: meeting,
-          password: meetingPassword,
-          displayName: meetingName,
+          token, // 唯一标识符
+          confNumber: meeting, // 云会议号
+          password: meetingPwd, // 入会密码，没有则为空
+          displayName: username, // 入会显示昵称
         });
 
         if (callStatus) {
           stream = xyRTC.createStream();
 
-          const devices = store.get("xy-devices") || {
-            audioInputValue: "default",
-            videoInValue: "",
-          };
-
-          await stream.init({ devices });
+          await stream.init();
 
           client.publish(stream, { isSharePeople: true });
-
-          // 记录入会时的设备信息
-          this.updateDevicesByStream(stream);
         }
       } catch (err) {
         console.log("入会失败: ", err);
@@ -387,14 +331,9 @@ export default {
 
     // 结束会议操作
     stop(reason = "OK") {
-      this.clearStorage();
-
       // 重置audio、video状态
-      this.audio = this.user.muteAudio ? "mute" : "unmute";
-      this.video = this.user.muteVideo ? "muteVideo" : "unmuteVideo";
-
-      // 重置字幕信息
-      this.subTitle = { action: "cancel", content: "" };
+      this.audio = "unmute";
+      this.video = "unmuteVideo";
 
       // sdk清理操作
       stream && stream.close();
@@ -412,10 +351,6 @@ export default {
       this.clearTimmer();
       client = null;
       stream = null;
-    },
-    clearStorage() {
-      store.remove("xy-devices");
-      store.remove("xy-deviceList");
     },
     clearTimmer() {
       audioLevelTimmer && clearInterval(audioLevelTimmer);
@@ -484,15 +419,18 @@ export default {
 
         if (muteOperation === "mute" && disableMute) {
           message.info("主持人已强制静音，如需发言，请点击“举手发言”");
-          this.handStatus = false;
         } else if (muteOperation === "mute" && !disableMute) {
           message.info("您已被主持人静音");
         } else if (muteOperation === "unmute" && disableMute) {
           message.info("主持人已允许您发言");
-          this.handStatus = false;
         } else if (muteOperation === "unmute" && !disableMute) {
           message.info("您已被主持人取消静音");
         }
+      });
+
+      // 参会者信息
+      client.on("roster", (e) => {
+        console.log("roster:", e);
       });
 
       // 分享content消息
@@ -505,107 +443,6 @@ export default {
       client.on("meeting-stats", (e) => {
         this.senderStatus = e;
       });
-
-      // 字幕、点名消息
-      client.on("sub-title", (e) => {
-        this.subTitle = e;
-      });
-
-      // 清除举手
-      client.on("cancel-handup", (e) => {
-        if (e) {
-          this.onHandDown();
-        }
-      });
-
-      // 设备切换
-      client.on("devices", async (e) => {
-        if (e && e.detail) {
-          const nextDevices = e.detail || DEFAULT_DEVICES;
-          const preDevices = store.get("xy-deviceList") || DEFAULT_DEVICES;
-          // pre 设备
-          // @ts-ignore
-          const {
-            videoIn: preVideoIn,
-            audioInput: preAudioInput,
-          } = this.preDevicesRef;
-          // 当前连接设备
-          const {
-            videoIn: nextVideoIn,
-            audioInput: nextAudioInput,
-            audioOutput,
-          } = xyRTC.diffDevices(preDevices, nextDevices);
-
-          nextVideoIn &&
-            message.info(`视频设备已自动切换至 ${nextVideoIn.label}`);
-          nextAudioInput &&
-            message.info(`音频输入设备已自动切换至 ${nextAudioInput.label}`);
-          audioOutput &&
-            message.info(`音频输出设备已自动切换至 ${audioOutput.label}`);
-
-          if (
-            nextAudioInput &&
-            nextAudioInput.deviceId !== preAudioInput.deviceId
-          ) {
-            console.log("switch audio device:::", nextAudioInput.deviceId);
-            try {
-              stream.switchDevice("audio", nextAudioInput.deviceId);
-              // @ts-ignore
-              this.preDevicesRef.audioInput = nextAudioInput;
-            } catch (err) {
-              stream.switchDevice("audio", undefined);
-            }
-          }
-
-          if (nextVideoIn && nextVideoIn.deviceId !== preVideoIn.deviceId) {
-            console.log("switch video device:::", nextVideoIn.deviceId);
-            try {
-              stream.switchDevice("video", nextVideoIn.deviceId);
-              // @ts-ignore
-              this.preDevicesRef.videoIn = nextVideoIn;
-            } catch (err) {
-              stream.switchDevice("video", undefined);
-            }
-          }
-
-          if (audioOutput) {
-            const devices = store.get("xy-devices");
-
-            store.set("xy-devices", {
-              ...devices,
-              audioOutputValue: audioOutput.deviceId,
-            });
-          }
-
-          store.set("xy-deviceList", nextDevices);
-        }
-      });
-    },
-    // 通过stream获取设备信息
-    async updateDevicesByStream(stream) {
-      if (stream && stream.localStream && stream.localStream.stream) {
-        const tempLocalStream = stream.localStream.stream.clone();
-
-        const audioTrack = tempLocalStream.getAudioTracks()[0];
-        const videoTrack = tempLocalStream.getVideoTracks()[0];
-
-        const audioInput = audioTrack.getSettings();
-        const videoIn = videoTrack.getSettings();
-
-        // @ts-ignore
-        this.preDevicesRef = {
-          audioInput: {
-            ...audioInput,
-            label: audioTrack.label,
-          },
-          videoIn: {
-            ...videoIn,
-            label: videoTrack.label,
-          },
-        };
-        const deviceList = await xyRTC.getDevices();
-        store.set("xy-deviceList", deviceList);
-      }
     },
     // 摄像头操作
     videoOperate() {
@@ -622,21 +459,7 @@ export default {
 
     // 麦克风操作
     async audioOperate() {
-      if (this.audio === "mute" && this.disableAudio && !this.handStatus) {
-        const isHandStatus = await client.onHandUp();
-        this.handStatus = isHandStatus;
-        message.info("发言请求已发送");
-        return;
-      }
-
-      if (this.audio === "mute" && this.disableAudio && this.handStatus) {
-        await this.onHandDown();
-        return;
-      }
-
-      if (this.audio === "unmute" && this.disableAudio) {
-        const isHandStatus = await client.onMute();
-        this.handStatus = isHandStatus;
+      if (this.audio === "mute" && this.disableAudio) {
         return;
       }
 
@@ -644,8 +467,6 @@ export default {
         client.muteAudio();
 
         this.audio = "mute";
-
-        message.info("麦克风已静音");
       } else {
         client.unmuteAudio();
 
@@ -654,18 +475,13 @@ export default {
     },
     // 切换布局
     switchLayout() {
-      const modal = client.switchLayout().toLowerCase();
+      client.switchLayout();
 
-      this.layoutModel = modal;
-    },
-    // 取消举手
-    async onHandDown() {
-      const isHandStatus = await client.onHandDown();
-      this.handStatus = isHandStatus;
-    },
-    // 设置
-    onToggleSetting() {
-      message.info("设置");
+      if (this.layoutModel === "speaker") {
+        this.layoutModel = "gallery";
+      } else {
+        this.layoutModel = "speaker";
+      }
     },
     // 上传日志
     async upload() {
@@ -751,16 +567,6 @@ export default {
 
         if (!callLoading && this.$refs["bgmAudioRef"]) {
           this.$refs["bgmAudioRef"].pause();
-        }
-
-        if (callMeeting && callLoading) {
-          const devices = store.get("xy-devices") || {
-            audioOutputValue: "default",
-          };
-          xyRTC.setOutputAudioDevice(
-            this.$refs["bgmAudioRef"],
-            devices.audioOutputValue
-          );
         }
       },
     },

@@ -11,21 +11,18 @@
     <el-form-item label="会议号" prop="meeting">
       <el-input v-model="loginForm.meeting" autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="入会昵称" prop="meetingName">
-      <el-input v-model="loginForm.meetingName" autocomplete="off"></el-input>
+    <el-form-item label="会议密码" prop="meetingPwd">
+      <el-input v-model="loginForm.meetingPwd" autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="入会密码" prop="meetingPassword">
+    <el-form-item label="账号" prop="username">
+      <el-input v-model="loginForm.username" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="账号密码" prop="password">
       <el-input
         type="password"
-        v-model="loginForm.meetingPassword"
+        v-model="loginForm.password"
         autocomplete="off"
       ></el-input>
-    </el-form-item>
-    <el-form-item label="开启摄像头" prop="muteVideo">
-      <el-switch v-model="muteVideoValue"></el-switch>
-    </el-form-item>
-    <el-form-item label="开启麦克风" prop="muteAudio">
-      <el-switch v-model="muteAudioValue"></el-switch>
     </el-form-item>
     <el-form-item class="center">
       <el-button type="primary" @click="submitForm('loginForm')"
@@ -40,24 +37,6 @@ import store from "@/utils/store";
 
 export default {
   props: ["user"],
-  computed: {
-    muteVideoValue: {
-      get() {
-        return !this.loginForm.muteVideo;
-      },
-      set(val) {
-        this.loginForm.muteVideo = !val;
-      },
-    },
-    muteAudioValue: {
-      get() {
-        return !this.loginForm.muteAudio;
-      },
-      set(val) {
-        this.loginForm.muteAudio = !val;
-      },
-    },
-  },
   data() {
     return {
       labelPosition: "right",

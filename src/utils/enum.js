@@ -3,16 +3,8 @@
  */
 
 export const USER_INFO = {
-  meeting: "",
-  meetingPassword: "",
-  meetingName: "",
-  muteVideo: false,
-  muteAudio: false,
-};
-
-
-export const DEFAULT_DEVICES = {
-  audioInputList: [],
-  audioOutputList: [],
-  videoInList: [],
+  meeting: "", // 会议号
+  meetingPwd: "", // 会议密码
+  username: "", // 账号
+  password: "", // 账号密码
 };

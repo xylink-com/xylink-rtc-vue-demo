@@ -4,10 +4,8 @@
   </div>
 </template>
 <script>
-import xyRTC from "@xylink/xy-rtc-sdk";
-
 export default {
-  props: ["item", "muted", "audioOutput"],
+  props: ["item", "muted"],
   mounted() {
     this.renderAudio(this.item);
   },
@@ -18,7 +16,7 @@ export default {
     renderAudio(newValue) {
       const audioEle = this.$refs["audioRef"];
       if (audioEle && !audioEle.srcObject && newValue) {
-        audioEle.srcObject =  newValue.data.streams[0];
+        audioEle.srcObject = newValue.data.streams[0];
 
         if (audioEle.paused) {
           audioEle.play();
@@ -27,14 +25,6 @@ export default {
     },
   },
   watch: {
-    audioOutput: {
-      handler(newValue) {
-        // 扬声器
-        if (newValue && this.item.status !== "local") {
-          xyRTC.setOutputAudioDevice(this.$refs["audioRef"], newValue);
-        }
-      },
-    },
     item: {
       handler(newValue) {
         this.renderAudio(newValue);
