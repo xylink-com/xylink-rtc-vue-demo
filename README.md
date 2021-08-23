@@ -6,11 +6,15 @@
 
 ### 准备工作
 
-1. 注意在`src/utils/config.js`中配置第三方登录所需的
+1. 注意在`src/utils/config.js`中配置服务地址
 
-- extId
-- clientId
-- clientSecret
+- wssServer
+- httpServer
+- logServer
+
+2. 此版本必须开启摄像头、麦克风权限
+  
+3. 项目访问地址必须是 **https**  或 http://localhost 协议
 
 ### 运行
 

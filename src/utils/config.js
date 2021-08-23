@@ -20,5 +20,3 @@ export const SERVER = {
   httpServer: "https://cloudapi.xylink.com", // rest api服务地址
   logServer: "https://log.xylink.com", // log server服务地址
 };
-
-export const ACCOUNT = { extId: "" };
