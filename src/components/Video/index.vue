@@ -1,5 +1,9 @@
 <template>
-  <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef">
+  <div
+    class="wrap-video"
+    :style="videoWrapStyle"
+    ref="videoWrapRef"
+  >
     <div class="video">
       <div class="video-content" :style="border">
         <div class="video-model">
@@ -89,25 +93,9 @@ export default {
     },
     videoStyle() {
       let style = {};
-      let fullStyle = {};
-
-      if (this.isFullScreen) {
-        fullStyle = {
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-        };
-      }
 
       if (this.index > 0) {
         style = this.item.rotate;
-
-        if (this.item.roster.isContent || this.isFullScreen) {
-          style = {
-            ...style,
-            ...fullStyle,
-          };
-        }
       } else {
         style = {
           ...this.item.rotate,
@@ -209,7 +197,6 @@ export default {
     return {
       streamStatus: "enabled",
       playStatus: false,
-      isFullScreen: false, // 是否全屏
       video: this.item.stream && this.item.stream.video,
     };
   },
