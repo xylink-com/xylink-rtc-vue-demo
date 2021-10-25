@@ -5,7 +5,7 @@
     :rules="rules"
     :label-position="labelPosition"
     ref="loginForm"
-    label-width="100px"
+    label-width="130px"
     class="login-form"
   >
     <el-form-item label="会议号" prop="meeting">
@@ -21,11 +21,11 @@
         autocomplete="off"
       ></el-input>
     </el-form-item>
-    <el-form-item label="开启摄像头" prop="muteVideo">
-      <el-switch v-model="muteVideoValue"></el-switch>
+    <el-form-item label="入会时关闭摄像头" prop="muteVideo">
+      <el-switch v-model="loginForm.muteVideo"></el-switch>
     </el-form-item>
-    <el-form-item label="开启麦克风" prop="muteAudio">
-      <el-switch v-model="muteAudioValue"></el-switch>
+    <el-form-item label="入会时静音" prop="muteAudio">
+      <el-switch v-model="loginForm.muteAudio"></el-switch>
     </el-form-item>
     <el-form-item class="center">
       <el-button type="primary" @click="submitForm('loginForm')"
@@ -40,24 +40,7 @@ import store from "@/utils/store";
 
 export default {
   props: ["user"],
-  computed: {
-    muteVideoValue: {
-      get() {
-        return !this.loginForm.muteVideo;
-      },
-      set(val) {
-        this.loginForm.muteVideo = !val;
-      },
-    },
-    muteAudioValue: {
-      get() {
-        return !this.loginForm.muteAudio;
-      },
-      set(val) {
-        this.loginForm.muteAudio = !val;
-      },
-    },
-  },
+  computed: {},
   data() {
     return {
       labelPosition: "right",
@@ -75,6 +58,8 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          console.log("login form:", this.loginForm);
+
           this.$emit("submitForm", this.loginForm);
         } else {
           return false;

@@ -56,7 +56,7 @@
 
       <div v-if="callMeeting && !callLoading">
         <div class="meeting-header">
-          <span> {{ user.meeting }}-({{ participantsCount }}人) </span>
+          {{ conferenceInfo.displayName }} {{ conferenceInfo.callNumber }} - ({{ participantsCount }}人)
         </div>
         <div class="meeting-content">
           <div
@@ -123,6 +123,16 @@
               >挂断</el-button
             >
           </div>
+
+          <div>
+            <el-button
+              type="primary"
+              size="small"
+              @click="participantVisible = true"
+              >参会者({{ participantsCount }})</el-button
+            >
+          </div>
+
           <div>
             <el-button type="primary" size="small" @click="audioOperate"
               >{{ audioStatus }}
@@ -170,6 +180,15 @@
           </div>
         </div>
 
+        <Participant
+          v-if="participantVisible"
+          :client="client"
+          :contentUri="contentUri"
+          :rosters="rosters"
+          :count="participantsCount"
+          @showParticipant="participantVisible = false"
+        />
+
         <Internels
           v-if="debug"
           :senderStatus="senderStatus"
@@ -197,6 +216,7 @@ import InOutReminder from "./components/InOutReminder/index.vue";
 import Audio from "./components/Audio/index.vue";
 import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
+import Participant from "./components/Participant/index.vue";
 import xyRTC, { getLayoutRotateInfo } from "@xylink/xy-rtc-sdk";
 import { Message } from "element-ui";
 import store from "@/utils/store";
@@ -238,6 +258,7 @@ export default {
     Video,
     Internels,
     Setting,
+    Participant,
   },
   computed: {
     layoutStyle() {
@@ -327,6 +348,10 @@ export default {
       },
       confChangeInfo: {},
       forceLayoutId: "", // 全屏 roster id
+      rosters: [], // 所有参会者列表
+      participantVisible: false, // 是否展示参会者列表
+      contentUri: "", // 共享content callUri
+      conferenceInfo: null, // 会议室信息
     };
   },
   beforeDestroy() {
@@ -334,8 +359,9 @@ export default {
   },
   methods: {
     // 登录
-    submitForm(values) {
-      const isSupport = xyRTC.checkSupportWebRTC();
+    async submitForm(values) {
+      const result = await xyRTC.checkSupportWebRTC();
+      const { result: isSupport } = result;
 
       if (!isSupport) {
         message.info("Not support webrtc");
@@ -432,6 +458,9 @@ export default {
         });
 
         if (callStatus) {
+          // 订阅全部参会者信息
+          this.client.subscribeBulkRoster();
+
           stream = xyRTC.createStream();
 
           const { audioInput, audioOutput, videoInput } = this.selectedDevice;
@@ -492,6 +521,12 @@ export default {
     },
     // 监听client的内部事件
     initEventListener(client) {
+      // 会议室信息
+      client.on("conference-info", (e) => {
+        this.conferenceInfo = e;
+        console.log("conference info:", e);
+      });
+
       // 退会消息监听，注意此消息很重要，内部的会议挂断都是通过此消息通知
       client.on("disconnected", (e) => {
         const showMessage =
@@ -512,6 +547,7 @@ export default {
         console.log("demo get conf change info: ", e);
 
         this.confChangeInfo = e;
+        this.contentUri = e.contentUri || "";
 
         // CUSTOM 模式
         if (this.templateMode === "CUSTOM") {
@@ -723,6 +759,57 @@ export default {
         };
         this.pageInfo = pageInfo;
       });
+
+      client.on("bulkRoster", this.handleBulkRoster);
+    },
+    handleBulkRoster(e) {
+      // 参会者信息 是增量消息
+      // bulkRosterType: 0 - 全量roster, 1 - 增量roster
+      // addRosterInfo  新增的参会者信息  当bulkRosterType是0的时候，此参数表示全量数据
+      // changeRosterInfo  变化的参会者信息
+      // deleteRosterInfo  被删除的参会者信息
+      const {
+        bulkRosterType = 0,
+        addRosterInfo = [],
+        changeRosterInfo = [],
+        deleteRosterInfo = [],
+      } = e;
+
+      if (bulkRosterType === 0) {
+        this.rosters = addRosterInfo;
+      } else {
+        // 新增参会者
+        let newRosters = this.rosters.concat(addRosterInfo);
+
+        // 删除离会的参会者
+        if (deleteRosterInfo.length > 0) {
+          deleteRosterInfo.forEach((info) => {
+            const index = newRosters.findIndex((roster) => {
+              return roster.participantId === info.participantId;
+            });
+
+            if (index > -1) {
+              newRosters.splice(index, 1);
+            }
+          });
+        }
+        // 修改参会者信息，如果不存在，则添加到参会者列表中
+        if (changeRosterInfo.length > 0) {
+          changeRosterInfo.forEach((info) => {
+            const index = newRosters.findIndex((roster) => {
+              return roster.participantId === info.participantId;
+            });
+
+            if (index > -1) {
+              newRosters[index] = info;
+            } else {
+              newRosters.push(info);
+            }
+          });
+        }
+
+        this.rosters = newRosters;
+      }
     },
     // CUSTOM布局 计算页码信息
     calcPageInfo() {
