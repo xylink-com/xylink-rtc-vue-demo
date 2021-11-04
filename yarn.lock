@@ -1557,10 +1557,10 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.0.2.tgz#da2444a5a9b8cc174b8367c08418298278c6d427"
-  integrity sha512-HXhar8mePbKdeXgEu/xaFMtPxnUl1kGoB40jkSnkYoRtC31wLnkBlcVn3AmTM8xSzU/sdE6DosjnF8lm0M2LCg==
+"@xylink/xy-rtc-sdk@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.0.3.tgz#2eda978dfdfeea90a693e2679648dd119d09bd29"
+  integrity sha512-cM+l7FZfo5flsI9GO2rjT5USqpAnE0m72k1QWr3XxTsj2VfW93SCwfieC9D1Kut8GuJl4kHANpyxH1+OFGDsWA==
   dependencies:
     crypto-js "^4.0.0"
     dexie "^2.0.4"
@@ -5195,9 +5195,9 @@ js-base64@^2.1.8:
   integrity sha512-pZe//GGmwJndub7ZghVHz7vjb2LgC1m8B07Au3eYqeqv9emhESByMXxaEgkUkEqJe87oBbSniGYoQNIBklc7IQ==
 
 js-base64@^3.6.1:
-  version "3.6.1"
-  resolved "https://registry.npmjs.org/js-base64/-/js-base64-3.6.1.tgz#555aae398b74694b4037af1f8a5a6209d170efbe"
-  integrity sha512-Frdq2+tRRGLQUIQOgsIGSCd1VePCS2fsddTG5dTCqR0JHgltXWfsxnY0gIXPoMeRmdom6Oyq+UMOFg5suduOjQ==
+  version "3.7.2"
+  resolved "https://registry.npmjs.org/js-base64/-/js-base64-3.7.2.tgz#816d11d81a8aff241603d19ce5761e13e41d7745"
+  integrity sha512-NnRs6dsyqUXejqk/yv2aiXlAvOs56sLkX6nUdeaNezI5LFFLlsZjOThmwnrcwh5ZZRwZlCMnVAY3CvhIhoVEKQ==
 
 js-message@1.0.7:
   version "1.0.7"
