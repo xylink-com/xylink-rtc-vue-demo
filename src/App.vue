@@ -56,7 +56,9 @@
 
       <div v-if="callMeeting && !callLoading">
         <div class="meeting-header">
-          {{ conferenceInfo.displayName }} {{ conferenceInfo.callNumber }} - ({{ participantsCount }}人)
+          {{ conferenceInfo.displayName }} {{ conferenceInfo.callNumber }} - ({{
+            participantsCount
+          }}人)
         </div>
         <div class="meeting-content">
           <div
@@ -217,7 +219,7 @@ import Audio from "./components/Audio/index.vue";
 import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
 import Participant from "./components/Participant/index.vue";
-import xyRTC, { getLayoutRotateInfo } from "@xylink/xy-rtc-sdk";
+import xyRTC, { getLayoutRotateInfo, detectLocator } from "@xylink/xy-rtc-sdk";
 import { Message } from "element-ui";
 import store from "@/utils/store";
 import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE } from "@/utils/enum";
@@ -377,24 +379,35 @@ export default {
       this.callLoading = true;
 
       let callStatus = true;
+      let locatorServer = "";
+
+      const {
+        meeting,
+        meetingPassword,
+        meetingName,
+        muteAudio,
+        muteVideo,
+      } = this.user;
+      const { wssServer, httpServer, logServer } = SERVER;
+      const { clientId, clientSecret, extId } = ACCOUNT;
+
+      // 内外网探测
+      locatorServer = await detectLocator({
+        httpServer,
+        clientId,
+        clientSecret,
+        extId,
+      });
+
+      console.log("get locator Server:", locatorServer);
 
       try {
-        const {
-          meeting,
-          meetingPassword,
-          meetingName,
-          muteAudio,
-          muteVideo,
-        } = this.user;
-        const { wssServer, httpServer, logServer } = SERVER;
-        const { clientId } = ACCOUNT;
-
         // 这里三方可以根据环境修改sdk log等级
         // xyRTC.logger.setLogLevel("NONE");
 
         this.client = xyRTC.createClient({
           // 注意，第三方集成时，默认是prd环境，不需要配置wss/http/log server地址；
-          wssServer,
+          wssServer: locatorServer ? `wss://${locatorServer}` : wssServer,
           httpServer,
           logServer,
           // 入会是否是自动静音
@@ -425,8 +438,6 @@ export default {
          * 重要提示
          */
         let result;
-        const { extId } = ACCOUNT;
-
         // 第三方企业用户登录
         result = await this.client.loginExternalAccount({
           // 用户名自行填写
