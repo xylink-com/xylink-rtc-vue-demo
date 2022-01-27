@@ -56,7 +56,9 @@
 
       <div v-if="callMeeting && !callLoading">
         <div class="meeting-header">
-          {{ conferenceInfo.displayName }} {{ conferenceInfo.callNumber }} - ({{ participantsCount }}人)
+          {{ conferenceInfo.displayName }} {{ conferenceInfo.callNumber }} - ({{
+            participantsCount
+          }}人)
         </div>
         <div class="meeting-content">
           <div
@@ -218,7 +220,7 @@ import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
 import Participant from "./components/Participant/index.vue";
 import xyRTC, { getLayoutRotateInfo } from "@xylink/xy-rtc-sdk";
-import { Message } from "element-ui";
+import { Message, Modal } from "element-ui";
 import store from "@/utils/store";
 import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE } from "@/utils/enum";
 import { SERVER, ACCOUNT } from "@/utils/config";
@@ -229,6 +231,7 @@ import {
   getScreenInfo,
   calculateBaseLayoutList,
 } from "@/utils/index";
+import { isMobile, isPc } from "@/utils/browser";
 
 let stream;
 let audioLevelTimmer;
@@ -237,6 +240,7 @@ const user = store.get("xy-user") || DEFAULT_LOCAL_USER;
 // AUTO/CUSTOM 两种模式
 const LAYOUT = "AUTO";
 const elementId = "container";
+let restartCount = 0;
 
 const message = {
   info: (message) => {
@@ -360,7 +364,9 @@ export default {
   methods: {
     // 登录
     async submitForm(values) {
-      const result = await xyRTC.checkSupportWebRTC();
+      const result = await (isPc
+        ? xyRTC.checkSupportWebRTC()
+        : xyRTC.checkSupportMobileWebRTC());
       const { result: isSupport } = result;
 
       if (!isSupport) {
@@ -434,13 +440,15 @@ export default {
           extId,
         });
 
-        if (result.code === 10104) {
+        // XYSDK:950120 成功
+        // XYSDK:950104 账号密码错误
+        if (result.code === "XYSDK:950104") {
           message.info("登录密码错误");
 
           this.callMeeting = false;
           this.callLoading = false;
           return;
-        } else if (result.code !== 200) {
+        } else if (result.code !== "XYSDK:950120") {
           message.info("登录失败");
 
           this.callMeeting = false;
@@ -606,17 +614,17 @@ export default {
 
       // 呼叫状态
       client.on("call-status", (e) => {
-        // 10518入会成功
-        // 10519正在呼叫中
+        // XYSDK:950518 入会成功
+        // XYSDK:950519 正在呼叫中
         // 呼叫失败，请将detail信息作为disconnected的第二个参数
         const code = e.code;
         const msg = e.msg;
         const detail = e.detail;
 
-        if (code === 10518) {
+        if (code === "XYSDK:950518") {
           message.info(msg);
           this.callLoading = false;
-        } else if (code === 10519) {
+        } else if (code === "XYSDK:950519") {
           message.info(msg);
         } else {
           this.disconnected(msg, detail);
@@ -761,6 +769,37 @@ export default {
       });
 
       client.on("bulkRoster", this.handleBulkRoster);
+
+      // video、audio play faild, 在移动端某些浏览器，audio需要手动播放
+      client.on("play-failed", ({ type, key, error }) => {
+        if (type === "video") {
+          console.log("[xyRTC on]video play failed:" + key, error);
+        }
+
+        if (type === "audio") {
+          console.log("[xyRTC on]audio play failed:" + key, error);
+
+          // 因有多个audio组件, 所以会多次收到此消息，只需第一次的时候重新播放音频即可。
+          if (isMobile) {
+            if (restartCount === 0) {
+              Modal.warning({
+                className: "xy-modal-confirm",
+                width: 288,
+                icon: null,
+                content: "点击“一键收听”按钮收听其他参会人声音",
+                closable: true,
+                centered: isMobile,
+                okText: "一键收听",
+                onOk() {
+                  client.playAudio();
+                },
+              });
+
+              restartCount++;
+            }
+          }
+        }
+      });
     },
     handleBulkRoster(e) {
       // 参会者信息 是增量消息
@@ -1230,7 +1269,10 @@ export default {
     // 分享content内容
     async shareContent() {
       try {
-        const result = await stream.createContentStream();
+        // screenAudio 共享时，是否采集系统音频。 true: 采集； false: 不采集
+        const result = await stream.createContentStream({
+          screenAudio: true,
+        });
 
         // 创建分享屏幕stream成功
         if (result) {
@@ -1247,7 +1289,8 @@ export default {
           message.info("分享屏幕失败");
         }
       } catch (err) {
-        if (err && err.code !== 20500) {
+        console.log('share content failed:', err)
+        if (err && err.code !== "XYSDK:950501") {
           message.info(err.msg || "分享屏幕失败");
         }
       }

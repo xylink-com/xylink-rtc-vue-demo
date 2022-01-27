@@ -3,6 +3,7 @@
     custom-class="xy__setting-modal"
     :visible="settingVisible"
     :before-close="stop"
+    :width="dialogWidth"
   >
     <el-row>
       <el-col :span="6">
@@ -202,6 +203,7 @@
 import xyRTC, { DeviceManager } from "@xylink/xy-rtc-sdk";
 import getIauthImg from "./guide.svg";
 import cameraNoIauthImg from "./camera_no_iauth.svg";
+
 export default {
   props: ["visible", "setting"],
   data() {
@@ -220,7 +222,8 @@ export default {
       current: "device",
       iauth: "pending",
       stream: null,
-      previewStream: null,
+      previewVideoStream: null,
+      previewAudioStream: null,
       deviceManager: null,
       audioInputList: [],
       audioOutputList: [],
@@ -231,6 +234,7 @@ export default {
       videoStatusVisible: false,
       localHide,
       audioLevelTimmer: null,
+      dialogWidth: "720px",
     };
   },
   async mounted() {
@@ -250,57 +254,88 @@ export default {
       if (!this.stream) {
         this.stream = xyRTC.createStream();
       }
+
+      await this.getVideoStream();
+
+      await this.getAudioStream();
+
+      this.hideCheckingPage();
+    },
+
+    async getVideoStream(deviceId = this.selectedDevice?.videoInput?.deviceId) {
       try {
         let params = {};
 
-        if (this.selectedDevice?.videoInput?.deviceId) {
+        if (deviceId) {
           params["video"] = {
-            deviceId: this.selectedDevice.videoInput.deviceId,
+            deviceId: { exact: deviceId },
           };
         }
 
-        if (this.selectedDevice?.audioInput?.deviceId) {
-          params["audio"] = {
-            deviceId: { exact: this.selectedDevice.audioInput.deviceId },
-          };
-        }
-
-        this.previewStream?.getTracks().forEach((track) => {
+        this.previewVideoStream?.getTracks().forEach((track) => {
           track.stop();
         });
 
-        this.previewStream = await this.stream.getPreviewStream(
+        this.previewVideoStream = await this.stream.getPreviewStream(
           true,
-          true,
+          false,
           params
         );
 
-        if (this.previewStream) {
-          const videoTrack = this.previewStream.getVideoTracks()[0];
-          const audioTrack = this.previewStream.getAudioTracks()[0];
+        if (this.previewVideoStream) {
+          const videoTrack = this.previewVideoStream.getVideoTracks()[0];
 
-          const audioInput = audioTrack?.getSettings()["deviceId"] || "default";
           const videoInput = videoTrack?.getSettings()["deviceId"] || "";
 
           this.select = {
             ...this.select,
             videoInValue: videoInput,
-            audioInputValue: audioInput,
           };
 
           const videoRefEle = this.$refs["videoRef"];
 
           if (videoRefEle && videoTrack) {
-            videoRefEle.srcObject = this.previewStream;
+            videoRefEle.srcObject = this.previewVideoStream;
           }
+        }
+      } catch (err) {
+        this.videoStatusVisible = true;
+        console.log("get video stream error:", err);
+      }
+    },
 
-          this.hideCheckingPage();
+    async getAudioStream(deviceId = this.selectedDevice?.audioInput?.deviceId) {
+      let params = {};
 
-          this.clearAudioLevelTimmer();
+      if (deviceId) {
+        params["audio"] = {
+          deviceId: { exact: deviceId },
+        };
+      }
+
+      this.previewAudioStream?.getTracks().forEach((track) => {
+        track.stop();
+      });
+
+      try {
+        this.previewAudioStream = await this.stream.getPreviewStream(
+          false,
+          true,
+          params
+        );
+
+        if (this.previewAudioStream) {
+          const audioTrack = this.previewAudioStream.getAudioTracks()[0];
+          const audioInput = audioTrack?.getSettings()["deviceId"] || "default";
+
+          this.select = {
+            ...this.select,
+            audioInputValue: audioInput,
+          };
 
           this.stream.clearAudioLevel();
 
-          await this.stream.getAudioLevel(this.previewStream);
+          await this.stream.getAudioLevel(this.previewAudioStream);
           // 实时获取音量大小
           this.audioLevelTimmer = setInterval(async () => {
             try {
@@ -314,10 +349,7 @@ export default {
           }, 100);
         }
       } catch (err) {
-        // 如果是403，则未授权
-        if (err.code === 403) {
-          this.iauth = "denied";
-        }
+        console.log("get audio stream failed:", err);
       }
     },
     getRangeRandom(min = 50, max = 500) {
@@ -333,13 +365,18 @@ export default {
     },
     async initDeviceManagerEvent() {
       this.deviceManager.on("permission", async (e) => {
-        const { camera } = e;
+        const { camera, microphone } = e;
         if (camera === "granted") {
-          await this.getStream();
+          await this.getVideoStream();
 
           this.getDevices();
         }
-        this.iauth = camera;
+
+        if (microphone === "granted") {
+          await this.getAudioStream();
+
+          this.getDevices();
+        }
       });
 
       this.deviceManager.on("device", (e) => {
@@ -365,7 +402,11 @@ export default {
 
     async handleChange(key, e) {
       if (key === "audioInputValue" || key === "videoInValue") {
-        this.replaceTrack(key, e);
+        await this.getVideoStream(e);
+      }
+
+      if (key === "videoInValue") {
+        await this.getAudioStream(e);
       }
 
       this.select = {
@@ -386,84 +427,6 @@ export default {
       this.handleChange("audioOutputValue", e);
     },
 
-    async replaceTrack(key, deviceId = undefined) {
-      if (this.previewStream) {
-        // 音量level clear
-        if (key === "audioInputValue") {
-          this.clearAudioLevelTimmer();
-        }
-
-        // 1. add new track
-        try {
-          let params = {};
-
-          if (key === "videoInValue") {
-            params.video = {
-              deviceId: deviceId
-                ? { exact: deviceId || this.select.videoInValue }
-                : undefined,
-            };
-          }
-
-          if (key === "audioInputValue") {
-            params.audio = {
-              deviceId: deviceId
-                ? { exact: deviceId || this.select.audioInputValue }
-                : undefined,
-            };
-          }
-
-          const newConstraintsStream = await this.stream.getPreviewStream(
-            !!params.video,
-            !!params.audio,
-            params
-          );
-          const newTrack =
-            key === "audioInputValue"
-              ? newConstraintsStream.getAudioTracks()[0]
-              : newConstraintsStream.getVideoTracks()[0];
-
-          this.previewStream.addTrack(newTrack);
-          if (key === "videoInValue") {
-            this.videoStatusVisible = false;
-          }
-        } catch (err) {
-          if (key === "videoInValue") {
-            this.videoStatusVisible = true;
-          }
-
-          return;
-        }
-
-        // 2. remove && stop
-        const localStreamTrack =
-          key === "audioInputValue"
-            ? this.previewStream.getAudioTracks()[0]
-            : this.previewStream.getVideoTracks()[0];
-
-        if (localStreamTrack) {
-          this.previewStream.removeTrack(localStreamTrack);
-          localStreamTrack.stop();
-        }
-
-        // 音量level重置
-        if (key === "audioInputValue") {
-          this.stream.clearAudioLevel();
-
-          this.audioLevelTimmer = setInterval(async () => {
-            try {
-              const level = await this.stream.getAudioLevel(this.previewStream);
-
-              // 更新Audio的实时音量显示
-              this.audioLevel = level;
-            } catch (err) {
-              this.clearAudioLevelTimmer();
-            }
-          }, 100);
-        }
-      }
-    },
-
     async getDevices() {
       const devices = await this.deviceManager.getDevices();
 
@@ -481,7 +444,11 @@ export default {
       this.audioLevelTimmer && clearInterval(this.audioLevelTimmer);
     },
     clearStream() {
-      this.previewStream && xyRTC.closePreviewStream(this.previewStream);
+      this.previewVideoStream &&
+        xyRTC.closePreviewStream(this.previewVideoStream);
+
+      this.previewAudioStream &&
+        xyRTC.closePreviewStream(this.previewAudioStream);
     },
     stop() {
       this.$emit("cancel");
@@ -520,32 +487,25 @@ export default {
     },
 
     handleOk() {
-      if (this.videoStatusVisible) {
-        this.$message("设备不可用,请重新选择");
-      } else {
-        this.stop();
+      this.stop();
 
-        const { audioInputValue, audioOutputValue, videoInValue } = this.select;
+      const { audioInputValue, audioOutputValue, videoInValue } = this.select;
 
-        this.$emit("setting", {
-          selectedDevice: {
-            audioInput: this.findDeviceById(
-              audioInputValue,
-              this.audioInputList
-            ),
-            audioOutput: this.findDeviceById(
-              audioOutputValue,
-              this.audioOutputList
-            ),
-            videoInput: this.findDeviceById(videoInValue, this.videoInList),
-          },
-          deviceList: {
-            audioInputList: this.audioInputList,
-            audioOutputList: this.audioOutputList,
-            videoInList: this.videoInList,
-          },
-        });
-      }
+      this.$emit("setting", {
+        selectedDevice: {
+          audioInput: this.findDeviceById(audioInputValue, this.audioInputList),
+          audioOutput: this.findDeviceById(
+            audioOutputValue,
+            this.audioOutputList
+          ),
+          videoInput: this.findDeviceById(videoInValue, this.videoInList),
+        },
+        deviceList: {
+          audioInputList: this.audioInputList,
+          audioOutputList: this.audioOutputList,
+          videoInList: this.videoInList,
+        },
+      });
     },
 
     setOutputAudioDevice(val = this.select.audioOutputValue) {
@@ -558,7 +518,7 @@ export default {
     "select.audioOutputValue": {
       handler(newVal) {
         this.setOutputAudioDevice(newVal);
-      }
+      },
     },
     localHide(newVal) {
       this.$emit("setting", {
@@ -570,7 +530,6 @@ export default {
 </script>
 <style scoped>
 .xy__setting-modal {
-  width: 720px;
   height: 540px;
 }
 

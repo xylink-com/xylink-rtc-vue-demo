@@ -80,5 +80,6 @@ export default {
 <style scoped>
 .login-form {
   text-align: left;
+  padding: 0 10px;
 }
 </style>
