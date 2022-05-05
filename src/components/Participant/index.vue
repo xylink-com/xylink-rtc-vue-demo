@@ -4,6 +4,7 @@
     :withHeader="false"
     :visible.sync="visible"
     :before-close="closeParticipant"
+    :size="size"
   >
     <div class="member">
       <div class="member-header">
@@ -47,10 +48,11 @@
               </span>
               <span
                 v-if="
-                  item.contentUri === item.endpointId && !item.isContentOnly
+                  (content && content.endpointId) === item.endpointId &&
+                    !item.isContentOnly
                 "
                 class="name__status"
-                >分享</span
+                >正在共享...</span
               >
             </div>
           </div>
@@ -73,7 +75,7 @@
           :total="pageInfo.totalCount"
           :current-page="pageInfo.currentPage"
           :page-size="defaultPageSize"
-          :pager-count = "5"
+          :pager-count="5"
           @current-change="onChangePage"
         >
         </el-pagination>
@@ -92,7 +94,7 @@ import local from "@/assets/img/operate/icon_me.svg";
 import "./index.scss";
 
 export default {
-  props: ["rosters", "contentUri", "count", "client"],
+  props: ["rosters", "content", "count", "client"],
   computed: {
     navbarClass() {
       return function(tab) {
@@ -153,6 +155,7 @@ export default {
       visible: false,
       selfRoster: null,
       tab: "all",
+      size: 300,
       unmuteCount: 0,
       defaultPageSize: PARTICIPANT_PAGE_SIZE,
       pageInfo: {

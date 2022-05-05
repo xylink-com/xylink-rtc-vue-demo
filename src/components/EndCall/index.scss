@@ -1,0 +1,30 @@
+.el-popover.end-call-popover {
+  border: 0;
+  .popper__arrow {
+    border: 0;
+  }
+  .xy-btn-box {
+    .xy-btn {
+      width: 116px;
+      height: 28px;
+      border-radius: 3px;
+      text-align: center;
+      line-height: 28px;
+      font-size: 12px;
+      color: #fff;
+      cursor: pointer;
+      margin-bottom: 8px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .xy-end-btn {
+    background: #f94b4b;
+  }
+  .xy-cancel-btn {
+    background: #232433;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}

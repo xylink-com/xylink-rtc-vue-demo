@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="24px" viewBox="0 0 30 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title></title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="30" height="23"></rect>
+        <rect id="path-3" x="0" y="0" width="30" height="23"></rect>
+    </defs>
+    <g id="Web-RTC" stroke="none" stroke-width="1" fill-rule="evenodd">
+        <g id="切图" transform="translate(-77.000000, -142.000000)">
+            <g id="icon-更多-normal" transform="translate(77.000000, 143.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="蒙版" fill-opacity="0" fill="#D8D8D8" xlink:href="#path-1"></use>
+                <path d="M5.5,9.47670861 C7.15685425,9.47670861 8.5,10.8198544 8.5,12.4767086 C8.5,14.1335629 7.15685425,15.4767086 5.5,15.4767086 C3.84314575,15.4767086 2.5,14.1335629 2.5,12.4767086 C2.5,10.8198544 3.84314575,9.47670861 5.5,9.47670861 Z M15,9.47670861 C16.6568542,9.47670861 18,10.8198544 18,12.4767086 C18,14.1335629 16.6568542,15.4767086 15,15.4767086 C13.3431458,15.4767086 12,14.1335629 12,12.4767086 C12,10.8198544 13.3431458,9.47670861 15,9.47670861 Z M24.5,9.47670861 C26.1568542,9.47670861 27.5,10.8198544 27.5,12.4767086 C27.5,14.1335629 26.1568542,15.4767086 24.5,15.4767086 C22.8431458,15.4767086 21.5,14.1335629 21.5,12.4767086 C21.5,10.8198544 22.8431458,9.47670861 24.5,9.47670861 Z" id="形状结合" mask="url(#mask-2)"></path>
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <use id="蒙版" fill-opacity="0" fill="#D8D8D8" xlink:href="#path-3"></use>
+            </g>
+        </g>
+    </g>
+</svg>

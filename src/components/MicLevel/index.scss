@@ -1,0 +1,22 @@
+.aec {
+  width: 10px;
+  height: 17px;
+  background-color: #fff;
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 10;
+
+  &_content {
+    height: 100%;
+    width: 100%;
+    background-color: #1483eb;
+    position: absolute;
+    bottom: -100%;
+    transform: translateY(-0%);
+    transition: transform ease 0.3s;
+  }
+}

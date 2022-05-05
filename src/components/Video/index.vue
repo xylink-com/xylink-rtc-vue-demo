@@ -50,9 +50,8 @@
   </div>
 </template>
 <script>
-
 export default {
-  props: ["item", "model", "id", "client"],
+  props: ["item", "model", "id", "forceLayoutId", "client"],
   computed: {
     state() {
       return this.item.state;
@@ -60,16 +59,16 @@ export default {
     videoWrapStyle() {
       let wrapStyle = {};
       // 全屏
-     if (this.isFullScreen) {
-       return (wrapStyle = {
-         position: 'fixed',
-         width: '100%',
-         height: '100%',
-         left: '0',
-         top: '0',
-         zIndex: '101'
-       });
-     }
+      if (this.isFullScreen) {
+        return (wrapStyle = {
+          position: "fixed",
+          width: "100%",
+          height: "100%",
+          left: "0",
+          top: "0",
+          zIndex: "101",
+        });
+      }
       const positionStyle = this.item.positionStyle;
 
       if (positionStyle && positionStyle.width) {
@@ -134,7 +133,7 @@ export default {
   },
   data() {
     return {
-      isFullScreen: false, // 是否全屏
+      isFullScreen:  this.forceLayoutId === this.item.roster.id, // 是否全屏
       wrapVideoId: "wrap-" + this.id,
     };
   },
@@ -144,16 +143,6 @@ export default {
   methods: {
     async toggleFullScreen() {
       await this.client.forceFullScreen(!this.isFullScreen && this.id);
-
-      if (this.isFullScreen) {
-        setTimeout(() => {
-          this.isFullScreen = false;
-          this.$emit("setForceLayoutId", "");
-        }, 1000);
-      } else {
-        this.isFullScreen = true;
-        this.$emit("setForceLayoutId", this.id);
-      }
     },
     renderVideo(newValue) {
       if (newValue && this.client) {

@@ -1,0 +1,10 @@
+/* 改变主题色变量 */
+$--color-primary: #3876ff;
+$--color-info: rgba(57, 57, 70, 0.8);
+$--button-font-weight: 400;
+$--popover-background-color: rgba(35, 36, 51, 0.9);
+// $--popover-border-color: rgba(35, 36, 51, 0.9);
+
+/* 改变 icon 字体路径变量，必需 */
+$--font-path: "~element-ui/lib/theme-chalk/fonts";
+@import "~element-ui/packages/theme-chalk/src/index";

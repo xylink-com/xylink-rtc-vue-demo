@@ -1,72 +1,45 @@
 <template>
   <div id="app">
     <div id="container" class="container">
-      <div class="login" v-if="!callMeeting && !callLoading">
-        <h1>XY RTC Vue DEMO</h1>
-        <div class="operate">
-          <el-row type="flex" class="row-bg">
-            <div class="header-container">
-              <span>布局模式：</span>
-              <el-select
-                v-model="templateMode"
-                size="mini"
-                placeholder="请选择"
-                class="template-mode"
-              >
-                <el-option
-                  v-for="item in templateModeOption"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-            </div>
-
-            <el-link class="operate-item" icon="el-icon-upload2" @click="upload"
-              >上传日志</el-link
-            >
-            <el-link
-              class="operate-item"
-              icon="el-icon-download"
-              @click="download"
-              >下载日志</el-link
-            >
-            <el-link
-              class="operate-item"
-              icon="el-icon-setting"
-              @click="onOpenSetting"
-              >设置</el-link
-            >
-          </el-row>
-        </div>
-
-        <Login :user="user" @submitForm="submitForm" />
-
-        <div class="copyright">版本：{{ this.version }}</div>
-      </div>
+      <Login
+        v-if="!callMeeting && !callLoading"
+        :user="user"
+        :isThird="setting.isThird"
+        @submitForm="submitForm"
+        @onToggleSetting="onToggleSetting"
+      />
 
       <Loading
         v-if="callMeeting && callLoading"
-        :meeting="user.meeting"
+        :callInfo="conferenceInfo"
         :audioOutputValue="selectedDevice.audioOutput.deviceId"
-        :callStatus="callStatus"
         @stop="stop"
       />
 
-      <div v-if="callMeeting && !callLoading">
-        <div class="meeting-header">
-          {{ conferenceInfo.displayName }} {{ conferenceInfo.callNumber }} - ({{
-            participantsCount
-          }}人)
-        </div>
+      <div class="meeting" v-if="callMeeting && !callLoading">
+        <MeetingHeader
+          :callInfo="conferenceInfo"
+          @onToggleSetting="onToggleSetting"
+          @switchDebug="switchDebug"
+          @stop="stop"
+        />
+
+        <PromptInfo
+          :forceLayoutId="forceLayoutId"
+          :chairmanUri="chairmanUri"
+          :content="content"
+          :localHide="setting.localHide"
+          :isLocalShareContent="shareContentStatus"
+          @forceFullScreen="forceFullScreen"
+        />
+
         <div class="meeting-content">
           <div
             v-if="layout.length > 1 && pageStatus.status && pageStatus.previous"
             class="previous-box"
           >
             <div class="previous-button" @click="switchPage('previous')">
-              <span class="svg-icon previous" />
+              <svg-icon icon="previous" />
             </div>
             <div
               v-if="pageInfo.currentPage > 1"
@@ -79,13 +52,12 @@
           <div class="meeting-layout" :style="layoutStyle">
             <Video
               v-for="item in newLayout"
-              :model="layoutModel"
+              :model="templateMode"
               :item="item"
               :key="item.roster.id"
               :id="item.roster.id"
               :forceLayoutId="forceLayoutId"
               :client="client"
-              :setForceLayoutId="setForceLayoutId"
             ></Video>
           </div>
           <div
@@ -93,7 +65,7 @@
             class="next-box"
           >
             <div class="next-button" @click="switchPage('next')">
-              <span class="svg-icon next" />
+              <svg-icon icon="next" />
               <div
                 v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0"
                 class="page-number"
@@ -120,72 +92,72 @@
           <InOutReminder v-if="!onhold" :reminders="reminders" />
         </div>
         <div class="meeting-footer">
-          <div>
-            <el-button type="danger" size="small" @click="stop('OK')"
-              >挂断</el-button
-            >
-          </div>
+          <div class="middle">
+            <More @onToggleSetting="onToggleSetting" />
 
-          <div>
-            <el-button
-              type="primary"
-              size="small"
+            <div
               @click="participantVisible = true"
-              >参会者({{ participantsCount }})</el-button
+              :class="[
+                'button host',
+                { 'disabled-button': conferenceInfo.numberType === 'APP' },
+              ]"
             >
-          </div>
+              <svg-icon icon="meeting_host" />
+              <div class="title">参会者</div>
+              <div class="tag">{{ participantsCount }}</div>
+            </div>
 
-          <div>
-            <el-button type="primary" size="small" @click="audioOperate"
-              >{{ audioStatus }}
-            </el-button>
-          </div>
-          <div>
-            <el-button type="primary" size="small" @click="videoOperate"
-              >{{ video === "unmuteVideo" ? "关闭摄像头" : "开启摄像头" }}
-            </el-button>
-          </div>
-          <div>
-            <el-button type="primary" size="small" @click="switchLayout"
-              >切换布局</el-button
+            <div class="button layout" @click="switchLayout">
+              <svg-icon icon="layout" />
+              <div class="title">窗口布局</div>
+            </div>
+
+            <div
+              v-if="shareContentStatus"
+              @click="stopShareContent"
+              class="button button-warn share-stop"
             >
-          </div>
-          <div>
-            <el-button type="primary" size="small" @click="switchDebug"
-              >调试：{{ debug ? "Yes" : "No" }}</el-button
-            >
-          </div>
-          <div v-if="shareContentStatus">
-            <el-button type="primary" size="small" @click="stopShareContent"
-              >结束共享
-            </el-button>
-          </div>
-          <div v-else>
-            <el-button type="primary" size="small" @click="shareContent"
-              >共享
-            </el-button>
-          </div>
-          <div>
-            <el-button
-              style="{ width: '90px' }"
-              type="primary"
-              size="small"
+              <svg-icon icon="share_stop" type="danger" />
+              <div class="title">结束共享</div>
+            </div>
+
+            <div
+              v-else
               @click="shareContent"
+              :class="[
+                'button share',
+                { 'disabled-button': contentIsDisabled },
+              ]"
             >
-              声量：{{ micLevel }}
-            </el-button>
-          </div>
-          <div>
-            <el-button type="primary" size="small" @click="onOpenSetting"
-              >设置
-            </el-button>
+              <svg-icon icon="share" />
+              <div class="title">共享</div>
+            </div>
+
+            <div class="line" />
+
+            <AudioButton
+              :permission="permission"
+              :audio="audio"
+              :disableAudio="disableAudio"
+              :handStatus="handStatus"
+              :stream="stream"
+              @audioOperate="audioOperate"
+            />
+
+            <VideoButton
+              :permission="permission"
+              :video="video"
+              @videoOperate="videoOperate"
+            />
+
+            <EndCall @stop="stop" />
           </div>
         </div>
 
         <Participant
           v-if="participantVisible"
           :client="client"
-          :contentUri="contentUri"
+          :content="content"
           :rosters="rosters"
           :count="participantsCount"
           @showParticipant="participantVisible = false"
@@ -197,21 +169,25 @@
           @switchDebug="switchDebug"
         ></Internels>
       </div>
-    </div>
 
-    <Setting
-      v-if="settingVisible"
-      :setting="{ localHide: user.localHide, selectedDevice }"
-      :visible="settingVisible"
-      @cancel="onCancelSetting"
-      @setting="onSaveSetting"
-    />
+      <Setting
+        v-if="settingVisible"
+        :setting="{
+          ...setting,
+          selectedDevice,
+        }"
+        :visible="settingVisible"
+        @cancel="onToggleSetting"
+        @setting="onSaveSetting"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import Login from "./components/Login/index.vue";
 import Loading from "./components/Loading/index.vue";
+import MeetingHeader from "./components/Header/index.vue";
 import Setting from "./components/Setting/index.vue";
 import Barrage from "./components/Barrage/index.vue";
 import InOutReminder from "./components/InOutReminder/index.vue";
@@ -219,10 +195,19 @@ import Audio from "./components/Audio/index.vue";
 import Video from "./components/Video/index.vue";
 import Internels from "./components/Internels/index.vue";
 import Participant from "./components/Participant/index.vue";
+import More from "./components/More/index.vue";
+import EndCall from "./components/EndCall/index.vue";
+import VideoButton from "./components/VideoButton/index.vue";
+import AudioButton from "./components/AudioButton/index.vue";
+import PromptInfo from "./components/PromptInfo/index.vue";
 import xyRTC, { getLayoutRotateInfo } from "@xylink/xy-rtc-sdk";
-import { Message, Modal } from "element-ui";
+import { Message } from "element-ui";
 import store from "@/utils/store";
-import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE } from "@/utils/enum";
+import {
+  DEFAULT_LOCAL_USER,
+  DEFAULT_DEVICE,
+  DEFAULT_SETTING,
+} from "@/utils/enum";
 import { SERVER, ACCOUNT } from "@/utils/config";
 import { TEMPLATE } from "@/utils/template";
 import cloneDeep from "clone-deep";
@@ -231,16 +216,11 @@ import {
   getScreenInfo,
   calculateBaseLayoutList,
 } from "@/utils/index";
-import { isMobile, isPc } from "@/utils/browser";
+import { isPc } from "@/utils/browser";
 
-let stream;
-let audioLevelTimmer;
 const user = store.get("xy-user") || DEFAULT_LOCAL_USER;
 
-// AUTO/CUSTOM 两种模式
-const LAYOUT = "AUTO";
 const elementId = "container";
-let restartCount = 0;
 
 const message = {
   info: (message) => {
@@ -263,6 +243,12 @@ export default {
     Internels,
     Setting,
     Participant,
+    More,
+    EndCall,
+    VideoButton,
+    AudioButton,
+    PromptInfo,
+    MeetingHeader,
   },
   computed: {
     layoutStyle() {
@@ -275,35 +261,15 @@ export default {
 
       return style;
     },
-    audioStatus() {
-      let status = "取消静音";
-
-      if (this.audio === "unmuteAudio") {
-        status = this.disableAudio ? "结束发言" : "静音";
-      } else if (this.audio === "muteAudio") {
-        if (this.disableAudio) {
-          status = this.handStatus ? "取消举手" : "举手发言";
-        } else {
-          status = "取消静音";
-        }
-      }
-      return status;
-    },
     newLayout() {
       return this.layout.filter((item) => item.roster.participantId);
-    },
-    callStatus() {
-      return {
-        callMeeting: this.callMeeting,
-        callLoading: this.callLoading,
-      };
     },
   },
   data() {
     return {
       client: null,
       stream: null,
-      user, // 登录者信息
+      user: store.get("xy-user") || DEFAULT_LOCAL_USER, // 登录者信息
       callMeeting: false, // 呼叫状态
       callLoading: false, // 是否呼叫中
       layout: [], // 参会成员数据，包含stream，roster，postion等信息，最终依赖layout的数据进行画面布局、渲染、播放、状态显示
@@ -314,26 +280,15 @@ export default {
       disableAudio: false, // 是否强制静音
       handStatus: false, // 举手状态
       subTitle: { action: "cancel", content: "" }, // 是否有字幕或点名
-      layoutModel: "speaker", // 桌面布局模式(语音激励模式、画廊模式)
+      templateMode: "speaker", // 桌面布局模式(语音激励模式、画廊模式)
       participantsCount: 0, // 会议成员数量
-      micLevel: 0, // 音量等级
       shareContentStatus: false, // 开启content的状态
       senderStatus: { sender: {}, receiver: {} }, // 呼叫数据统计
       debug: false, // 是否是调试模式（开启则显示所有画面的呼叫数据）
       settingVisible: false, // 设置
+      setting: store.get("xy-setting") || DEFAULT_SETTING, // 设置信息
       selectedDevice: DEFAULT_DEVICE.nextDevice, // 选择的设备信息
       version: xyRTC.version,
-      templateModeOption: [
-        {
-          value: "AUTO",
-          label: "AUTO",
-        },
-        {
-          value: "CUSTOM",
-          label: "CUSTOM",
-        },
-      ],
-      templateMode: store.get("xy-sdk-template-mode") || LAYOUT,
       permission: {
         camera: "",
         microphone: "",
@@ -354,7 +309,7 @@ export default {
       forceLayoutId: "", // 全屏 roster id
       rosters: [], // 所有参会者列表
       participantVisible: false, // 是否展示参会者列表
-      contentUri: "", // 共享content callUri
+      content: null,
       conferenceInfo: null, // 会议室信息
     };
   },
@@ -362,8 +317,16 @@ export default {
     this.stop();
   },
   methods: {
+    setUserInfo(values) {
+      this.user = values;
+
+      this.audio = this.user.muteAudio ? "muteAudio" : "unmuteAudio";
+      this.video = this.user.muteVideo ? "muteVideo" : "unmuteVideo";
+    },
     // 登录
     async submitForm(values) {
+      this.setUserInfo(values);
+
       const result = await (isPc
         ? xyRTC.checkSupportWebRTC()
         : xyRTC.checkSupportMobileWebRTC());
@@ -374,7 +337,6 @@ export default {
 
         return;
       }
-      this.user = values;
 
       this.join();
     },
@@ -391,6 +353,8 @@ export default {
           meetingName,
           muteAudio,
           muteVideo,
+          extUserId,
+          layoutMode = "AUTO",
         } = this.user;
         const { wssServer, httpServer, logServer } = SERVER;
         const { clientId } = ACCOUNT;
@@ -410,11 +374,12 @@ export default {
           // 使用哪一种布局方式：
           // AUTO：自动布局，第三方只需要监听layout回调消息即可渲染布局和视频画面
           // CUSTOM：自定义布局，灵活性更高，但是实现较为复杂，自定义控制参会成员的位置、大小和画面质量
-          layout: this.templateMode,
+          layout: layoutMode,
           container: {
+            elementId,
             // AUTO布局时，Layout容器相对于elementId元素空间的偏移量，四个值分别对应：[上、下、左、右]
             // 如果没有配置elementId元素，默认使用Body空间大小计算信息
-            offset: [32, 60, 20, 20],
+            offset: [0, 0, 0, 0],
           },
           clientId,
         });
@@ -434,11 +399,20 @@ export default {
         const { extId } = ACCOUNT;
 
         // 第三方企业用户登录
-        result = await this.client.loginExternalAccount({
-          // 用户名自行填写
-          displayName: "thirdName",
-          extId,
-        });
+        if (this.setting.isThird) {
+          result = await this.client.loginExternalAccount({
+            // 用户名自行填写
+            displayName: "thirdName",
+            extId,
+            extUserId,
+          });
+        } else {
+          // 小鱼登录
+          result = await this.client.loginXYlinkAccount(
+            user.phone || "",
+            user.password || ""
+          );
+        }
 
         // XYSDK:950120 成功
         // XYSDK:950104 账号密码错误
@@ -448,7 +422,9 @@ export default {
           this.callMeeting = false;
           this.callLoading = false;
           return;
-        } else if (result.code !== "XYSDK:950120") {
+        }
+
+        if (result.code !== "XYSDK:950120") {
           message.info("登录失败");
 
           this.callMeeting = false;
@@ -469,11 +445,11 @@ export default {
           // 订阅全部参会者信息
           this.client.subscribeBulkRoster();
 
-          stream = xyRTC.createStream();
+          this.stream = xyRTC.createStream();
 
           const { audioInput, audioOutput, videoInput } = this.selectedDevice;
 
-          await stream.init({
+          await this.stream.init({
             devices: {
               audioInputValue: audioInput.deviceId || "default",
               audioOutputValue: audioOutput.deviceId || "default",
@@ -481,7 +457,7 @@ export default {
             },
           });
 
-          this.client.publish(stream, { isSharePeople: true });
+          this.client.publish(this.stream, { isSharePeople: true });
         }
       } catch (err) {
         console.log("入会失败: ", err);
@@ -499,7 +475,7 @@ export default {
     // 结束会议操作
     stop() {
       // 重置audio、video状态
-      this.audio = this.user.muteAudio ? "mute" : "unmute";
+      this.audio = this.user.muteAudio ? "muteAudio" : "unmuteAudio";
       this.video = this.user.muteVideo ? "muteVideo" : "unmuteVideo";
 
       // 重置字幕信息
@@ -514,25 +490,16 @@ export default {
       this.shareContentStatus = false;
       this.debug = false;
       this.layout = [];
-      this.micLevel = 0;
       this.settingVisible = false;
 
-      // 清理定时器
-      this.clearTimmer();
       this.client = null;
-      stream = null;
-    },
-    clearTimmer() {
-      audioLevelTimmer && clearInterval(audioLevelTimmer);
-      audioLevelTimmer = null;
-      this.micLevel = 0;
+      this.stream = null;
     },
     // 监听client的内部事件
     initEventListener(client) {
       // 会议室信息
       client.on("conference-info", (e) => {
         this.conferenceInfo = e;
-        console.log("conference info:", e);
       });
 
       // 退会消息监听，注意此消息很重要，内部的会议挂断都是通过此消息通知
@@ -552,13 +519,10 @@ export default {
       // 接收到conf-change-info后，需要基于此列表数据计算想要请求的参会成员和共享Content画面流
       // client.requestNewLayout请求后，会回调custom-layout数据，包含有请求的视频画面数据
       client.on("conf-change-info", (e) => {
-        console.log("demo get conf change info: ", e);
-
         this.confChangeInfo = e;
-        this.contentUri = e.contentUri || "";
 
         // CUSTOM 模式
-        if (this.templateMode === "CUSTOM") {
+        if (this.setting.layoutMode === "CUSTOM") {
           const cacheCustomPageInfo = this.calcPageInfo();
 
           this.customRequestLayout(cacheCustomPageInfo);
@@ -575,8 +539,6 @@ export default {
       // 通过 requestLayout 请求视频流之后，会通过此回调返回所有的参会者列表数据
       // 通过处理处理此数据，展示画面
       client.on("custom-layout", (e) => {
-        console.log("demo get custom layout data:", e);
-
         // 此处渲染没有排序处理，需要自行将回调数据排序并展示
         // 此示例程序通过配置一个一组 TEMPLATE 模版数据，来计算layout container容器大小和layout item position/size/rotate 信息
         // 如果不想通过此方式实现，第三方获取到customLayoutList数据后，自行处理数据即可
@@ -623,6 +585,12 @@ export default {
 
         if (code === "XYSDK:950518") {
           message.info(msg);
+
+          // 提示
+          if (this.localHide) {
+            message.info("已开启隐藏本地画面模式", 5);
+          }
+
           this.callLoading = false;
         } else if (code === "XYSDK:950519") {
           message.info(msg);
@@ -633,9 +601,16 @@ export default {
 
       // 麦克风状态
       client.on("meeting-control", (e) => {
-        const { disableMute, muteOperation } = e;
+        const {
+          disableMute,
+          muteOperation,
+          contentIsDisabled,
+          chairmanUri,
+        } = e;
         let info = "";
         this.disableAudio = disableMute;
+        this.contentIsDisabled = contentIsDisabled;
+        this.chairmanUri = chairmanUri;
 
         if (muteOperation === "muteAudio" && disableMute) {
           info = "主持人已强制静音，如需发言，请点击“举手发言”";
@@ -666,15 +641,14 @@ export default {
         this.video = e.status;
       });
 
-      // 分享content消息
-      client.on("content", (e) => {
-        if (e.data) {
-          message.info("您正在接收共享内容", 3);
-        }
-      });
-
+      // 会议实时数据
       client.on("meeting-stats", (e) => {
         this.senderStatus = e;
+      });
+
+      // 共享content
+      client.on("content", (e) => {
+        this.content = e.data;
       });
 
       // 字幕、点名消息
@@ -692,11 +666,9 @@ export default {
       // 设备旋转信息
       // 自定义布局需要处理
       client.on("rotation-change", (e) => {
-        console.log("demo get rotation-change: ", e);
-
         // 当手机竖屏入会，或者分享的竖屏的内容时
         // 自定义布局需要手动计算视频画面的旋转信息
-        if (this.templateMode === "CUSTOM") {
+        if (this.setting.layoutMode === "CUSTOM") {
           rotationInfoRef = e;
           // 计算屏幕旋转信息
           nextLayoutListRef = this.calculateRotate();
@@ -738,7 +710,7 @@ export default {
 
       // AUTO布局 当前模板类型
       client.on("template-mode", (mode) => {
-        this.layoutModel = mode;
+        this.templateMode = mode;
       });
 
       // 出入会消息
@@ -778,27 +750,12 @@ export default {
 
         if (type === "audio") {
           console.log("[xyRTC on]audio play failed:" + key, error);
-
-          // 因有多个audio组件, 所以会多次收到此消息，只需第一次的时候重新播放音频即可。
-          if (isMobile) {
-            if (restartCount === 0) {
-              Modal.warning({
-                className: "xy-modal-confirm",
-                width: 288,
-                icon: null,
-                content: "点击“一键收听”按钮收听其他参会人声音",
-                closable: true,
-                centered: isMobile,
-                okText: "一键收听",
-                onOk() {
-                  client.playAudio();
-                },
-              });
-
-              restartCount++;
-            }
-          }
         }
+      });
+
+      // current forceLayout roster id
+      client.on("force-full-screen", (id) => {
+        this.forceLayoutId = id;
       });
     },
     handleBulkRoster(e) {
@@ -874,8 +831,6 @@ export default {
 
       this.pageInfo = cacheCustomPageInfo;
 
-      console.log("cacheCustomPageInfo: ", cacheCustomPageInfo);
-
       return cacheCustomPageInfo;
     },
     // CUSTOM布局 请流
@@ -925,9 +880,6 @@ export default {
           quality: 1,
         });
       }
-
-      console.log("reqlist: ", reqList);
-      console.log("extReqList: ", extReqList);
 
       this.client?.requestNewLayout(
         reqList,
@@ -979,16 +931,12 @@ export default {
         } else {
           result = await this.client.unmuteVideo();
         }
+
         this.video = result;
       } catch (err) {
-        const msg = err?.detail?.msg || "禁止操作";
-        const code = err?.detail?.code;
+        const { msg = "禁止操作" } = err || {};
 
-        if (code === 401) {
-          message.error("当前摄像头或麦克风设备异常，请切换其他设备");
-        } else {
-          message.error("操作失败: " + msg);
-        }
+        message.error(msg);
       }
     },
 
@@ -1006,14 +954,9 @@ export default {
         }
         this.audio = result;
       } catch (err) {
-        const msg = err?.detail?.msg || "禁止操作";
-        const code = err?.detail?.code;
+        const { msg = "禁止操作" } = err || {};
 
-        if (code === 401) {
-          message.error("当前摄像头或麦克风设备异常，请切换其他设备");
-        } else {
-          message.error("操作失败: " + msg);
-        }
+        message.error(msg);
       }
     },
 
@@ -1070,9 +1013,7 @@ export default {
     // 切换布局
     async switchLayout() {
       try {
-        const modal = await this.client.switchLayout();
-
-        this.layoutModel = modal.toLowerCase();
+        await this.client.switchLayout();
       } catch (err) {
         console.log("switch layout error: ", err);
       }
@@ -1117,13 +1058,19 @@ export default {
       this.customRequestLayout(this.pageInfo);
     },
 
-    // 分页
-    switchPage(type) {
-      this.forceLayoutId = ""; // 退出全屏
+    async forceFullScreen(id = "") {
+      await this.client.forceFullScreen(id);
+    },
 
-      if (this.templateMode === "CUSTOM") {
+    // 分页
+    async switchPage(type) {
+      if (this.setting.layoutMode === "CUSTOM") {
         this.customSwitchPage(type);
         return;
+      }
+
+      if (this.forceLayoutId) {
+        await this.forceFullScreen();
       }
 
       const { currentPage, totalPage } = this.pageInfo;
@@ -1143,13 +1090,8 @@ export default {
       this.client?.setPageInfo(nextPage);
     },
 
-    setForceLayoutId(id) {
-      this.forceLayoutId = id;
-    },
-
-    // 设置
-    onOpenSetting() {
-      this.settingVisible = true;
+    onToggleSetting() {
+      this.settingVisible = !this.settingVisible;
     },
 
     async toggleLocal() {
@@ -1177,9 +1119,9 @@ export default {
       const { deviceId, label } = device;
       try {
         if (key === "audioOutput") {
-          await stream.setAudioOutput(deviceId);
+          await this.stream.setAudioOutput(deviceId);
         } else if (key === "audioInput" || key === "videoInput") {
-          await stream.switchDevice(deviceMap[key]["key"], deviceId);
+          await this.stream.switchDevice(deviceMap[key]["key"], deviceId);
         }
         message.info(`${deviceMap[key]["zh_text"]}已自动切换至 ${label}`);
       } catch (err) {
@@ -1215,33 +1157,36 @@ export default {
       }
     },
 
-    onCancelSetting() {
-      this.settingVisible = false;
-    },
-
     async onSaveSetting(data) {
       if (data["selectedDevice"]) {
         this.settingVisible = false;
 
         try {
-          if (stream) {
+          if (this.stream) {
             await this.onSwitchDevice(data["selectedDevice"]);
           }
           this.selectedDevice = data.selectedDevice;
         } catch (err) {
           console.log("switch device err:", err);
         }
+
+        return;
       }
 
       if (Object.prototype.hasOwnProperty.call(data, "localHide")) {
-        const xyUser = { ...this.user, localHide: data["localHide"] };
-        store.set("xy-user", xyUser);
-        this.user = xyUser;
-
         if (this.client) {
           this.toggleLocal();
         }
       }
+
+      const key = Object.keys(data)[0];
+      const value = data[key];
+
+      const xySetting = { ...this.setting, [key]: value };
+
+      store.set("xy-setting", xySetting);
+
+      this.setting = xySetting;
     },
 
     // 上传日志
@@ -1270,7 +1215,7 @@ export default {
     async shareContent() {
       try {
         // screenAudio 共享时，是否采集系统音频。 true: 采集； false: 不采集
-        const result = await stream.createContentStream({
+        const result = await this.stream.createContentStream({
           screenAudio: true,
         });
 
@@ -1278,18 +1223,18 @@ export default {
         if (result) {
           this.shareContentStatus = true;
 
-          stream.on("start-share-content", () => {
-            this.client.publish(stream, { isShareContent: true });
+          this.stream.on("start-share-content", () => {
+            this.client.publish(this.stream, { isShareContent: true });
           });
 
-          stream.on("stop-share-content", () => {
+          this.stream.on("stop-share-content", () => {
             this.stopShareContent();
           });
         } else {
           message.info("分享屏幕失败");
         }
       } catch (err) {
-        console.log('share content failed:', err)
+        console.log("share content failed:", err);
         if (err && err.code !== "XYSDK:950501") {
           message.info(err.msg || "分享屏幕失败");
         }
@@ -1302,119 +1247,9 @@ export default {
 
       this.client.switchDebug(status);
     },
-    // 设置音量
-    setMicLevel(audio) {
-      if (audio === "unmuteAudio") {
-        if (!audioLevelTimmer) {
-          audioLevelTimmer = setInterval(async () => {
-            if (stream) {
-              try {
-                const level = await stream.getAudioLevel();
-
-                // 更新Audio的实时音量显示
-                this.micLevel = level;
-              } catch (err) {
-                this.clearTimmer();
-              }
-            }
-          }, 500);
-        }
-      } else {
-        this.clearTimmer();
-      }
-    },
-  },
-  watch: {
-    callStatus: {
-      handler(newValue) {
-        const { callMeeting, callLoading } = newValue;
-        if (callMeeting && !callLoading) {
-          this.setMicLevel(this.audio);
-        }
-
-        // const bgmAudioEle = this.$refs["bgmAudioRef"];
-
-        // if (!callLoading && bgmAudioEle) {
-        //   bgmAudioEle.pause();
-        // }
-
-        // if (callMeeting && callLoading) {
-        //   xyRTC.setOutputAudioDevice(
-        //     bgmAudioEle,
-        //     this.selectedDevice.audioOutput.deviceId || "default"
-        //   );
-        // }
-      },
-      deep: true,
-    },
-    templateMode: (nextValue) => {
-      store.set("xy-sdk-template-mode", nextValue);
-    },
-    audio: {
-      handler(newValue) {
-        if (this.callMeeting && !this.callLoading) {
-          this.setMicLevel(newValue);
-        }
-      },
-    },
   },
 };
 </script>
-<style scoped>
-body {
-  padding: 0px;
-  width: 100vw;
-  height: 100vh;
-
-  overflow: hidden;
-  user-select: none;
-}
-
-#app {
-  width: 100vw;
-  height: 100vh;
-
-  overflow: auto;
-  box-sizing: border-box;
-}
-
-#container {
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-
-  position: relative;
-}
-
-.login {
-  width: 100%;
-  height: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-}
-
-.login h1 {
-  margin: 20px 0;
-}
-
-.login .operate {
-  margin: 20px 0 50px;
-}
-
-.login .operate-item {
-  margin: 0 10px;
-}
-
-.template-mode {
-  width: 100px;
-  margin-right: 15px;
-}
-
-.header-container {
-  font-size: 14px;
-  color: #333;
-}
+<style lang="scss">
+@import "./assets/style/index.scss";
 </style>

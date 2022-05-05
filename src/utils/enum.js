@@ -7,14 +7,23 @@ import nemo from "@/assets/img/type/nemo.png";
 import tvbox from "@/assets/img/type/tvbox.png";
 import noicon from "@/assets/img/type/noicon.png";
 import bruce from "@/assets/img/type/bruce.png";
+import { THIRD } from "./config";
 
 export const DEFAULT_LOCAL_USER = {
+  phone: "",
+  password: "",
   meeting: "",
   meetingPassword: "",
   meetingName: "",
   muteVideo: false,
   muteAudio: false,
+  extUserId: "",
+};
+
+export const DEFAULT_SETTING = {
   localHide: false,
+  layoutMode: "AUTO",
+  isThird: THIRD,
 };
 
 export const NEXT_DEVICE = {

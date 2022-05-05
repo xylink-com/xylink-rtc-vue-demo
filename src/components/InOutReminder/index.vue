@@ -1,7 +1,7 @@
 <template>
   <div :class="reminderClass">
     <div class="reminder-toolbar" @click="onToggleReminder">
-      <img src="../../assets/img/icon_hide.svg" alt="" />
+      <img src="@/assets/img/icon/icon_hide.svg" alt="" />
       {{ !isHideContent && "隐藏" }}
     </div>
     <ul class="reminder-content">

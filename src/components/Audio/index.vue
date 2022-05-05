@@ -1,5 +1,5 @@
 <template>
-  <div className="wrap-audio">
+  <div class="wrap-audio">
     <audio autoPlay ref="audioRef" :muted="muted"></audio>
   </div>
 </template>

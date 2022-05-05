@@ -5,6 +5,7 @@
  */
 
 import { TEMPLATE } from "./template";
+import { Message } from "element-ui";
 
 export const transformTime = (timestamp = +new Date()) => {
   if (timestamp) {
@@ -202,4 +203,10 @@ export const setSelfRoster = (orderRosterList, selfRoster) => {
 
   // 记录下来最终排好序的roster数据
   return orderRosterList || [];
+};
+
+export const message = {
+  info: (message) => {
+    Message.info({ message, duration: 2000, center: true });
+  },
 };
