@@ -6,7 +6,7 @@
       </div>
       <div class="name">
         <div class="calling">正在呼叫</div>
-        <div class="text">{{ callInfo && callInfo.displayName }}</div>
+        <div class="text">{{ conferenceInfo && conferenceInfo.displayName }}</div>
       </div>
       <div class="stop-btn" @click="stop('OK')">
         <svg-icon icon="hang_up" />
@@ -20,7 +20,7 @@
 <script>
 import xyRTC from "@xylink/xy-rtc-sdk";
 export default {
-  props: ["callInfo", "audioOutputValue"],
+  props: ["conferenceInfo", "audioOutputValue"],
   async mounted() {
     const bgmAudioEle = this.$refs["bgmAudioRef"];
 

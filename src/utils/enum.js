@@ -26,6 +26,14 @@ export const DEFAULT_SETTING = {
   isThird: THIRD,
 };
 
+export const DEFAULT_CALL_INFO = {
+  avatar: '',
+  displayName: '',
+  numberType: 'CONFERENCE',
+  number: '',
+  callNumber: ''
+};
+
 export const NEXT_DEVICE = {
   deviceId: "",
   label: "",

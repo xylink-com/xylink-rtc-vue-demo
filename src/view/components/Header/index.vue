@@ -6,9 +6,9 @@
     </span>
     <span class="header-count">
       <span class="header-displayname">
-        {{ callInfo.displayName }}
-        <span v-if="callInfo.numberType !== 'CONFERENCE'"
-          >({{ callInfo.number }})
+        {{ conferenceInfo.displayName }}
+        <span v-if="conferenceInfo.numberType !== 'CONFERENCE'"
+          >({{ conferenceInfo.number }})
         </span>
       </span>
 
@@ -22,11 +22,11 @@
           <div class="upload-icon" @click="onToggleSetting">
             <svg-icon icon="setting" />
           </div>
-          <div class="meeting-popover-name" :title="callInfo.displayName">
-            {{ callInfo.displayName }}
+          <div class="meeting-popover-name" :title="conferenceInfo.displayName">
+            {{ conferenceInfo.displayName }}
           </div>
           <div class="meeting-popover-number">
-            会议号：<span class="number">{{ callInfo.number }}</span>
+            会议号：<span class="number">{{ conferenceInfo.number }}</span>
           </div>
         </div>
         <div class="meeting-popover-btn" slot="reference">
@@ -38,10 +38,10 @@
 </template>
 
 <script>
-import Timmer from "../Timmer";
+import Timmer from "@/components/Timmer";
 
 export default {
-  props: ["callInfo"],
+  props: ["conferenceInfo"],
   components: {
     Timmer,
   },

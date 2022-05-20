@@ -4,7 +4,7 @@
       <p class="hold-title">请稍等，主持人稍后邀请您入会</p>
 
       <p class="hold-conference-title">会议主题</p>
-      <p class="hold-conference">{{ callInfo.displayName }}</p>
+      <p class="hold-conference">{{ conferenceInfo.displayName }}</p>
 
       <div class="hold-level-meeting">
         <span @click="stopMeeting">
@@ -16,7 +16,7 @@
 </template>
 <script>
 export default {
-  props: ["callInfo"],
+  props: ["conferenceInfo"],
   computed: {
   },
   methods: {

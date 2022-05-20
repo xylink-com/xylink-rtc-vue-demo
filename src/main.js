@@ -1,6 +1,6 @@
 import Vue from "vue";
 import "./plugins/element.js";
-import App from "./App.vue";
+import App from "./view/App.vue";
 import "./assets/style/global.scss";
 import SvgIcon from "./components/Svg/index.vue";
 

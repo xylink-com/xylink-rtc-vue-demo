@@ -10,7 +10,7 @@
       已开启隐藏本地画面模式
     </div>
 
-    <div v-if="chairmanUri" class="meeting-prompt-box">主会场模式</div>
+    <div v-if="chairman" class="meeting-prompt-box">主会场模式</div>
 
     <div v-if="isLocalShareContent" class="meeting-prompt-box">本地共享中</div>
 
@@ -28,7 +28,7 @@ export default {
     "localHide",
     "isLocalShareContent",
     "content",
-    "chairmanUri",
+    "chairman",
   ],
   data() {
     return {};

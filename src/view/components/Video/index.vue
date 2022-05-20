@@ -53,6 +53,9 @@
 export default {
   props: ["item", "model", "id", "forceLayoutId", "client"],
   computed: {
+    isFullScreen() {
+      return this.forceLayoutId === this.item.roster.id;
+    },
     state() {
       return this.item.state;
     },
@@ -133,7 +136,6 @@ export default {
   },
   data() {
     return {
-      isFullScreen:  this.forceLayoutId === this.item.roster.id, // 是否全屏
       wrapVideoId: "wrap-" + this.id,
     };
   },
@@ -142,7 +144,7 @@ export default {
   },
   methods: {
     async toggleFullScreen() {
-      await this.client.forceFullScreen(!this.isFullScreen && this.id);
+      this.$emit("forceFullScreen", this.isFullScreen ? "" : this.id);
     },
     renderVideo(newValue) {
       if (newValue && this.client) {

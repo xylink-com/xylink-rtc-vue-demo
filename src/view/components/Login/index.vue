@@ -27,7 +27,15 @@
         ref="loginForm"
         class="login-form"
       >
-        <el-form-item v-if="isThird" prop="extUserId">
+        <el-form-item
+          v-if="isThird"
+          prop="extUserId"
+          :rules="{
+            required: true,
+            message: '请输入第三方用户ID',
+            trigger: 'blur',
+          }"
+        >
           <el-input
             v-model="loginForm.extUserId"
             autocomplete="off"
@@ -35,7 +43,15 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item v-if="!isThird" prop="phone">
+        <el-form-item
+          v-if="!isThird"
+          prop="phone"
+          :rules="{
+            required: true,
+            message: '请输入小鱼账号',
+            trigger: 'blur',
+          }"
+        >
           <el-input
             v-model="loginForm.phone"
             autocomplete="off"
@@ -43,7 +59,15 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item v-if="!isThird" prop="password">
+        <el-form-item
+          v-if="!isThird"
+          prop="password"
+          :rules="{
+            required: true,
+            message: '请输入账号密码',
+            trigger: 'blur',
+          }"
+        >
           <el-input
             type="password"
             v-model="loginForm.password"
@@ -138,7 +162,7 @@ export default {
         if (!valid) {
           return false;
         }
-        
+
         this.$emit("submitForm", this.loginForm);
       });
     },

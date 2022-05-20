@@ -11,14 +11,14 @@
 
       <Loading
         v-if="callMeeting && callLoading"
-        :callInfo="conferenceInfo"
+        :conferenceInfo="conferenceInfo"
         :audioOutputValue="selectedDevice.audioOutput.deviceId"
         @stop="stop"
       />
 
       <div class="meeting" v-if="callMeeting && !callLoading">
         <MeetingHeader
-          :callInfo="conferenceInfo"
+          :conferenceInfo="conferenceInfo"
           @onToggleSetting="onToggleSetting"
           @switchDebug="switchDebug"
           @stop="stop"
@@ -26,18 +26,15 @@
 
         <PromptInfo
           :forceLayoutId="forceLayoutId"
-          :chairmanUri="chairmanUri"
+          :chairman="chairman.hasChairman"
           :content="content"
           :localHide="setting.localHide"
-          :isLocalShareContent="shareContentStatus"
+          :isLocalShareContent="isLocalShareContent"
           @forceFullScreen="forceFullScreen"
         />
 
         <div class="meeting-content">
-          <div
-            v-if="layout.length > 1 && pageStatus.status && pageStatus.previous"
-            class="previous-box"
-          >
+          <div v-if="pageStatus.previous" class="previous-box">
             <div class="previous-button" @click="switchPage('previous')">
               <svg-icon icon="previous" />
             </div>
@@ -58,12 +55,10 @@
               :id="item.roster.id"
               :forceLayoutId="forceLayoutId"
               :client="client"
+              @forceFullScreen="forceFullScreen"
             ></Video>
           </div>
-          <div
-            v-if="layout.length > 1 && pageStatus.status && pageStatus.next"
-            class="next-box"
-          >
+          <div v-if="pageStatus.next" class="next-box">
             <div class="next-button" @click="switchPage('next')">
               <svg-icon icon="next" />
               <div
@@ -113,7 +108,7 @@
             </div>
 
             <div
-              v-if="shareContentStatus"
+              v-if="isLocalShareContent"
               @click="stopShareContent"
               class="button button-warn share-stop"
             >
@@ -207,6 +202,7 @@ import {
   DEFAULT_LOCAL_USER,
   DEFAULT_DEVICE,
   DEFAULT_SETTING,
+  DEFAULT_CALL_INFO,
 } from "@/utils/enum";
 import { SERVER, ACCOUNT } from "@/utils/config";
 import { TEMPLATE } from "@/utils/template";
@@ -264,6 +260,36 @@ export default {
     newLayout() {
       return this.layout.filter((item) => item.roster.participantId);
     },
+    pageStatus() {
+      const { currentPage = 0, totalPage = 0 } = this.pageInfo;
+
+      const { participantCount = 1 } = this.confChangeInfo || {};
+
+      // 总页数大于当前页，则显示 "下一页"按钮
+      let next = currentPage < totalPage;
+      // 非首页，则显示”上一页“按钮
+      let previous = currentPage !== 0;
+
+      // 不显示分页按钮
+      // 1. 人数为1
+      // 2. 人数为2,且隐藏本地画面
+      // 3. 共享(本地)
+      // 4. 主会场(非本地、且在线)
+      if (
+        participantCount === 1 ||
+        (participantCount === 2 && this.setting.localHide) ||
+        this.isLocalShareContent ||
+        this.chairman.chairmanUri
+      ) {
+        next = false;
+        previous = false;
+      }
+
+      return {
+        previous, // 上一页
+        next, // 下一页
+      };
+    },
   },
   data() {
     return {
@@ -282,7 +308,7 @@ export default {
       subTitle: { action: "cancel", content: "" }, // 是否有字幕或点名
       templateMode: "speaker", // 桌面布局模式(语音激励模式、画廊模式)
       participantsCount: 0, // 会议成员数量
-      shareContentStatus: false, // 开启content的状态
+      isLocalShareContent: false, // 开启content的状态
       senderStatus: { sender: {}, receiver: {} }, // 呼叫数据统计
       debug: false, // 是否是调试模式（开启则显示所有画面的呼叫数据）
       settingVisible: false, // 设置
@@ -300,17 +326,16 @@ export default {
         currentPage: 1,
         totalPage: 0,
       },
-      pageStatus: {
-        status: true, // 是否分页
-        previous: false, // 上一页
-        next: true, // 下一页
-      },
       confChangeInfo: {},
       forceLayoutId: "", // 全屏 roster id
       rosters: [], // 所有参会者列表
       participantVisible: false, // 是否展示参会者列表
       content: null,
-      conferenceInfo: null, // 会议室信息
+      conferenceInfo: DEFAULT_CALL_INFO, // 会议室信息
+      chairman: {
+        chairmanUri: "", // 主会场是否入会
+        hasChairman: false, // 是否有设置主会场(预设主会场)
+      },
     };
   },
   beforeDestroy() {
@@ -487,7 +512,7 @@ export default {
       // 清理组件状
       this.callMeeting = false;
       this.callLoading = false;
-      this.shareContentStatus = false;
+      this.isLocalShareContent = false;
       this.debug = false;
       this.layout = [];
       this.settingVisible = false;
@@ -519,7 +544,14 @@ export default {
       // 接收到conf-change-info后，需要基于此列表数据计算想要请求的参会成员和共享Content画面流
       // client.requestNewLayout请求后，会回调custom-layout数据，包含有请求的视频画面数据
       client.on("conf-change-info", (e) => {
+        const { chairManUrl } = e;
+
         this.confChangeInfo = e;
+
+        this.chairman = {
+          ...this.chairman,
+          chairmanUri: chairManUrl,
+        };
 
         // CUSTOM 模式
         if (this.setting.layoutMode === "CUSTOM") {
@@ -610,7 +642,11 @@ export default {
         let info = "";
         this.disableAudio = disableMute;
         this.contentIsDisabled = contentIsDisabled;
-        this.chairmanUri = chairmanUri;
+
+        this.chairman = {
+          ...this.chairman,
+          hasChairman: !!chairmanUri,
+        };
 
         if (muteOperation === "muteAudio" && disableMute) {
           info = "主持人已强制静音，如需发言，请点击“举手发言”";
@@ -720,23 +756,6 @@ export default {
 
       // 分页信息
       client.on("page-info", (pageInfo) => {
-        let next = true;
-        let previous = false;
-        const { currentPage = 0, totalPage = 0 } = pageInfo;
-
-        if (currentPage !== 0) {
-          previous = true;
-        }
-
-        if (currentPage >= totalPage) {
-          next = false;
-        }
-
-        this.pageStatus = {
-          ...this.pageStatus,
-          next,
-          previous,
-        };
         this.pageInfo = pageInfo;
       });
 
@@ -1022,8 +1041,6 @@ export default {
     customSwitchPage(type) {
       const { currentPage, totalPage } = this.pageInfo;
       let nextPage = currentPage;
-      let next = true;
-      let previous = false;
 
       if (type === "next") {
         nextPage += 1;
@@ -1035,20 +1052,6 @@ export default {
 
       nextPage = Math.max(nextPage, 1);
       nextPage = Math.min(nextPage, totalPage);
-
-      if (nextPage !== 1) {
-        previous = true;
-      }
-
-      if (nextPage >= totalPage) {
-        next = false;
-      }
-
-      this.pageStatus = {
-        ...this.pageStatus,
-        next,
-        previous,
-      };
 
       this.pageInfo = {
         ...this.pageInfo,
@@ -1067,10 +1070,6 @@ export default {
       if (this.setting.layoutMode === "CUSTOM") {
         this.customSwitchPage(type);
         return;
-      }
-
-      if (this.forceLayoutId) {
-        await this.forceFullScreen();
       }
 
       const { currentPage, totalPage } = this.pageInfo;
@@ -1208,7 +1207,7 @@ export default {
     // 停止分享content
     stopShareContent() {
       this.client.stopShareContent();
-      this.shareContentStatus = false;
+      this.isLocalShareContent = false;
     },
 
     // 分享content内容
@@ -1221,7 +1220,7 @@ export default {
 
         // 创建分享屏幕stream成功
         if (result) {
-          this.shareContentStatus = true;
+          this.isLocalShareContent = true;
 
           this.stream.on("start-share-content", () => {
             this.client.publish(this.stream, { isShareContent: true });
@@ -1251,5 +1250,5 @@ export default {
 };
 </script>
 <style lang="scss">
-@import "./assets/style/index.scss";
+@import "@/assets/style/index.scss";
 </style>
