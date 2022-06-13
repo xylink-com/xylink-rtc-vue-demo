@@ -1557,10 +1557,10 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.1.0.tgz#1597f5c9672d35b97e674698ac13a87a5043add3"
-  integrity sha512-hvlYov38Cay5zMrAfRPmq4zXW0cNN8a7fK8PTu34kQQRYuQ9XUHAlTBIbfhNYX4AMICMW+Lmj1Mvh/1sV93uQA==
+"@xylink/xy-rtc-sdk@2.1.1":
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.1.1.tgz#931c86540ec0610e114370c90ce4179f0c639a32"
+  integrity sha512-YJUl7Qgg+S/SmxsV2qHqkKYACb8MYMwtMdZr6IIB3ypB/WAXfsweVIrp5MaC8Ur4q+xBGAvH/pcXsvOrePV32A==
   dependencies:
     crypto-browserify "^3.12.0"
     crypto-js "^4.1.1"
