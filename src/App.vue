@@ -424,6 +424,7 @@ export default {
             offset: [32, 60, 20, 20],
           },
           clientId,
+          isSupportHybridCloud: !!locatorServer,
         });
 
         this.initEventListener(this.client);
