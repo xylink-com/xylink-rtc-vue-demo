@@ -1,0 +1,53 @@
+@import "./var.scss";
+@import "./common.scss";
+
+html,
+body {
+  margin: 0;
+  font-family: "PingFangSC-Regular", "PingFang SC", "Microsoft YaHei",
+    "Helvetica Neue", Helvetica, Tahoma, Arial, "Hiragino Sans GB", "Heiti SC",
+    "WenQuanYi Micro Hei", sans-serif;
+  /* -webkit-font-smoothing: antialiased; */
+  font-variant: tabular-nums;
+  -moz-osx-font-smoothing: grayscale;
+
+  width: 100%;
+  height: 100%;
+  /* user-select: none; */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+#app,
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+ul li {
+  list-style: none;
+}
+
+ol,
+ul,
+dl,
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+img {
+  vertical-align: middle;
+  border-style: none;
+}
+
+.link {
+  color: #6198ff;
+  cursor: pointer;
+  text-decoration: none;
+}

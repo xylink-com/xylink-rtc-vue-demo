@@ -1,0 +1,130 @@
+@import "./var.scss";
+
+// !!! 复写element ui 样式
+.el-button {
+  border-radius: 3px;
+  border: 1px solid $primary-color;
+  background: transparent;
+  color: $primary-color;
+  font-weight: normal;
+  &:hover {
+    background: #f8fafd;
+  }
+  &:active,
+  &:focus {
+    background: #eeeeee;
+  }
+}
+.el-button--primary {
+  color: #fff;
+  background: $primary-btn-color;
+  border: none;
+  &:hover {
+    background: $primary-btn-hover-color;
+  }
+  &:active,
+  &:focus {
+    background: $primary-btn-color;
+    border: none;
+  }
+}
+
+// model
+.model {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  &-content {
+    background: $bg-color;
+    box-shadow: 0px 2px 20px 0px rgba(119, 119, 178, 0.2);
+    border-radius: 4px;
+    opacity: 0;
+    position: relative;
+    margin-top: 200px;
+    padding: 0 30px;
+  }
+
+  &-container {
+    position: relative;
+    padding-bottom: 24px;
+  }
+
+  &-title {
+    color: #3e454c;
+    font-size: 20px;
+    padding: 24px 0 28px;
+
+    .close {
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      cursor: pointer;
+      display: flex;
+
+      img {
+        width: 22px;
+        height: 22px;
+      }
+    }
+  }
+}
+
+.slideIn {
+  animation: slideIn 0.5s ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.close-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url("~@/assets/img/close.png") no-repeat;
+  background-size: 100% 100%;
+}
+
+.xy-select.el-popper {
+  margin-top: 4px;
+  .popper__arrow {
+    display: none;
+  }
+}

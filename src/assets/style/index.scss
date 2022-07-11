@@ -1,0 +1,245 @@
+@import "@/assets/style/var.scss";
+
+.meeting {
+  width: 100%;
+  height: 100%;
+  &-content {
+    width: 100%;
+    height: 100%;
+    background-color: $meeting-bg-color;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  &-layout {
+    position: relative;
+  }
+
+  &-footer {
+    height: 60px;
+    color: #e7e7e7;
+    background: $toolbar-bg-color;
+    border-radius: 3px;
+    z-index: 10;
+
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 40px;
+    user-select: none;
+
+    .middle {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .disabled-button {
+      cursor: default;
+      opacity: 0.6;
+      &:hover {
+        .svg-icon {
+          fill: #fff;
+          fill-opacity: 0.8;
+        }
+        .title {
+          color: #e7e7e7;
+        }
+      }
+    }
+
+    .operate-fail-tip {
+      position: absolute;
+      top: -42px;
+      right: -140%;
+      font-size: 12px;
+      color: $text-color;
+      padding: 0 12px;
+      border-radius: 4px;
+      background: $bg-color;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      span {
+        display: inline-block;
+        margin-left: 8px;
+        color: $primary-color;
+      }
+      .tip-close {
+        display: inline-block;
+        margin-left: 16px;
+        width: 16px;
+        height: 16px;
+        background: url("~@/assets/img/icon/icon_close.png") no-repeat;
+        background-size: 100%;
+      }
+    }
+
+    .button {
+      position: relative;
+      width: 50px;
+      height: 100%;
+      margin: 0 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 0;
+      transition: all ease 0.2s;
+      cursor: pointer;
+
+      .title {
+        margin-top: 3px;
+      }
+
+      &:hover {
+        .title {
+          color: #44b5ff;
+        }
+        .svg-icon {
+          fill: #44b5ff;
+          fill-opacity: 1;
+        }
+        .svg-icon-danger {
+          fill: #ff6666;
+          fill-opacity: 1;
+        }
+      }
+    }
+
+    .button.host {
+      overflow: initial;
+      .tag {
+        overflow: hidden;
+      }
+    }
+
+    .button.button-warn {
+      transition: all ease 0.2s;
+
+      &:hover .title {
+        color: rgb(252, 109, 114);
+      }
+    }
+
+    .mic-icon {
+      height: 25px;
+    }
+
+    .mic_aec {
+      .mic-icon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      svg {
+        width: 36px;
+        height: 26px;
+      }
+    }
+
+    .disabled_mute {
+      cursor: default !important;
+
+      &:hover .title {
+        color: inherit !important;
+      }
+    }
+
+    .host {
+      .tag {
+        position: absolute;
+        top: 3px;
+        right: -24px;
+        font-size: 12px;
+        font-family: Helvetica Neue;
+        transform: scale(0.9);
+        width: 36px;
+        text-align: left;
+      }
+    }
+
+    .title {
+      transition: all ease 0.3s;
+      font-size: 12px;
+      color: $white-lighter-color;
+      line-height: 16px;
+      white-space: nowrap;
+      transform: scale(0.9);
+    }
+  }
+
+  .line {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.6);
+    margin: 0 5px;
+  }
+
+  .previous-box,
+  .next-box {
+    position: absolute;
+    width: 52px;
+    top: 50%;
+    margin-top: -23px;
+    z-index: 103;
+    cursor: pointer;
+  }
+
+  .previous-button,
+  .next-button,
+  .home-button {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 3px 0px 0px 3px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    color: #fff;
+    &:hover {
+      background: rgba(56, 118, 255, 0.8);
+    }
+    .svg-icon {
+      width: 24px;
+      height: 24px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+    .page-number {
+      font-size: 12px;
+      font-weight: 400;
+      color: $white-lighter-color;
+      line-height: 18px;
+      margin-bottom: 2px;
+    }
+  }
+  .home-button {
+    margin-top: 2px;
+    font-size: 12px;
+    height: 20px;
+    line-height: 20px;
+    padding-bottom: 0;
+  }
+
+  .previous-box {
+    left: 0;
+  }
+
+  .next-box {
+    right: 0;
+  }
+
+  .previous-button,
+  .home-button {
+    left: 0;
+    border-radius: 0 3px 3px 0;
+  }
+}

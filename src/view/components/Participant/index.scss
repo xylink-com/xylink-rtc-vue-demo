@@ -1,0 +1,198 @@
+$member-height: 48px;
+$normal-color: rgba(57, 57, 70, 1);
+$text-color: rgba(57, 57, 70, 0.9);
+$lighter-color: rgba(57, 57, 70, 0.6);
+$primary-color: #3876ff;
+$bg-color: #fff;
+
+.member {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  &-header {
+    display: flex;
+    align-items: center;
+    height: $member-height;
+    border-bottom: 1px solid #e9e8e8;
+    color: $normal-color;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 20px;
+  }
+  &-hide-btn {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url("~@/assets/img/operate/icon_fold.png") no-repeat;
+    background-size: 100% 100%;
+    margin-right: 8px;
+    &:hover {
+      background: url("~@/assets/img/operate/icon_fold_hover.png") no-repeat;
+      background-size: 100% 100%;
+    }
+    cursor: pointer;
+  }
+  &-search {
+    position: relative;
+    width: 122px;
+    height: 28px;
+    margin-left: auto;
+    &-input {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #d8d8d8;
+      border-radius: 3px;
+      padding-right: 28px;
+      padding-left: 8px;
+      font-size: 12px;
+      color: $text-color;
+      background: #f9f9f9;
+      border-radius: 3px;
+      &::placeholder {
+        color: $lighter-color;
+      }
+      &:focus {
+        outline: none;
+        border: 1px solid $primary-color;
+      }
+    }
+    &-btn {
+      position: absolute;
+      height: 100%;
+      top: 0;
+      right: 8px;
+      color: #d8d8d8;
+      display: flex;
+      align-items: center;
+      img {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+    }
+  }
+  &-navbar {
+    height: $member-height;
+    border-bottom: 1px solid #e9e8e8;
+    font-size: 12px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    &-item {
+      max-width: 120px;
+      position: relative;
+      height: $member-height;
+      line-height: 52px;
+      padding: 0 8px;
+      text-align: center;
+      color: $lighter-color;
+      cursor: pointer;
+      &-active {
+        color: $primary-color;
+        &::after {
+          position: absolute;
+          content: "";
+          left: 14px;
+          right: 14px;
+          height: 2px;
+          background-color: $primary-color;
+          bottom: 0;
+        }
+      }
+    }
+  }
+  &-content {
+    flex: 1 1;
+    overflow: auto;
+    padding-bottom: 50px;
+    .member-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      padding: 8px 20px;
+      margin: 0;
+      font-size: 12px;
+      color: $normal-color;
+    }
+
+    .info {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+
+      .name {
+        width: calc(100% - 44px);
+        overflow: hidden;
+        color: inherit;
+        cursor: default;
+        display: flex;
+        flex-direction: column;
+        &__info {
+          width: 100%;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        &__status {
+          font-size: 12px;
+          color: $primary-color;
+        }
+      }
+
+      .avatar {
+        position: relative;
+        width: 32px;
+        height: 32px;
+        margin-right: 12px;
+        &__status {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          right: 0;
+          bottom: 0;
+        }
+      }
+    }
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+  &__staus {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    &-audio {
+      width: 20px;
+      margin-right: 16px;
+    }
+
+    &-video {
+      width: 20px;
+    }
+  }
+  &__tips {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 28px;
+  }
+  &-pagination {
+    position: absolute;
+    bottom: 0;
+    height: 40px;
+    border-top: 1px solid #d8d8d8;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    background: $bg-color;
+  }
+}

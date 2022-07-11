@@ -1,0 +1,28 @@
+$primary-color: #3876ff;
+$bg-color: #fff;
+$footer-bg-color: #393946;
+$page-bg-color: #f5f5f9;
+$normal-color: rgba(57, 57, 70, 1);
+$text-color: rgba(57, 57, 70, 0.8);
+$lighter-color: rgba(57, 57, 70, 0.6);
+$title-color: #3e454c;
+
+$placeholder-color: rgba(57, 57, 70, 0.4);
+
+$danger-color: #f33d3d;
+$toolbar-bg-color: rgba(14, 4, 4, 0.8);
+$white-lighter-color: rgba(255, 255, 255, 0.8);
+
+$svg-default-color: #ffffffcc;
+$svg-danger-color: #ff6666cc;
+
+$meeting-bg-color: #0f121a;
+
+$primary-btn-color: linear-gradient(90deg, #69aeff 0%, #3876ff 100%);
+$primary-btn-hover-color: linear-gradient(90deg, #87beff 0%, #6393fd 100%);
+
+@mixin text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
