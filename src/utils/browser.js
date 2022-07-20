@@ -21,15 +21,12 @@ export const platform = () => {
     /iPad/i.test(ua) ||
     (ua.indexOf("MacIntel") > -1 && navigator.maxTouchPoints > 1) ||
     (ua.indexOf("Macintosh") > -1 && navigator.maxTouchPoints > 1);
-  const isPad =
-    (lowerUa.indexOf("win") > -1 || lowerUa.indexOf("linux") > -1) &&
-    navigator.maxTouchPoints > 1;
   const isTablet =
     /(?:iPad|PlayBook)/.test(ua) ||
     (isAndroid && !/(?:Mobile)/.test(ua)) ||
     (isFireFox && /(?:Tablet)/.test(ua));
   const isPhone = /(?:iPhone)/.test(ua) && !isTablet;
-  const isPc = !isPhone && !isAndroid && !isSymbian && !isIPad && !isPad;
+  const isPc = !isPhone && !isAndroid && !isSymbian && !isIPad;
   const isBaidu =
     ua.indexOf("Baidu") > -1 ||
     ua.indexOf("BIDUBrowser") > -1 ||
@@ -97,7 +94,6 @@ export const platform = () => {
     isMac,
     isWindows,
     isIPad,
-    isPad,
     isChrome,
     isLinux,
     isFirefox,
