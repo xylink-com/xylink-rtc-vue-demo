@@ -65,18 +65,19 @@ export const getLayoutIndexByRotateInfo = (nextLayoutList, pid, mid) => {
 // 具体布局形式可参考AUTO布局的SPEAKER演讲者模式
 export const getScreenInfo = (elementId = '', nextTemplateRate) => {
   const { clientHeight, clientWidth } = document.getElementById(elementId) || document.body;
+
   const rateHeight = Math.floor(clientWidth * nextTemplateRate);
   const rateWidth = Math.floor(clientHeight / nextTemplateRate);
   const screenInfoObj = { rateHeight: 0, rateWidth: 0 };
 
   // 高充足，以屏幕宽计算高
   if (clientHeight > rateHeight) {
-    screenInfoObj.rateHeight = rateHeight;
+    screenInfoObj.rateHeight = nextTemplateRate === 1 ? clientHeight : rateHeight;
     screenInfoObj.rateWidth = clientWidth;
   } else {
     // 否则，以比例宽计算高
     screenInfoObj.rateHeight = clientHeight;
-    screenInfoObj.rateWidth = rateWidth;
+    screenInfoObj.rateWidth = nextTemplateRate === 1 ? clientWidth : rateWidth;
   }
 
   return screenInfoObj;

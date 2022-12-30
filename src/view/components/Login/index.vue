@@ -3,123 +3,92 @@
     <div class="login-header">
       <el-row type="flex" justify="center" align="center">
         <el-col :xs="24" :lg="22" :xl="16">
-          <a
-            href="https://www.xylink.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              class="login-header-logo"
-              src="@/assets/img/login-logo.png"
-              alt="logo"
-            />
+          <a href="https://www.xylink.com/" target="_blank" rel="noopener noreferrer">
+            <img class="login-header-logo" src="@/assets/img/login-logo.png" alt="logo" />
           </a>
         </el-col>
       </el-row>
     </div>
     <div class="login-container">
-      <div class="login-title">加入会议</div>
-      <el-form
-        :model="loginForm"
-        status-icon
-        :rules="rules"
-        :label-position="labelPosition"
-        ref="loginForm"
-        class="login-form"
-      >
-        <el-form-item
-          v-if="isThird"
-          prop="extUserId"
-          :rules="{
-            required: true,
-            message: '请输入第三方用户ID',
-            trigger: 'blur',
-          }"
+      <div class="login-content">
+        <div class="login-title">加入会议</div>
+        <el-form
+          :model="loginForm"
+          status-icon
+          :rules="rules"
+          :label-position="labelPosition"
+          ref="loginForm"
+          class="login-form"
         >
-          <el-input
-            v-model="loginForm.extUserId"
-            autocomplete="off"
-            placeholder="第三方用户ID"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item
-          v-if="!isThird"
-          prop="phone"
-          :rules="{
-            required: true,
-            message: '请输入小鱼账号',
-            trigger: 'blur',
-          }"
-        >
-          <el-input
-            v-model="loginForm.phone"
-            autocomplete="off"
-            placeholder="输入小鱼账号"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item
-          v-if="!isThird"
-          prop="password"
-          :rules="{
-            required: true,
-            message: '请输入账号密码',
-            trigger: 'blur',
-          }"
-        >
-          <el-input
-            type="password"
-            v-model="loginForm.password"
-            autocomplete="off"
-            placeholder="输入账号密码"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item prop="meeting">
-          <el-input
-            v-model="loginForm.meeting"
-            autocomplete="off"
-            placeholder="输入云会议室号或终端号"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item prop="meetingPassword">
-          <el-input
-            type="password"
-            v-model="loginForm.meetingPassword"
-            autocomplete="off"
-            placeholder="入会密码"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item prop="meetingName">
-          <el-input
-            v-model="loginForm.meetingName"
-            autocomplete="off"
-            placeholder="输入会议中显示的名称"
-          ></el-input>
-        </el-form-item>
-
-        <el-button
-          class="join-btn"
-          type="primary"
-          @click="submitForm('loginForm')"
-          >加入会议</el-button
-        >
-        <el-form-item class="login-form-checkbox">
-          <el-checkbox v-model="loginForm.muteVideo"
-            >入会时关闭摄像头</el-checkbox
+          <el-form-item
+            v-if="isThird"
+            prop="extUserId"
+            :rules="{
+              required: true,
+              message: '请输入第三方用户ID',
+              trigger: 'blur',
+            }"
           >
-        </el-form-item>
-        <el-form-item class="login-form-checkbox">
-          <el-checkbox v-model="loginForm.muteAudio">入会时静音</el-checkbox>
-        </el-form-item>
-      </el-form>
-      <div class="setting-btn">
-        <span @click="onOpenSetting">
-          设置 <i class="el-icon-setting"></i>
-        </span>
+            <el-input v-model="loginForm.extUserId" autocomplete="off" placeholder="第三方用户ID"></el-input>
+          </el-form-item>
+
+          <el-form-item
+            v-if="!isThird"
+            prop="phone"
+            :rules="{
+              required: true,
+              message: '请输入小鱼账号',
+              trigger: 'blur',
+            }"
+          >
+            <el-input v-model="loginForm.phone" autocomplete="off" placeholder="输入小鱼账号"></el-input>
+          </el-form-item>
+
+          <el-form-item
+            v-if="!isThird"
+            prop="password"
+            :rules="{
+              required: true,
+              message: '请输入账号密码',
+              trigger: 'blur',
+            }"
+          >
+            <el-input
+              type="password"
+              v-model="loginForm.password"
+              autocomplete="off"
+              placeholder="输入账号密码"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item prop="meeting">
+            <el-input v-model="loginForm.meeting" autocomplete="off" placeholder="输入云会议室号或终端号"></el-input>
+          </el-form-item>
+
+          <el-form-item prop="meetingPassword">
+            <el-input
+              type="password"
+              v-model="loginForm.meetingPassword"
+              autocomplete="off"
+              placeholder="入会密码"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item prop="meetingName">
+            <el-input v-model="loginForm.meetingName" autocomplete="off" placeholder="输入会议中显示的名称"></el-input>
+          </el-form-item>
+
+          <el-button class="join-btn" type="primary" @click="submitForm('loginForm')">加入会议</el-button>
+          <el-form-item class="login-form-checkbox">
+            <el-checkbox v-model="loginForm.muteVideo">入会时关闭摄像头</el-checkbox>
+          </el-form-item>
+          <el-form-item class="login-form-checkbox">
+            <el-checkbox v-model="loginForm.muteAudio">入会时静音</el-checkbox>
+          </el-form-item>
+        </el-form>
+        <div class="setting-btn">
+          <span @click="onOpenSetting"> 设置 <i class="el-icon-setting"></i> </span>
+        </div>
       </div>
     </div>
 
@@ -136,23 +105,21 @@
   </div>
 </template>
 <script>
-import store from "@/utils/store";
-import xyRTC from "@xylink/xy-rtc-sdk";
+import store from '@/utils/store';
+import xyRTC from '@xylink/xy-rtc-sdk';
 
 export default {
-  props: ["user", "isThird"],
+  props: ['user', 'isThird'],
   computed: {},
   data() {
     return {
       xyRTC,
-      labelPosition: "right",
+      labelPosition: 'right',
       loginForm: this.user,
       rules: {
-        meeting: [{ required: true, message: "请输入会议号", trigger: "blur" }],
-        meetingPassword: [{ trigger: "blur" }],
-        meetingName: [
-          { required: true, message: "请输入入会昵称", trigger: "blur" },
-        ],
+        meeting: [{ required: true, message: '请输入会议号', trigger: 'blur' }],
+        meetingPassword: [{ trigger: 'blur' }],
+        meetingName: [{ required: true, message: '请输入入会昵称', trigger: 'blur' }],
       },
     };
   },
@@ -163,18 +130,18 @@ export default {
           return false;
         }
 
-        this.$emit("submitForm", this.loginForm);
+        this.$emit('submitForm', this.loginForm);
       });
     },
 
     onOpenSetting() {
-      this.$emit("onToggleSetting");
+      this.$emit('onToggleSetting');
     },
   },
   watch: {
     loginForm: {
       handler(newValue) {
-        store.set("xy-user", newValue);
+        store.set('xy-user', newValue);
       },
       deep: true,
     },
@@ -182,5 +149,5 @@ export default {
 };
 </script>
 <style lang="scss">
-@import "./index.scss";
+@import './index.scss';
 </style>

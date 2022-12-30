@@ -60,9 +60,9 @@
         :layoutMode="layoutMode"
         @setting="onHandleSetting"
       />
-      <div class="list-item">
+      <div class="list-item" @click="feedbackVisible = true">
         <div class="key">快速反馈</div>
-        <div class="value" @click="feedbackVisible = true">
+        <div class="value">
           <i class="el-icon-arrow-right"></i>
         </div>
       </div>

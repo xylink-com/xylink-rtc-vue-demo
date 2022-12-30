@@ -1,5 +1,5 @@
 <template>
-  <div class="meeting-header">
+  <div :class="['meeting-header', className]">
     <span class="header-time" @click="switchDebug">
       <svg-icon icon="signal" class="meeting-stats-switch" />
       <Timmer />
@@ -59,7 +59,7 @@ import { isPc } from '@/utils/browser';
 import { message } from '@/utils/index';
 
 export default {
-  props: ['conferenceInfo'],
+  props: ['className', 'conferenceInfo'],
   components: {
     Timmer,
     EndCall,

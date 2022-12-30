@@ -1,13 +1,17 @@
-@import "@/assets/style/var.scss";
+@import '@/assets/style/var.scss';
 
 .meeting-prompt {
   position: absolute;
-  top: 40px;
+  top: 50px;
   left: 10px;
   z-index: 99;
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+
+  &-top {
+    top: 12px;
+  }
 
   &-box {
     display: flex;
@@ -23,6 +27,7 @@
     top: 8px;
   }
 }
+
 .lock-btn {
   display: inline-block;
   width: 56px;

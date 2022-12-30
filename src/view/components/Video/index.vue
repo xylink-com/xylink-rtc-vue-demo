@@ -1,6 +1,12 @@
 <template>
-  <v-touch @doubletap="toggleFullScreen">
-    <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef" :id="wrapVideoId">
+  <!-- <v-touch @doubletap="toggleFullScreen"> -->
+    <div
+      class="wrap-video"
+      :style="item.positionStyle"
+      ref="videoWrapRef"
+      :id="wrapVideoId"
+      @dblclick="toggleFullScreen"
+    >
       <div class="video">
         <div class="video-content" :style="{ border }">
           <div class="video-model">
@@ -36,41 +42,17 @@
           </div>
         </div>
 
-        <video :style="videoStyle" autoPlay></video>
+        <video :style="item.rotate" autoPlay></video>
       </div>
     </div>
-  </v-touch>
+  <!-- </v-touch> -->
 </template>
 <script>
 export default {
   props: ['item', 'model', 'id', 'forceLayoutId', 'client'],
   computed: {
-    isFullScreen() {
-      return this.forceLayoutId === this.item.roster.id;
-    },
     state() {
       return this.item.state;
-    },
-    videoWrapStyle() {
-      let wrapStyle = {};
-      // 全屏
-      if (this.isFullScreen) {
-        return (wrapStyle = {
-          position: 'fixed',
-          width: '100%',
-          height: '100%',
-          left: '0',
-          top: '0',
-          zIndex: '101',
-        });
-      }
-      const positionStyle = this.item.positionStyle;
-
-      if (positionStyle && positionStyle.width) {
-        wrapStyle = positionStyle;
-      }
-
-      return wrapStyle;
     },
     border() {
       let border = '';
@@ -80,29 +62,6 @@ export default {
         border = 'none';
       }
       return border;
-    },
-    videoStyle() {
-      let style = {};
-      let fullStyle = {};
-
-      if (this.isFullScreen) {
-        fullStyle = {
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-        };
-      }
-
-      style = this.item.rotate;
-
-      if (this.item.roster.isContent || this.isFullScreen) {
-        style = {
-          ...style,
-          ...fullStyle,
-        };
-      }
-
-      return style;
     },
     audioOnlyClass() {
       return `video-bg ${
@@ -128,7 +87,9 @@ export default {
   },
   methods: {
     async toggleFullScreen() {
-      this.$emit('forceFullScreen', this.isFullScreen ? '' : this.id);
+      const isFullScreen = this.forceLayoutId === this.item.roster.id;
+
+      this.$emit('forceFullScreen', isFullScreen ? '' : this.id);
     },
     renderVideo(newValue) {
       if (newValue && this.client) {
@@ -178,8 +139,8 @@ export default {
 .video video {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  object-fit: cover;
+  /* overflow: hidden; */
+  object-fit: contain;
 }
 .video audio {
   position: absolute;
@@ -198,13 +159,13 @@ export default {
 }
 .video .video-model .video-status {
   position: absolute;
-  bottom: 4px;
-  left: 4px;
+  bottom: 0;
+  left: 0;
   background-color: rgba(42, 46, 51, 0.8);
-  border-radius: 3px;
   display: flex;
   align-items: center;
   max-width: 90%;
+  height: 21px;
 }
 .video .video-model .name {
   flex: 1;
@@ -241,9 +202,7 @@ export default {
   position: relative;
   z-index: 1;
 }
-.video .video-model .name {
-  margin-bottom: 5px;
-}
+
 .video .video-model .audio-muted-status,
 .video .video-model .audio-unmuted-status {
   width: 26px;

@@ -25,10 +25,28 @@
       background: none;
       outline: none;
     }
-    &:active, &:visited {
+    &:active,
+    &:visited {
       background: none;
       outline: none;
     }
+  }
+
+  .login-container {
+    width: 100%;
+    height: calc(100% - 50px);
+    padding-left: 40px;
+    padding-right: 40px;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .login-content {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    min-width: 300px;
   }
 
   .login-header-logo {
@@ -38,7 +56,7 @@
 
   .setting-btn {
     position: absolute;
-    right: 25px;
+    right: 0;
     margin-top: -80px;
     height: 40px;
     line-height: 40px;
@@ -243,6 +261,33 @@
       .number {
         font-weight: bold;
         color: $normal-color;
+      }
+    }
+  }
+
+  @media (orientation: landscape) {
+    .meeting {
+      .horizontal-screen-mask {
+        display: block;
+        .icon-rotate {
+          width: 80px;
+          height: 68px;
+          margin-bottom: 16px;
+        }
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $container-bg-color;
+        color: $white-color;
+        font-size: 12px;
+        flex-direction: column;
+        z-index: 99;
       }
     }
   }

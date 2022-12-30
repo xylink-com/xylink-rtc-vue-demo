@@ -17,9 +17,15 @@
       />
 
       <div class="meeting" v-if="callMeeting && !callLoading">
-        <MeetingHeader :conferenceInfo="conferenceInfo" @switchDebug="switchDebug" @stop="stop" />
+        <MeetingHeader
+          :className="toolVisible ? 'xy__show' : 'xy__hide'"
+          :conferenceInfo="conferenceInfo"
+          @switchDebug="switchDebug"
+          @stop="stop"
+        />
 
         <PromptInfo
+          :toolVisible="toolVisible"
           :forceLayoutId="forceLayoutId"
           :chairman="chairman.hasChairman"
           :content="content"
@@ -28,17 +34,17 @@
           @forceFullScreen="forceFullScreen"
         />
 
-        <div class="meeting-content" id="meeting">
+        <div class="meeting-content" id="meeting" @click.stop="handleToolVisible">
           <div v-if="pageStatus.previous && isPc" class="previous-box">
-            <div class="previous-button" @click="switchPage('previous')">
+            <div class="previous-button" @click.stop="switchPage('previous')">
               <svg-icon icon="previous" />
             </div>
-            <div v-if="pageInfo.currentPage > 1" class="home-button" @click="switchPage('home')">
+            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">
               回首页
             </div>
           </div>
           <div v-if="pageStatus.next && isPc" class="next-box">
-            <div class="next-button" @click="switchPage('next')">
+            <div class="next-button" @click.stop="switchPage('next')">
               <svg-icon icon="next" />
               <div v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0" class="page-number">
                 {{ pageInfo.currentPage }} /
@@ -46,7 +52,6 @@
               </div>
             </div>
           </div>
-
           <div class="meeting-layout" :style="layoutStyle">
             <Video
               v-for="item in layout"
@@ -59,7 +64,6 @@
               @forceFullScreen="forceFullScreen"
             ></Video>
           </div>
-
           <div class="audio-list">
             <Audio
               v-for="item in audioList"
@@ -70,12 +74,15 @@
             />
           </div>
           <Barrage v-if="!onhold && subTitle.content && subTitle.action === 'push'" :subTitle="subTitle" />
-
           <InOutReminder v-if="!onhold" :reminders="reminders" />
+          <div v-if="!isPc" class="horizontal-screen-mask">
+            <svg-icon icon="rotate" class="icon-rotate"></svg-icon>
+            目前不支持横屏，请旋转至竖屏使用
+          </div>
         </div>
-        <div class="meeting-footer">
+        <div :class="toolVisible ? 'meeting-footer xy__show' : 'meeting-footer xy__hide'">
           <div class="middle">
-            <div class="button setting" @click="onToggleSetting">
+            <div class="button setting" @click.stop="onToggleSetting">
               <svg-icon icon="setting" />
               <div class="title">设置</div>
             </div>
@@ -175,10 +182,11 @@ import { TEMPLATE } from '@/utils/template';
 import { message } from '@/utils/index';
 import { getLayoutIndexByRotateInfo, getScreenInfo, calculateBaseLayoutList, getOrderLayoutList } from '@/utils/layout';
 import { isPc } from '@/utils/browser';
+import { WindowResize } from '@/utils/resize';
 
 const user = store.get('xy-user') || DEFAULT_LOCAL_USER;
 
-const elementId = 'meeting';
+const elementId = 'container';
 
 let rotationInfoRef = [];
 let nextLayoutListRef = [];
@@ -274,8 +282,8 @@ export default {
       onhold: false,
       reminders: [],
       pageInfo: {
-        pageSize: 5,
-        currentPage: 1,
+        pageSize: 7,
+        currentPage: 0,
         totalPage: 0,
       },
       confChangeInfo: {},
@@ -289,6 +297,7 @@ export default {
         hasChairman: false, // 是否有设置主会场(预设主会场)
       },
       isPc, // 是否是PC端
+      toolVisible: true, // 操作条是否显示
     };
   },
   beforeMount() {
@@ -300,6 +309,9 @@ export default {
     this.stop();
   },
   methods: {
+    handleToolVisible() {
+      this.toolVisible = !this.toolVisible;
+    },
     setUserInfo(values) {
       this.user = values;
 
@@ -429,11 +441,20 @@ export default {
           });
 
           this.client.publish(this.stream, { isSharePeople: true });
+
+          WindowResize.init(elementId, this.onResize);
         }
       } catch (err) {
         console.log('入会失败: ', err);
 
         this.disconnected(err.msg || '呼叫异常，请稍后重试');
+      }
+    },
+
+    onResize() {
+      // CUSTOM 模式
+      if (this.setting.layoutMode === 'CUSTOM') {
+        this.createCustomLayout();
       }
     },
     // 挂断会议
@@ -445,6 +466,8 @@ export default {
 
     // 结束会议操作
     stop() {
+      WindowResize.destroy();
+
       // 重置audio、video状态
       this.audio = this.user.muteAudio ? 'muteAudio' : 'unmuteAudio';
       this.video = this.user.muteVideo ? 'muteVideo' : 'unmuteVideo';
@@ -502,6 +525,8 @@ export default {
 
         // CUSTOM 模式
         if (this.setting.layoutMode === 'CUSTOM') {
+          this.content = this.rosters.find((item) => item.endpointId === this.confChangeInfo.contentUri);
+
           const cacheCustomPageInfo = this.calcPageInfo();
 
           this.customRequestLayout(cacheCustomPageInfo);
@@ -518,44 +543,7 @@ export default {
       // 通过 requestLayout 请求视频流之后，会通过此回调返回所有的参会者列表数据
       // 通过处理处理此数据，展示画面
       client.on('custom-layout', (e) => {
-        // 如果forceFullScreen 的情况下，layout返回空，则说明当前终端已不在会，则需重新请流
-        if (this.forceLayoutId) {
-          const item = e.find((item) => item.roster.id === this.forceLayoutId);
-
-          // 当前layout为空，则说明当前终端已不在会，则需重新请流
-          // 全屏对象是content, 但是远端已取消content或者取消指定广播该content
-          if (!item || (item.roster.mediagroupid === 1 && !this.confChangeInfo.contentUri)) {
-            this.forceLayoutId = '';
-
-            this.customRequestLayout();
-            return;
-          }
-        }
-        // 此处渲染没有排序处理，需要自行将回调数据排序并展示
-        // 此示例程序通过配置一个一组 TEMPLATE 模版数据，来计算layout container容器大小和layout item position/size/rotate 信息
-        // 如果不想通过此方式实现，第三方获取到customLayoutList数据后，自行处理数据即可
-        e = getOrderLayoutList(e);
-
-        this.content = e.find((item) => (item.endpointId = this.confChangeInfo.contentUri))?.roster || null;
-
-        const { rate, temp } = TEMPLATE(isPc);
-        const nextTemplateRate = rate[e.length] || 0.5625;
-        const positionInfo = temp[e.length];
-
-        const { rateWidth, rateHeight } = getScreenInfo(elementId, nextTemplateRate);
-
-        // 设置layout container容器的大小
-        this.screenInfo = { rateWidth, rateHeight };
-
-        // 计算初始layoutList数据
-        // 包含计算每个参会成员的大小、位置
-        // 如果不需要做上述的getOrderLayoutList的排序操作，那么直接在calculateBaseLayoutList中的第一个参数配置e即可
-        nextLayoutListRef = calculateBaseLayoutList(e, rateWidth, rateHeight, positionInfo);
-
-        // 计算屏幕旋转信息
-        nextLayoutListRef = this.calculateRotate();
-
-        this.layout = nextLayoutListRef;
+        this.createCustomLayout(e);
       });
 
       // 动态计算的显示容器信息
@@ -846,10 +834,11 @@ export default {
       }
 
       const { chairManUrl, contentUri, participantCount } = this.confChangeInfo;
+      const { pageSize, currentPage } = cacheCustomPageInfo;
       let reqList = [];
       let extReqList = [];
-      let realLen = participantCount;
-      const { pageSize, currentPage } = cacheCustomPageInfo;
+      const realContentLen = currentPage === 0 && contentUri ? 1 : 0;
+      let realLen = participantCount + realContentLen;
 
       if (realLen > pageSize) {
         if (realLen < currentPage * pageSize) {
@@ -859,12 +848,13 @@ export default {
         }
       }
 
-      if (currentPage === 1) {
-        realLen -= 1; // 减去Local，剩下为实际请流人数
+      if (currentPage === 0) {
+        // 只有第一页显示local, 减去Local，剩下为实际请流人数
+        realLen -= 1;
 
         // 只在首页显示content和主会场
         if (chairManUrl) {
-          extReqList.push({
+          reqList.push({
             calluri: chairManUrl,
             mediagroupid: 0,
             resolution: 3,
@@ -875,7 +865,7 @@ export default {
         }
 
         if (contentUri) {
-          extReqList.push({
+          reqList.push({
             calluri: contentUri,
             mediagroupid: 1,
             resolution: 4,
@@ -899,7 +889,50 @@ export default {
         uiShowLocalWhenPageMode: false,
       });
     },
-    // 计算 layout 成员渲染
+    // CUSTOM布局
+    createCustomLayout(e = this.layout) {
+      // 如果forceFullScreen 的情况下，layout返回空，则说明当前终端已不在会，则需重新请流
+      if (this.forceLayoutId) {
+        const forceLayoutList = e.filter((item) => item.roster.id === this.forceLayoutId);
+
+        const item = forceLayoutList[0];
+
+        // 当前layout为空，则说明当前终端已不在会，则需重新请流
+        // 全屏对象是content, 但是远端已取消content或者取消指定广播该content
+        if (!item || (item.roster.mediagroupid === 1 && !this.confChangeInfo.contentUri)) {
+          this.forceLayoutId = '';
+
+          this.customRequestLayout();
+          return;
+        }
+
+        e = forceLayoutList;
+      }
+      // 此处渲染没有排序处理，需要自行将回调数据排序并展示
+      // 此示例程序通过配置一个一组 TEMPLATE 模版数据，来计算layout container容器大小和layout item position/size/rotate 信息
+      // 如果不想通过此方式实现，第三方获取到customLayoutList数据后，自行处理数据即可
+      e = getOrderLayoutList(e);
+
+      const { rate, temp } = TEMPLATE(isPc);
+      const nextTemplateRate = rate[e.length] || 0.5625;
+      const positionInfo = temp[e.length];
+
+      const { rateWidth, rateHeight } = getScreenInfo(elementId, nextTemplateRate);
+
+      // 设置layout container容器的大小
+      this.screenInfo = { rateWidth, rateHeight };
+
+      // 计算初始layoutList数据
+      // 包含计算每个参会成员的大小、位置
+      // 如果不需要做上述的getOrderLayoutList的排序操作，那么直接在calculateBaseLayoutList中的第一个参数配置e即可
+      nextLayoutListRef = calculateBaseLayoutList(e, rateWidth, rateHeight, positionInfo);
+
+      // 计算屏幕旋转信息
+      nextLayoutListRef = this.calculateRotate();
+
+      this.layout = nextLayoutListRef;
+    },
+    // CUSTOM布局 计算 layout 成员渲染
     calculateRotate() {
       const rotationInfo = rotationInfoRef;
       const cacheNextLayoutList = cloneDeep(nextLayoutListRef);
@@ -923,7 +956,6 @@ export default {
 
       return cacheNextLayoutList;
     },
-
     // 摄像头操作
     async videoOperate() {
       try {

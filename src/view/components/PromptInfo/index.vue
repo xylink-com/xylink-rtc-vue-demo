@@ -1,5 +1,5 @@
 <template>
-  <div class="meeting-prompt">
+  <div :class="['meeting-prompt', toolVisible ? '' : 'meeting-prompt-top']">
     <div v-if="forceLayoutId" class="meeting-prompt-box">
       主屏已被锁定
       <span class="lock-btn" @click="toggleForceFullScreen">
@@ -23,23 +23,17 @@
 
 <script>
 export default {
-  props: [
-    "forceLayoutId",
-    "localHide",
-    "isLocalShareContent",
-    "content",
-    "chairman",
-  ],
+  props: ['forceLayoutId', 'localHide', 'isLocalShareContent', 'content', 'chairman', 'toolVisible'],
   data() {
     return {};
   },
   methods: {
     toggleForceFullScreen() {
-      this.$emit("forceFullScreen");
+      this.$emit('forceFullScreen');
     },
   },
 };
 </script>
 <style lang="scss" scoped>
-@import "./index.scss";
+@import './index.scss';
 </style>

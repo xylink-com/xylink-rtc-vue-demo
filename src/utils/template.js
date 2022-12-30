@@ -362,8 +362,8 @@ export const TEMPLATE = (isPc = true) => {
       7: MOBILE_GALLERY_TEMPLATE['7-1'],
     },
     rate: {
-      0: 1.7778,
-      1: 1.7778,
+      0: 1,
+      1: 1,
       2: 1.125,
       3: 0.8437,
       4: 1.125,
