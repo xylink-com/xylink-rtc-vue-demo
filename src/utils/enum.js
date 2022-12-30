@@ -1,29 +1,30 @@
 /**
  * enum tools
  */
-import confernece from "@/assets/img/type/confernece.png";
-import h323 from "@/assets/img/type/h323.png";
-import nemo from "@/assets/img/type/nemo.png";
-import tvbox from "@/assets/img/type/tvbox.png";
-import noicon from "@/assets/img/type/noicon.png";
-import bruce from "@/assets/img/type/bruce.png";
-import { THIRD } from "./config";
+import { isPc } from '@/utils/browser';
 
-export const DEFAULT_LOCAL_USER = {
-  phone: "",
-  password: "",
-  meeting: "",
-  meetingPassword: "",
-  meetingName: "",
-  muteVideo: false,
-  muteAudio: false,
-  extUserId: "",
-};
+import confernece from '@/assets/img/type/confernece.png';
+import h323 from '@/assets/img/type/h323.png';
+import nemo from '@/assets/img/type/nemo.png';
+import tvbox from '@/assets/img/type/tvbox.png';
+import noicon from '@/assets/img/type/noicon.png';
+import bruce from '@/assets/img/type/bruce.png';
 
 export const DEFAULT_SETTING = {
   localHide: false,
-  layoutMode: "AUTO",
-  isThird: THIRD,
+  layoutMode: isPc ? 'AUTO' : 'CUSTOM',
+  isThird: true,
+};
+
+export const DEFAULT_LOCAL_USER = {
+  phone: '',
+  password: '',
+  meeting: '',
+  meetingPassword: '',
+  meetingName: '',
+  muteVideo: false,
+  muteAudio: false,
+  extUserId: '',
 };
 
 export const DEFAULT_CALL_INFO = {
@@ -31,12 +32,12 @@ export const DEFAULT_CALL_INFO = {
   displayName: '',
   numberType: 'CONFERENCE',
   number: '',
-  callNumber: ''
+  callNumber: '',
 };
 
 export const NEXT_DEVICE = {
-  deviceId: "",
-  label: "",
+  deviceId: '',
+  label: '',
 };
 
 export const DEFAULT_DEVICE = {
@@ -53,8 +54,8 @@ export const DEFAULT_DEVICE = {
 };
 
 export const DEVICE_TYPE_MAP = {
-  webrtc: confernece,
-  soft: confernece,
+  webrtc: noicon,
+  soft: noicon,
   hard: nemo,
   nemono: nemo,
   virtualnemo: nemo,
@@ -64,7 +65,7 @@ export const DEVICE_TYPE_MAP = {
   bruce,
   desk: noicon,
   confernece,
-  default: confernece,
+  default: noicon,
 };
 
 export const MAX_PARTICIPANT_COUNT = 500;

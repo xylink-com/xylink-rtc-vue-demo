@@ -3,7 +3,7 @@ $normal-color: rgba(57, 57, 70, 1);
 $text-color: rgba(57, 57, 70, 0.9);
 $lighter-color: rgba(57, 57, 70, 0.6);
 $primary-color: #3876ff;
-$bg-color: #fff;
+$white-color: #fff;
 
 .member {
   display: flex;
@@ -193,6 +193,6 @@ $bg-color: #fff;
     align-items: center;
     justify-content: center;
     padding: 0 16px;
-    background: $bg-color;
+    background: $white-color;
   }
 }

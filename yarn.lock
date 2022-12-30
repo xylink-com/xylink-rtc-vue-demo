@@ -1557,16 +1557,15 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@2.1.2":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.1.2.tgz#d908c7d79c7b16efb477bcc4bca5f0ba31e9370a"
-  integrity sha512-SGYJQtiqLS78MkPTQRMT8xWIi4FjEK2tkywFCh/sUEx2W/I05CSAgo3aV2bLpdkWkqi0tXQEbZPJcXKhXuUQVw==
+"@xylink/xy-rtc-sdk@2.0.8":
+  version "2.0.8"
+  resolved "https://fe-private-npm.xylink.com/@xylink%2fxy-rtc-sdk/-/xy-rtc-sdk-2.0.8.tgz#3e566142823d72a9c6215799cc5625edfa06c408"
+  integrity sha512-zKgOikti2LyHPzg1849Hb6L5VAQ0QfJ87+U+QdtJ+S6R3iL8UoEoSp5y0lcVEdtG+2HQUg1Sfb605sXcK92IIw==
   dependencies:
     crypto-browserify "^3.12.0"
     crypto-js "^4.1.1"
     dexie "^2.0.4"
     dexie-export-import "^1.0.0-rc.1"
-    encryptlong "^3.1.4"
     js-base64 "^3.6.1"
     qs "^6.9.4"
     uuid "^7.0.2"
@@ -1593,6 +1592,16 @@ acorn-walk@^7.1.1:
   version "7.2.0"
   resolved "https://registry.npmjs.org/acorn-walk/-/acorn-walk-7.2.0.tgz#0de889a601203909b0fbe07b8938dc21d2e967bc"
   integrity sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==
+
+acorn@^3.3.0:
+  version "3.3.0"
+  resolved "https://fe-private-npm.xylink.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
+  integrity sha1-ReN/s56No/JbruP/U2niu18iAXo=
+
+acorn@^4.0.1:
+  version "4.0.13"
+  resolved "https://fe-private-npm.xylink.com/acorn/-/acorn-4.0.13.tgz#105495ae5361d697bd195c825192e1ad7f253787"
+  integrity sha1-EFSVrlNh1pe9GVyCUZLhrX8lN4c=
 
 acorn@^6.4.1:
   version "6.4.2"
@@ -2112,6 +2121,13 @@ brorand@^1.0.1, brorand@^1.1.0:
   resolved "https://registry.npmjs.org/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
   integrity sha512-cKV8tMCEpQs4hK/ik71d6LrPOnpkpGBR0wzxqr68g2m/LB2GxVYQroAjMJZRVM1Y4BCjCKc3vAamxSzOY2RP+w==
 
+browser-resolve@^1.11.0:
+  version "1.11.3"
+  resolved "https://fe-private-npm.xylink.com/browser-resolve/-/browser-resolve-1.11.3.tgz#9b7cbb3d0f510e4cb86bdbd796124d28b5890af6"
+  integrity sha512-exDi1BYWB/6raKHmDTCicQfTkqwN5fioMFV4j8BsfMU4R2DK/QfZfK7kOVkmWCNANf0snkBzqGqAJBao9gZMdQ==
+  dependencies:
+    resolve "1.1.7"
+
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.2.0"
   resolved "https://registry.npmjs.org/browserify-aes/-/browserify-aes-1.2.0.tgz#326734642f403dabc3003209853bb70ad428ef48"
@@ -2212,6 +2228,11 @@ buffer@^4.3.0:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
     isarray "^1.0.0"
+
+builtin-modules@^1.1.0:
+  version "1.1.1"
+  resolved "https://fe-private-npm.xylink.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
+  integrity sha1-Jw8HbFpywC9bZaR9+Uxf46J4iS8=
 
 builtin-status-codes@^3.0.0:
   version "3.0.0"
@@ -2517,6 +2538,15 @@ cli-width@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/cli-width/-/cli-width-3.0.0.tgz#a2f48437a2caa9a22436e794bf071ec9e61cedf6"
   integrity sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==
+
+clipboard@^2.0.11:
+  version "2.0.11"
+  resolved "https://fe-private-npm.xylink.com/clipboard/-/clipboard-2.0.11.tgz#62180360b97dd668b6b3a84ec226975762a70be5"
+  integrity sha512-C+0bbOqkezLIsmWSvlsXS0Q0bmkugu7jcfMIACB+RDEntIzQIkdr148we28AfSloQLRdZlYL/QYyrq05j/3Faw==
+  dependencies:
+    good-listener "^1.2.2"
+    select "^1.1.2"
+    tiny-emitter "^2.0.0"
 
 clipboardy@^2.3.0:
   version "2.3.0"
@@ -2910,8 +2940,8 @@ crypto-browserify@^3.11.0, crypto-browserify@^3.12.0:
 
 crypto-js@^4.1.1:
   version "4.1.1"
-  resolved "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
-  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
+  resolved "https://fe-private-npm.xylink.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  integrity sha1-nkhbzwNSEEG9hYRHhrg/t2GXNs8=
 
 css-color-names@0.0.4, css-color-names@^0.0.4:
   version "0.0.4"
@@ -3229,6 +3259,11 @@ delayed-stream@~1.0.0:
   resolved "https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
+delegate@^3.1.2:
+  version "3.2.0"
+  resolved "https://fe-private-npm.xylink.com/delegate/-/delegate-3.2.0.tgz#b66b71c3158522e8ab5744f720d8ca0c2af59166"
+  integrity sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw==
+
 delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
@@ -3259,13 +3294,13 @@ detect-node@^2.0.4:
 
 dexie-export-import@^1.0.0-rc.1:
   version "1.0.3"
-  resolved "https://registry.npmjs.org/dexie-export-import/-/dexie-export-import-1.0.3.tgz#e93926a0a3939c68f5e2b80b48517ea4c6d88fde"
-  integrity sha512-oun27bUUEaeOfSZ8Cv3Nvj5s0LeANYBYQ7ROpF/3Zg1X/IALUnrX0hk5ZUMlYC3s99kFHimXX57ac5AlOdMzWw==
+  resolved "https://fe-private-npm.xylink.com/dexie-export-import/-/dexie-export-import-1.0.3.tgz#e93926a0a3939c68f5e2b80b48517ea4c6d88fde"
+  integrity sha1-6TkmoKOTnGj14rgLSFF+pMbYj94=
 
 dexie@^2.0.4:
   version "2.0.4"
-  resolved "https://registry.npmjs.org/dexie/-/dexie-2.0.4.tgz#6027a5e05879424e8f9979d8c14e7420f27e3a11"
-  integrity sha512-aQ/s1U2wHxwBKRrt2Z/mwFNHMQWhESerFsMYzE+5P5OsIe5o1kgpFMWkzKTtkvkyyEni6mWr/T4HUJuY9xIHLA==
+  resolved "https://fe-private-npm.xylink.com/dexie/-/dexie-2.0.4.tgz#6027a5e05879424e8f9979d8c14e7420f27e3a11"
+  integrity sha1-YCel4Fh5Qk6PmXnYwU50IPJ+OhE=
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -3495,11 +3530,6 @@ encodeurl@~1.0.2:
   resolved "https://registry.npmjs.org/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=
 
-encryptlong@^3.1.4:
-  version "3.1.4"
-  resolved "https://registry.npmjs.org/encryptlong/-/encryptlong-3.1.4.tgz#ef5543d8f1db91e7d05ee9122d5872e453956996"
-  integrity sha512-nx+om7MXaSBSBPBNKKPrOWMot/C0L0Ru8dy9WTyjO5k8Wo+1hsnK0d8uX1UjctkgcgEWhkKhVScniYDjXvnKgw==
-
 end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   version "1.4.4"
   resolved "https://registry.npmjs.org/end-of-stream/-/end-of-stream-1.4.4.tgz#5ae64a5f45057baf3626ec14da0ca5e4b2431eb0"
@@ -3727,6 +3757,21 @@ estraverse@^5.1.0, estraverse@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/estraverse/-/estraverse-5.2.0.tgz#307df42547e6cc7324d3cf03c155d5cdb8c53880"
   integrity sha512-BxbNGGNm0RyRYvUdHpIwv9IWzeM9XClbOxwoATuFdOE7ZE6wHL+HQ5T8hoPM+zHvmKzzsEqhgy0GrQ5X13afiQ==
+
+estree-walker@^0.2.1:
+  version "0.2.1"
+  resolved "https://fe-private-npm.xylink.com/estree-walker/-/estree-walker-0.2.1.tgz#bdafe8095383d8414d5dc2ecf4c9173b6db9412e"
+  integrity sha1-va/oCVOD2EFNXcLs9MkXO225QS4=
+
+estree-walker@^0.3.0:
+  version "0.3.1"
+  resolved "https://fe-private-npm.xylink.com/estree-walker/-/estree-walker-0.3.1.tgz#e6b1a51cf7292524e7237c312e5fe6660c1ce1aa"
+  integrity sha1-5rGlHPcpJSTnI3wxLl/mZgwc4ao=
+
+estree-walker@^0.6.1:
+  version "0.6.1"
+  resolved "https://fe-private-npm.xylink.com/estree-walker/-/estree-walker-0.6.1.tgz#53049143f40c6eb918b23671d1fe3219f3a1b362"
+  integrity sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
 
 esutils@^2.0.2:
   version "2.0.3"
@@ -4363,6 +4408,13 @@ globule@^1.0.0:
     lodash "~4.17.10"
     minimatch "~3.0.2"
 
+good-listener@^1.2.2:
+  version "1.2.2"
+  resolved "https://fe-private-npm.xylink.com/good-listener/-/good-listener-1.2.2.tgz#d53b30cdf9313dffb7dc9a0d477096aa6d145c50"
+  integrity sha1-1TswzfkxPf+33JoNR3CWqm0UXFA=
+  dependencies:
+    delegate "^3.1.2"
+
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.3:
   version "4.2.8"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
@@ -4375,6 +4427,11 @@ gzip-size@^5.0.0:
   dependencies:
     duplexer "^0.1.1"
     pify "^4.0.1"
+
+hammerjs@^2.0.8:
+  version "2.0.8"
+  resolved "https://fe-private-npm.xylink.com/hammerjs/-/hammerjs-2.0.8.tgz#04ef77862cff2bb79d30f7692095930222bf60f1"
+  integrity sha1-BO93hiz/K7edMPdpIJWTAiK/YPE=
 
 handle-thing@^2.0.0:
   version "2.0.1"
@@ -5006,6 +5063,13 @@ is-core-module@^2.2.0:
   dependencies:
     has "^1.0.3"
 
+is-core-module@^2.9.0:
+  version "2.11.0"
+  resolved "https://fe-private-npm.xylink.com/is-core-module/-/is-core-module-2.11.0.tgz#ad4cb3e3863e814523c96f3f58d26cc570ff0144"
+  integrity sha512-RRjxlvLDkD1YJwDbroBHMb+cukurkDWNyHx7D3oNB5x9rb5ogcksMC5wHCadcXoo67gVr/+3GFySh3134zi6rw==
+  dependencies:
+    has "^1.0.3"
+
 is-data-descriptor@^0.1.4:
   version "0.1.4"
   resolved "https://registry.npmjs.org/is-data-descriptor/-/is-data-descriptor-0.1.4.tgz#0b5ee648388e2c860282e793f1856fec3f301b56"
@@ -5265,9 +5329,9 @@ js-base64@^2.1.8, js-base64@^2.1.9:
   integrity sha512-pZe//GGmwJndub7ZghVHz7vjb2LgC1m8B07Au3eYqeqv9emhESByMXxaEgkUkEqJe87oBbSniGYoQNIBklc7IQ==
 
 js-base64@^3.6.1:
-  version "3.7.2"
-  resolved "https://registry.npmjs.org/js-base64/-/js-base64-3.7.2.tgz#816d11d81a8aff241603d19ce5761e13e41d7745"
-  integrity sha512-NnRs6dsyqUXejqk/yv2aiXlAvOs56sLkX6nUdeaNezI5LFFLlsZjOThmwnrcwh5ZZRwZlCMnVAY3CvhIhoVEKQ==
+  version "3.7.3"
+  resolved "https://fe-private-npm.xylink.com/js-base64/-/js-base64-3.7.3.tgz#2e784bb0851636bf1e99ef12e4f3a8a8c9b7639f"
+  integrity sha512-PAr6Xg2jvd7MCR6Ld9Jg3BmTcjYsHEBx1VlwEwULb/qowPf5VD9kEMagj23Gm7JRnSvE/Da/57nChZjnvL8v6A==
 
 js-message@1.0.7:
   version "1.0.7"
@@ -5577,6 +5641,20 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+magic-string@^0.16.0:
+  version "0.16.0"
+  resolved "https://fe-private-npm.xylink.com/magic-string/-/magic-string-0.16.0.tgz#970ebb0da7193301285fb1aa650f39bdd81eb45a"
+  integrity sha1-lw67DacZMwEoX7GqZQ85vdgetFo=
+  dependencies:
+    vlq "^0.2.1"
+
+magic-string@^0.19.0:
+  version "0.19.1"
+  resolved "https://fe-private-npm.xylink.com/magic-string/-/magic-string-0.19.1.tgz#14d768013caf2ec8fdea16a49af82fc377e75201"
+  integrity sha1-FNdoATyvLsj96hakmvgvw3fnUgE=
+  dependencies:
+    vlq "^0.2.1"
+
 make-dir@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/make-dir/-/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"
@@ -5816,6 +5894,13 @@ minimalistic-crypto-utils@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
   integrity sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==
+
+minimatch@^3.0.2:
+  version "3.1.2"
+  resolved "https://fe-private-npm.xylink.com/minimatch/-/minimatch-3.1.2.tgz#19cd194bfd3e428f049a70817c038d89ab4be35b"
+  integrity sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==
+  dependencies:
+    brace-expansion "^1.1.7"
 
 minimatch@^3.0.4, minimatch@~3.0.2:
   version "3.0.4"
@@ -6570,7 +6655,7 @@ path-key@^3.0.0, path-key@^3.1.0:
   resolved "https://registry.npmjs.org/path-key/-/path-key-3.1.1.tgz#581f6ade658cbba65a0d3380de7753295054f375"
   integrity sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==
 
-path-parse@^1.0.6:
+path-parse@^1.0.6, path-parse@^1.0.7:
   version "1.0.7"
   resolved "https://registry.npmjs.org/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
   integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
@@ -7193,7 +7278,7 @@ qs@6.7.0:
 
 qs@^6.9.4:
   version "6.11.0"
-  resolved "https://registry.npmjs.org/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
+  resolved "https://fe-private-npm.xylink.com/qs/-/qs-6.11.0.tgz#fd0d963446f7a65e1367e01abd85429453f0c37a"
   integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==
   dependencies:
     side-channel "^1.0.4"
@@ -7499,6 +7584,20 @@ resolve-url@^0.2.1:
   resolved "https://registry.npmjs.org/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
   integrity sha1-LGN/53yJOv0qZj/iGqkIAGjiBSo=
 
+resolve@1.1.7:
+  version "1.1.7"
+  resolved "https://fe-private-npm.xylink.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
+  integrity sha1-IDEU2CrSxe2ejgQRs5ModeiJ6Xs=
+
+resolve@^1.1.6, resolve@^1.1.7:
+  version "1.22.1"
+  resolved "https://fe-private-npm.xylink.com/resolve/-/resolve-1.22.1.tgz#27cb2ebb53f91abb49470a928bba7558066ac177"
+  integrity sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==
+  dependencies:
+    is-core-module "^2.9.0"
+    path-parse "^1.0.7"
+    supports-preserve-symlinks-flag "^1.0.0"
+
 resolve@^1.10.0, resolve@^1.12.0, resolve@^1.14.2, resolve@^1.20.0:
   version "1.20.0"
   resolved "https://registry.npmjs.org/resolve/-/resolve-1.20.0.tgz#629a013fb3f70755d6f0b7935cc1c2c5378b1975"
@@ -7571,6 +7670,50 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
+
+rollup-plugin-cleanup@^0.1.4:
+  version "0.1.4"
+  resolved "https://fe-private-npm.xylink.com/rollup-plugin-cleanup/-/rollup-plugin-cleanup-0.1.4.tgz#9fed3ab4300988a882d63de3321e410cdafc6331"
+  integrity sha1-n+06tDAJiKiC1j3jMh5BDNr8YzE=
+  dependencies:
+    acorn "^3.3.0"
+    magic-string "^0.16.0"
+    rollup-pluginutils "^1.5.2"
+
+rollup-plugin-commonjs@^7.0.0:
+  version "7.1.0"
+  resolved "https://fe-private-npm.xylink.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-7.1.0.tgz#c3a772c2e4a5fa13507f5c578b66cc13b0cb8a79"
+  integrity sha1-w6dywuSl+hNQf1xXi2bME7DLink=
+  dependencies:
+    acorn "^4.0.1"
+    estree-walker "^0.3.0"
+    magic-string "^0.19.0"
+    resolve "^1.1.7"
+    rollup-pluginutils "^2.0.1"
+
+rollup-plugin-node-resolve@^2.0.0:
+  version "2.1.1"
+  resolved "https://fe-private-npm.xylink.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-2.1.1.tgz#cbb783b0d15b02794d58915350b2f0d902b8ddc8"
+  integrity sha1-y7eDsNFbAnlNWJFTULLw2QK43cg=
+  dependencies:
+    browser-resolve "^1.11.0"
+    builtin-modules "^1.1.0"
+    resolve "^1.1.6"
+
+rollup-pluginutils@^1.5.2:
+  version "1.5.2"
+  resolved "https://fe-private-npm.xylink.com/rollup-pluginutils/-/rollup-pluginutils-1.5.2.tgz#1e156e778f94b7255bfa1b3d0178be8f5c552408"
+  integrity sha1-HhVud4+UtyVb+hs9AXi+j1xVJAg=
+  dependencies:
+    estree-walker "^0.2.1"
+    minimatch "^3.0.2"
+
+rollup-pluginutils@^2.0.1:
+  version "2.8.2"
+  resolved "https://fe-private-npm.xylink.com/rollup-pluginutils/-/rollup-pluginutils-2.8.2.tgz#72f2af0748b592364dbd3389e600e5a9444a351e"
+  integrity sha1-cvKvB0i1kjZNvTOJ5gDlqURKNR4=
+  dependencies:
+    estree-walker "^0.6.1"
 
 run-async@^2.4.0:
   version "2.4.1"
@@ -7685,6 +7828,11 @@ select-hose@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=
+
+select@^1.1.2:
+  version "1.1.2"
+  resolved "https://fe-private-npm.xylink.com/select/-/select-1.1.2.tgz#0e7350acdec80b1108528786ec1d4418d11b396d"
+  integrity sha1-DnNQrN7ICxEIUoeG7B1EGNEbOW0=
 
 selfsigned@^1.10.8:
   version "1.10.11"
@@ -8306,6 +8454,11 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
+supports-preserve-symlinks-flag@^1.0.0:
+  version "1.0.0"
+  resolved "https://fe-private-npm.xylink.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
+  integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
+
 svg-baker-runtime@^1.4.7:
   version "1.4.7"
   resolved "https://registry.npmjs.org/svg-baker-runtime/-/svg-baker-runtime-1.4.7.tgz#f4720637f5b6202eef6378d81f1fead0815f8a4e"
@@ -8485,6 +8638,11 @@ timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
   integrity sha1-QFQRqOfmM5/mTbmiNN4R3DHgK9Q=
+
+tiny-emitter@^2.0.0:
+  version "2.1.0"
+  resolved "https://fe-private-npm.xylink.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
+  integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
 
 tmp@^0.0.33:
   version "0.0.33"
@@ -8858,8 +9016,8 @@ uuid@^3.3.2, uuid@^3.4.0:
 
 uuid@^7.0.2:
   version "7.0.3"
-  resolved "https://registry.npmjs.org/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
-  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
+  resolved "https://fe-private-npm.xylink.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  integrity sha1-xcnyyM8l3Ao3LE3xRBxB9b0MaAs=
 
 v8-compile-cache@^2.0.3:
   version "2.3.0"
@@ -8892,6 +9050,11 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vlq@^0.2.1:
+  version "0.2.3"
+  resolved "https://fe-private-npm.xylink.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
+  integrity sha512-DRibZL6DsNhIgYQ+wNdWDL2SL3bKPlVrRiBqV5yuMm++op8W4kGFtaQfCs4KEJn0wBZcHVHJ3eoywX8983k1ow==
 
 vm-browserify@^1.0.1:
   version "1.1.2"
@@ -8961,6 +9124,16 @@ vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
+
+vue-touch@^2.0.0-beta.4:
+  version "2.0.0-beta.4"
+  resolved "https://fe-private-npm.xylink.com/vue-touch/-/vue-touch-2.0.0-beta.4.tgz#0259a5fbf89fed12d5e5d789fffb99b874ae0501"
+  integrity sha512-UvbKsqf7HHwtXzuEodtzeDEX/lkq6ul1QcdHhl8VUKlDTYne5ey15RjNVTkDvigJaKvtVU0UB0x5NURNyRC37A==
+  dependencies:
+    hammerjs "^2.0.8"
+    rollup-plugin-cleanup "^0.1.4"
+    rollup-plugin-commonjs "^7.0.0"
+    rollup-plugin-node-resolve "^2.0.0"
 
 vue@^2.6.11:
   version "2.6.14"

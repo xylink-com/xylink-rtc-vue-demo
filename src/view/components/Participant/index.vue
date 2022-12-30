@@ -5,41 +5,29 @@
     :visible.sync="visible"
     :before-close="closeParticipant"
     :size="size"
+    :direction="direction"
+    custom-class="xy__drawer-member"
   >
     <div class="member">
       <div class="member-header">
         <span class="member-hide-btn" @click="closeParticipant"></span>
         参会者
+        <span v-if="!isPc">（{{ count }}）</span>
       </div>
 
       <div class="member-navbar">
-        <span :class="navbarClass('all')" @click="onChangeTab('all')">
-          已入会({{ count }})
-        </span>
-        <span
-          v-if="unmuteCount"
-          :class="navbarClass('unmute')"
-          @click="onChangeTab('unmute')"
-        >
+        <span :class="navbarClass('all')" @click="onChangeTab('all')"> 已入会({{ count }}) </span>
+        <span v-if="unmuteCount" :class="navbarClass('unmute')" @click="onChangeTab('unmute')">
           未静音({{ unmuteCount }})
         </span>
       </div>
 
       <div class="member-content">
-        <div
-          class="member-item"
-          v-for="item in computedRosters"
-          :key="item.participantId + item.mediagroupid"
-        >
+        <div class="member-item" v-for="item in computedRosters" :key="item.participantId + item.mediagroupid">
           <div class="info">
             <div class="avatar">
               <img :src="item.avatar" alt="avatar" />
-              <img
-                v-if="item.memberStatusImg"
-                class="avatar__status"
-                :src="item.memberStatusImg"
-                alt=""
-              />
+              <img v-if="item.memberStatusImg" class="avatar__status" :src="item.memberStatusImg" alt="" />
             </div>
             <div class="name" :title="item.displayName">
               <span class="name__info">
@@ -47,10 +35,7 @@
                 <span v-if="item.isContentOnly">(仅桌面共享)</span>
               </span>
               <span
-                v-if="
-                  (content && content.endpointId) === item.endpointId &&
-                    !item.isContentOnly
-                "
+                v-if="(content && content.endpointId) === item.endpointId && !item.isContentOnly"
                 class="name__status"
                 >正在共享...</span
               >
@@ -84,23 +69,22 @@
   </el-drawer>
 </template>
 <script>
-import { DEVICE_TYPE_MAP, PARTICIPANT_PAGE_SIZE } from "@/utils/enum";
-import unmuteActive from "@/assets/img/operate/icon_mic.svg";
-import muteActive from "@/assets/img/operate/icon_mute_mic.svg";
-import muteCamera from "@/assets/img/operate/icon_mute_camera.svg";
-import unmuteCamera from "@/assets/img/operate/icon_camera.svg";
-import speaker from "@/assets/img/operate/icon_speaker.gif";
-import local from "@/assets/img/operate/icon_me.svg";
-import "./index.scss";
+import { DEVICE_TYPE_MAP, PARTICIPANT_PAGE_SIZE } from '@/utils/enum';
+import { isPc } from '@/utils/browser';
+import unmuteActive from '@/assets/img/operate/icon_mic.svg';
+import muteActive from '@/assets/img/operate/icon_mute_mic.svg';
+import muteCamera from '@/assets/img/operate/icon_mute_camera.svg';
+import unmuteCamera from '@/assets/img/operate/icon_camera.svg';
+import speaker from '@/assets/img/operate/icon_speaker.gif';
+import local from '@/assets/img/operate/icon_me.svg';
+import './index.scss';
 
 export default {
-  props: ["rosters", "content", "count", "client"],
+  props: ['rosters', 'content', 'count', 'client'],
   computed: {
     navbarClass() {
       return function(tab) {
-        return `member-navbar-item ${
-          this.tab === tab ? "member-navbar-item-active" : ""
-        }`;
+        return `member-navbar-item ${this.tab === tab ? 'member-navbar-item-active' : ''}`;
       };
     },
     computedRosters() {
@@ -122,10 +106,9 @@ export default {
         const avatar = DEVICE_TYPE_MAP[deviceType] || DEVICE_TYPE_MAP.default;
         const audioImg = audioTxMute ? muteActive : unmuteActive;
         const videoImg = videoTxMute ? muteCamera : unmuteCamera;
-        const isContentOnly =
-          videoTxMute && videoRxMute && audioRxMute && audioTxMute;
+        const isContentOnly = videoTxMute && videoRxMute && audioRxMute && audioTxMute;
 
-        let memberStatusImg = "";
+        let memberStatusImg = '';
 
         if (isContent) {
           return null;
@@ -154,7 +137,7 @@ export default {
     return {
       visible: false,
       selfRoster: null,
-      tab: "all",
+      tab: 'all',
       size: 300,
       unmuteCount: 0,
       defaultPageSize: PARTICIPANT_PAGE_SIZE,
@@ -166,6 +149,8 @@ export default {
       },
       originalRosters: this.rosters,
       newRosters: [],
+      direction: isPc ? 'rtl' : 'btt',
+      isPc,
     };
   },
   beforeMount() {
@@ -178,7 +163,7 @@ export default {
     fetchRosters() {
       let newData = this.originalRosters.concat();
 
-      if (this.tab === "unmute") {
+      if (this.tab === 'unmute') {
         newData = newData.filter((roster) => !roster.audioTxMute);
       }
 
@@ -192,10 +177,7 @@ export default {
       if (newData instanceof Array) {
         totalCount = newData.length;
         const startIndex = Math.max((currentPage - 1) * pageSize, 0);
-        const endIndex =
-          startIndex + pageSize > totalCount
-            ? totalCount
-            : startIndex + pageSize;
+        const endIndex = startIndex + pageSize > totalCount ? totalCount : startIndex + pageSize;
         newData = newData.slice(startIndex, endIndex);
 
         // 当前页没有数据时，返回第一页
@@ -219,11 +201,10 @@ export default {
       this.newRosters = newData;
     },
     setUnmuteCount() {
-      const length = this.originalRosters.filter((item) => !item.audioTxMute)
-        .length;
+      const length = this.originalRosters.filter((item) => !item.audioTxMute).length;
 
       if (length === 0) {
-        this.tab = "all";
+        this.tab = 'all';
       }
 
       this.unmuteCount = length;
@@ -238,7 +219,7 @@ export default {
       this.fetchRosters();
     },
     closeParticipant() {
-      this.$emit("showParticipant", false);
+      this.$emit('showParticipant', false);
     },
   },
   watch: {

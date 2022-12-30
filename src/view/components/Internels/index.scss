@@ -1,6 +1,6 @@
 .debug {
   position: fixed;
-  top: 30px;
+  top: 0px;
   left: 0px;
   width: 100%;
   height: calc(100% - 112px);
@@ -23,8 +23,8 @@
 
     .close-icon {
       position: fixed;
-      right: 50px;
-      top: 50px;
+      right: 20px;
+      top: 20px;
       cursor: pointer;
     }
 

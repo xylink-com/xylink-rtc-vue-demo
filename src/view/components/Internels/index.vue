@@ -51,35 +51,6 @@
       </table>
       <br />
 
-      <h3>音频：</h3>
-      <table class="table">
-        <thead>
-          <tr class="table-title">
-            <th>通道名称</th>
-            <th>Codec</th>
-            <th>码率(kbps)</th>
-            <th>音量</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, key) in audioSender" :key="key">
-            <td>音频发送</td>
-            <td>{{ item.mimeType }}</td>
-            <td>{{ item.bytesSentSecond }}</td>
-            <td>{{ item.audioLevel }}</td>
-          </tr>
-
-          <tr v-for="(item, key) in audioReceiver" :key="key">
-            <td>音频接收</td>
-            <td>{{ item.mimeType }}</td>
-            <td>{{ item.bytesReceivedSecond }}</td>
-            <td>{{ item.audioLevel }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <br />
-
-      <br />
       <h3>与会者：</h3>
       <table class="table">
         <thead>
@@ -110,7 +81,7 @@
             :key="key"
           >
             <td>{{ name }}</td>
-            <td>{{ type }} * {{ isContent ? "Con" : "Peo" }}</td>
+            <td>{{ type }} * {{ isContent ? 'Con' : 'Peo' }}</td>
             <td>{{ frameWidth }}*{{ frameHeight }}</td>
             <td>{{ framesDecodedSecond }}</td>
             <td>{{ framesReceivedSecond }}</td>
@@ -123,25 +94,16 @@
   </div>
 </template>
 <script>
-import { transformTime } from "@/utils/index";
+import { transformTime } from '@/utils/index';
 export default {
-  props: ["senderStatus"],
+  props: ['senderStatus'],
   computed: {
     time() {
       return transformTime(this.timestamp);
     },
   },
   data() {
-    const {
-      mimeType,
-      sender = {},
-      timestamp,
-      receiver = {},
-      bytesReceivedSecond,
-      bytesSentSecond,
-      audioSender = {},
-      audioReceiver = {},
-    } = this.senderStatus;
+    const { mimeType, sender = {}, timestamp, receiver = {}, bytesReceivedSecond, bytesSentSecond } = this.senderStatus;
     return {
       mimeType,
       sender,
@@ -149,26 +111,17 @@ export default {
       receiver,
       bytesReceivedSecond,
       bytesSentSecond,
-      audioSender,
-      audioReceiver,
     };
   },
   methods: {
     switchDebug() {
-      this.$emit("switchDebug");
+      this.$emit('switchDebug');
     },
   },
   watch: {
     senderStatus: {
       handler(newValue) {
-        const {
-          mimeType,
-          sender = {},
-          timestamp,
-          receiver = {},
-          bytesReceivedSecond,
-          bytesSentSecond,
-        } = newValue;
+        const { mimeType, sender = {}, timestamp, receiver = {}, bytesReceivedSecond, bytesSentSecond } = newValue;
         this.mimeType = mimeType;
         this.sender = sender;
         this.timestamp = timestamp;
@@ -181,5 +134,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-@import "./index.scss";
+@import './index.scss';
 </style>

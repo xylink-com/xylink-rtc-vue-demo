@@ -1,27 +1,28 @@
-@import "@/assets/style/var.scss";
+@import '@/assets/style/var.scss';
 
 .meeting {
   width: 100%;
   height: 100%;
+  background-color: $meeting-bg-color;
+  
   &-content {
-    width: 100%;
-    height: 100%;
-    background-color: $meeting-bg-color;
-
     position: fixed;
     top: 0;
     left: 0;
-
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: $meeting-bg-color;
   }
+
   &-layout {
     position: relative;
   }
 
   &-footer {
-    height: 60px;
+    height: $meeting-footer-height;
     color: #e7e7e7;
     background: $toolbar-bg-color;
     border-radius: 3px;
@@ -62,7 +63,7 @@
       color: $text-color;
       padding: 0 12px;
       border-radius: 4px;
-      background: $bg-color;
+      background: $white-color;
       height: 36px;
       display: flex;
       align-items: center;
@@ -77,7 +78,7 @@
         margin-left: 16px;
         width: 16px;
         height: 16px;
-        background: url("~@/assets/img/icon/icon_close.png") no-repeat;
+        background: url('~@/assets/img/icon/icon_close.png') no-repeat;
         background-size: 100%;
       }
     }

@@ -1,40 +1,22 @@
 <template>
   <div class="setting__content-common">
     <div v-if="!isInMeeting">
-      <div class="item">
+      <div v-if="isPc" class="item">
         <div class="key">布局模式</div>
         <div class="value">
-          <el-select
-            popper-class="xy-select"
-            v-model="mode"
-            @change="onChangeLayoutMode"
-          >
-            <el-option
-              v-for="key in Object.keys(layoutModeMap)"
-              :key="key"
-              :label="layoutModeMap[key]"
-              :value="key"
-            >
+          <el-select popper-class="xy-select" v-model="mode" @change="onChangeLayoutMode">
+            <el-option v-for="key in Object.keys(layoutModeMap)" :key="key" :label="layoutModeMap[key]" :value="key">
               {{ layoutModeMap[key] }}
             </el-option>
           </el-select>
         </div>
       </div>
 
-      <div class="item">
+      <div v-if="isPc" class="item">
         <div class="key">登录方式</div>
         <div class="value">
-          <el-select
-            popper-class="xy-select"
-            v-model="loginType"
-            @change="onChangeLoginType"
-          >
-            <el-option
-              v-for="key in Object.keys(loginTypeMap)"
-              :key="key"
-              :label="loginTypeMap[key]"
-              :value="key"
-            >
+          <el-select popper-class="xy-select" v-model="loginType" @change="onChangeLoginType">
+            <el-option v-for="key in Object.keys(loginTypeMap)" :key="key" :label="loginTypeMap[key]" :value="key">
               {{ loginTypeMap[key] }}
             </el-option>
           </el-select>
@@ -42,7 +24,7 @@
       </div>
     </div>
 
-    <div class="item">
+    <div class="item" v-if="isPc">
       <div class="key">隐藏本地画面</div>
       <div class="value">
         <el-switch v-model="isLocalHide" @change="onChangeLocalHide" />
@@ -51,32 +33,35 @@
   </div>
 </template>
 <script>
+import { isPc } from '@/utils/browser';
+
 export default {
-  props: ["isThird", "layoutMode", "localHide", "isInMeeting"],
+  props: ['isThird', 'layoutMode', 'localHide', 'isInMeeting'],
   data() {
     return {
       layoutModeMap: {
-        AUTO: "自动布局",
-        CUSTOM: "自定义布局",
+        AUTO: '自动布局',
+        CUSTOM: '自定义布局',
       },
       loginTypeMap: {
-        XYLINK: "小鱼账号登录",
-        THIRD: "第三方账号登录",
+        XYLINK: '小鱼账号登录',
+        THIRD: '第三方账号登录',
       },
-      loginType: this.isThird ? "THIRD" : "XYLINK",
+      loginType: this.isThird ? 'THIRD' : 'XYLINK',
       isLocalHide: this.localHide,
-      mode: this.layoutMode
+      mode: this.layoutMode,
+      isPc,
     };
   },
   methods: {
     onChangeLayoutMode(value) {
-      this.$emit("setting", { layoutMode: value });
+      this.$emit('setting', { layoutMode: value });
     },
     onChangeLoginType(value) {
-      this.$emit("setting", { isThird: value === 'THIRD' });
+      this.$emit('setting', { isThird: value === 'THIRD' });
     },
     onChangeLocalHide(value) {
-      this.$emit("setting", { localHide: value });
+      this.$emit('setting', { localHide: value });
     },
   },
   watch: {},

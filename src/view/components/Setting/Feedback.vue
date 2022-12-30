@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="feedback__footer">
-      <el-button class="download" type="text" @click="download"
+      <el-button class="download" type="text" @click="download" :loading="downloadLoading"
         >下载日志</el-button
       >
       <el-button
@@ -53,11 +53,14 @@ export default {
       content: "",
       contact: "",
       uploadLoading: false,
+      downloadLoading: false
     };
   },
   methods: {
     async download() {
+      this.downloadLoading = true;
       await xyRTC.logger.downloadLog();
+      this.downloadLoading = false;
     },
     async upload() {
       this.uploadLoading = false;

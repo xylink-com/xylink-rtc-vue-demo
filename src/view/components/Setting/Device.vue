@@ -18,11 +18,7 @@
     </div>
 
     <div v-if="iauth === 'pending'" class="fixed">
-      <div
-        class="request__loading"
-        v-loading="true"
-        element-loading-text="设备检测中..."
-      />
+      <div class="request__loading" v-loading="true" element-loading-text="设备检测中..." />
     </div>
 
     <div v-if="iauth === 'error'" class="fixed">
@@ -33,29 +29,15 @@
       </div>
     </div>
 
-    <div
-      :class="[
-        'setting__content-device-main',
-        iauth === 'granted' ? 'visible' : 'hidden',
-      ]"
-    >
+    <div :class="['setting__content-device-main', iauth === 'granted' ? 'visible' : 'hidden']">
       <div>
         <div class="item">
           <div class="key">
             摄像头
           </div>
           <div class="value">
-            <el-select
-              popper-class="xy-select"
-              v-model="select.videoInValue"
-              @change="changeVideoIn"
-            >
-              <el-option
-                v-for="item in videoInList"
-                :key="item.deviceId"
-                :label="item.label"
-                :value="item.deviceId"
-              >
+            <el-select popper-class="xy-select" v-model="select.videoInValue" @change="changeVideoIn">
+              <el-option v-for="item in videoInList" :key="item.deviceId" :label="item.label" :value="item.deviceId">
               </el-option>
             </el-select>
           </div>
@@ -64,52 +46,29 @@
         <div class="item">
           <div class="key"></div>
           <div class="value video-value">
-            <div
-              :class="[
-                videoStatusVisible ? 'visible' : 'hidden',
-                'preview-video-bg',
-              ]"
-            >
-              设备不可用
+            <div :class="[videoStatusVisible ? 'visible' : 'hidden', 'preview-video-bg']">
+              预览不可用
             </div>
-            <video
-              class="preview-video"
-              autoPlay
-              :muted="true"
-              ref="videoRef"
-              :controls="false"
-              playsInline
-            ></video>
+            <video class="preview-video" autoPlay :muted="true" ref="videoRef" :controls="false" playsInline></video>
           </div>
         </div>
 
         <div class="item">
           <div class="key">麦克风</div>
           <div class="value">
-            <el-select
-              popper-class="xy-select"
-              v-model="select.audioInputValue"
-              @change="changeAudioInput"
-            >
-              <el-option
-                v-for="item in audioInputList"
-                :key="item.deviceId"
-                :label="item.label"
-                :value="item.deviceId"
-              >
+            <el-select popper-class="xy-select" v-model="select.audioInputValue" @change="changeAudioInput">
+              <el-option v-for="item in audioInputList" :key="item.deviceId" :label="item.label" :value="item.deviceId">
               </el-option>
             </el-select>
           </div>
         </div>
 
         <div class="item">
-          <div class="key"></div>
+          <div class="key">音量</div>
           <div class="value">
+            <svg-icon icon="icon_device_volume" class="volume"/>
             <div class="level-process">
-              <div
-                class="level-value"
-                :style="{ transform: `translateX(${audioLevel}%)` }"
-              ></div>
+              <div class="level-value" :style="{ transform: `translateX(${audioLevel}%)` }"></div>
             </div>
           </div>
         </div>
@@ -117,11 +76,7 @@
         <div class="item">
           <div class="key">扬声器</div>
           <div class="value">
-            <el-select
-              popper-class="xy-select"
-              v-model="select.audioOutputValue"
-              @change="changeAudioOutput"
-            >
+            <el-select popper-class="xy-select" v-model="select.audioOutputValue" @change="changeAudioOutput">
               <el-option
                 v-for="item in audioOutputList"
                 :key="item.deviceId"
@@ -136,12 +91,8 @@
         <div class="item">
           <div class="key"></div>
           <div class="value">
-            <span class="play-audio" @click="play">{{
-              testAudioStatus ? "停止扬声器" : "测试扬声器"
-            }}</span>
-            <span v-if="testAudioStatus" class="play-audio-status"
-              >正在播放...</span
-            >
+            <span class="play-audio" @click="play">{{ testAudioStatus ? '停止扬声器' : '测试扬声器' }}</span>
+            <span v-if="testAudioStatus" class="play-audio-status">正在播放声音...</span>
             <audio
               class="preview-audio"
               ref="audioRef"
@@ -155,11 +106,7 @@
       <div class="item">
         <div class="key">详细检测</div>
         <div class="value">
-          <a
-            href="https://cdn.xylink.com/webrtc/web/index.html#/detect"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
+          <a href="https://cdn.xylink.com/webrtc/web/index.html#/detect" rel="noopener noreferrer" target="_blank">
             开始检测
           </a>
         </div>
@@ -174,11 +121,11 @@
   </div>
 </template>
 <script>
-import xyRTC, { DeviceManager } from "@xylink/xy-rtc-sdk";
-import Guide from "../Guide";
+import xyRTC, { DeviceManager } from '@xylink/xy-rtc-sdk';
+import Guide from '../Guide';
 
 export default {
-  props: ["setting", "current"],
+  props: ['setting', 'current'],
   components: {
     Guide,
   },
@@ -186,24 +133,19 @@ export default {
     isShowStreamFailTips() {
       const { camera, microphone } = this.permission || {};
 
-      return (
-        camera === "denied" ||
-        camera === "failed" ||
-        microphone === "denied" ||
-        microphone === "failed"
-      );
+      return camera === 'denied' || camera === 'failed' || microphone === 'denied' || microphone === 'failed';
     },
   },
   data() {
     const { selectedDevice } = this.setting || {};
     const defaultSelect = {
-      audioInputValue: selectedDevice?.audioInput?.deviceId || "default",
-      audioOutputValue: selectedDevice?.audioOutput?.deviceId || "default",
-      videoInValue: selectedDevice?.videoInput?.deviceId || "",
+      audioInputValue: selectedDevice?.audioInput?.deviceId || 'default',
+      audioOutputValue: selectedDevice?.audioOutput?.deviceId || 'default',
+      videoInValue: selectedDevice?.videoInput?.deviceId || '',
     };
     return {
       settingVisible: this.visible,
-      iauth: "pending",
+      iauth: 'pending',
       stream: null,
       previewVideoStream: null,
       previewAudioStream: null,
@@ -216,7 +158,7 @@ export default {
       testAudioStatus: false,
       videoStatusVisible: false,
       audioLevelTimmer: null,
-      permission: { camera: "", microphone: "" },
+      permission: { camera: '', microphone: '' },
       guideVisible: false,
     };
   },
@@ -251,13 +193,13 @@ export default {
     },
 
     async getVideoStream(deviceId = this.selectedDevice?.videoInput?.deviceId) {
-      let cameraPermission = "failed";
+      let cameraPermission = 'failed';
 
       try {
         let params = {};
 
         if (deviceId) {
-          params["video"] = {
+          params['video'] = {
             deviceId: { exact: deviceId },
           };
         }
@@ -266,40 +208,36 @@ export default {
           track.stop();
         });
 
-        this.previewVideoStream = await this.stream.getPreviewStream(
-          true,
-          false,
-          params
-        );
+        this.previewVideoStream = await this.stream.getPreviewStream(true, false, params);
 
         if (this.previewVideoStream) {
           const videoTrack = this.previewVideoStream.getVideoTracks()[0];
 
-          const videoInput = videoTrack?.getSettings()["deviceId"] || "";
+          const videoInput = videoTrack?.getSettings()['deviceId'] || '';
 
           this.select = {
             ...this.select,
             videoInValue: videoInput,
           };
 
-          const videoRefEle = this.$refs["videoRef"];
+          const videoRefEle = this.$refs['videoRef'];
 
           if (videoRefEle && videoTrack) {
             videoRefEle.srcObject = this.previewVideoStream;
           }
         }
 
-        cameraPermission = "granted";
+        cameraPermission = 'granted';
       } catch (err) {
         this.videoStatusVisible = true;
 
-        console.log("video err:", err);
+        console.log('video err:', err);
 
-        if (err?.code === "XYSDK:950404") {
-          cameraPermission = "denied";
+        if (err?.code === 'XYSDK:950404') {
+          cameraPermission = 'denied';
         }
 
-        console.log("get video stream error:", err);
+        console.log('get video stream error:', err);
       }
 
       this.permission = {
@@ -309,11 +247,11 @@ export default {
     },
 
     async getAudioStream(deviceId = this.selectedDevice?.audioInput?.deviceId) {
-      let microphonePermission = "failed";
+      let microphonePermission = 'failed';
       let params = {};
 
       if (deviceId) {
-        params["audio"] = {
+        params['audio'] = {
           deviceId: { exact: deviceId },
         };
       }
@@ -323,15 +261,11 @@ export default {
       });
 
       try {
-        this.previewAudioStream = await this.stream.getPreviewStream(
-          false,
-          true,
-          params
-        );
+        this.previewAudioStream = await this.stream.getPreviewStream(false, true, params);
 
         if (this.previewAudioStream) {
           const audioTrack = this.previewAudioStream.getAudioTracks()[0];
-          const audioInput = audioTrack?.getSettings()["deviceId"] || "default";
+          const audioInput = audioTrack?.getSettings()['deviceId'] || 'default';
 
           this.select = {
             ...this.select,
@@ -353,12 +287,12 @@ export default {
             }
           }, 100);
         }
-        microphonePermission = "granted";
+        microphonePermission = 'granted';
       } catch (err) {
-        console.log("get audio stream failed:", err);
+        console.log('get audio stream failed:', err);
 
-        if (err?.code === "XYSDK:950404") {
-          microphonePermission = "denied";
+        if (err?.code === 'XYSDK:950404') {
+          microphonePermission = 'denied';
         }
       }
 
@@ -377,19 +311,19 @@ export default {
       const randomTimer = this.getRangeRandom();
 
       setTimeout(() => {
-        this.iauth = "granted";
+        this.iauth = 'granted';
       }, randomTimer);
     },
 
     async initDeviceManagerEvent() {
-      this.deviceManager.on("permission", async (e) => {
+      this.deviceManager.on('permission', async (e) => {
         const { camera, microphone } = e;
 
-        if (camera === "granted") {
+        if (camera === 'granted') {
           await this.getVideoStream();
         }
 
-        if (microphone === "granted") {
+        if (microphone === 'granted') {
           await this.getAudioStream();
         }
 
@@ -398,21 +332,21 @@ export default {
         this.permission = e;
       });
 
-      this.deviceManager.on("device", (e) => {
+      this.deviceManager.on('device', (e) => {
         const { detail, nextDevice } = e;
         const { videoInput, audioInput, audioOutput } = nextDevice;
         const nextDevices = detail;
 
         if (videoInput) {
-          this.handleChange("videoInValue", videoInput.deviceId);
+          this.handleChange('videoInValue', videoInput.deviceId);
         }
 
         if (audioInput) {
-          this.handleChange("audioInputValue", audioInput.deviceId);
+          this.handleChange('audioInputValue', audioInput.deviceId);
         }
 
         if (audioOutput) {
-          this.handleChange("audioOutputValue", audioOutput.deviceId);
+          this.handleChange('audioOutputValue', audioOutput.deviceId);
         }
 
         this.setDevices(nextDevices);
@@ -420,11 +354,11 @@ export default {
     },
 
     async handleChange(key, e) {
-      if (key === "audioInputValue" || key === "videoInValue") {
+      if (key === 'audioInputValue' || key === 'videoInValue') {
         await this.getVideoStream(e);
       }
 
-      if (key === "videoInValue") {
+      if (key === 'videoInValue') {
         await this.getAudioStream(e);
       }
 
@@ -435,15 +369,15 @@ export default {
     },
 
     changeVideoIn(e) {
-      this.handleChange("videoInValue", e);
+      this.handleChange('videoInValue', e);
     },
 
     changeAudioInput(e) {
-      this.handleChange("audioInputValue", e);
+      this.handleChange('audioInputValue', e);
     },
 
     changeAudioOutput(e) {
-      this.handleChange("audioOutputValue", e);
+      this.handleChange('audioOutputValue', e);
     },
 
     async getDevices() {
@@ -464,17 +398,15 @@ export default {
     },
 
     clearStream() {
-      this.previewVideoStream &&
-        xyRTC.closePreviewStream(this.previewVideoStream);
+      this.previewVideoStream && xyRTC.closePreviewStream(this.previewVideoStream);
 
-      this.previewAudioStream &&
-        xyRTC.closePreviewStream(this.previewAudioStream);
+      this.previewAudioStream && xyRTC.closePreviewStream(this.previewAudioStream);
     },
 
     stop() {
       this.clearAudioLevelTimmer();
 
-      const deviceManager = this.$refs["deviceManager"];
+      const deviceManager = this.$refs['deviceManager'];
 
       if (deviceManager) {
         deviceManager.destroy();
@@ -484,10 +416,10 @@ export default {
 
       this.stream.close();
 
-      this.$emit("cancel");
+      this.$emit('cancel');
     },
     async play() {
-      const audioRef = this.$refs["audioRef"];
+      const audioRef = this.$refs['audioRef'];
       if (audioRef) {
         if (audioRef.paused && !this.testAudioStatus) {
           xyRTC.setOutputAudioDevice(audioRef, this.select.audioOutputValue);
@@ -504,7 +436,7 @@ export default {
       return (
         list.find((item) => {
           return item.deviceId === deviceId;
-        }) || { deviceId: "", label: "" }
+        }) || { deviceId: '', label: '' }
       );
     },
 
@@ -513,13 +445,10 @@ export default {
 
       const { audioInputValue, audioOutputValue, videoInValue } = this.select;
 
-      this.$emit("setting", {
+      this.$emit('setting', {
         selectedDevice: {
           audioInput: this.findDeviceById(audioInputValue, this.audioInputList),
-          audioOutput: this.findDeviceById(
-            audioOutputValue,
-            this.audioOutputList
-          ),
+          audioOutput: this.findDeviceById(audioOutputValue, this.audioOutputList),
           videoInput: this.findDeviceById(videoInValue, this.videoInList),
         },
         deviceList: {
@@ -531,14 +460,14 @@ export default {
     },
 
     setOutputAudioDevice(val = this.select.audioOutputValue) {
-      const audioRef = this.$refs["audioRef"];
+      const audioRef = this.$refs['audioRef'];
 
       audioRef && val && xyRTC.setOutputAudioDevice(audioRef, val);
     },
   },
 
   watch: {
-    "select.audioOutputValue": {
+    'select.audioOutputValue': {
       handler(newVal) {
         this.setOutputAudioDevice(newVal);
       },

@@ -1,5 +1,5 @@
 /**
- * Broswer version tools
+ * Browser version tools
  */
 
 export const platform = () => {

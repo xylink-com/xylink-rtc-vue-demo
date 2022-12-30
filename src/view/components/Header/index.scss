@@ -1,4 +1,4 @@
-@import "@/assets/style/var.scss";
+@import '@/assets/style/var.scss';
 
 .meeting-header {
   height: 36px;
@@ -45,13 +45,15 @@
     align-items: center;
     justify-content: center;
   }
-
-  .info-icon {
-    transform: rotatez(180deg);
-    margin-left: 12px;
+  .el-icon-warning-outline {
+    transform: rotateZ(180deg);
   }
 }
 
-.header-displayname {
+.header-name {
   margin-right: 10px;
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

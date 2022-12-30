@@ -1,57 +1,49 @@
 <template>
-  <div
-    class="wrap-video"
-    :style="videoWrapStyle"
-    ref="videoWrapRef"
-    :id="wrapVideoId"
-    @dblclick="toggleFullScreen"
-  >
-    <div class="video">
-      <div class="video-content" :style="{ border }">
-        <div class="video-model">
-          <div :class="audioOnlyClass">
-            <div class="center">
-              <div class="displayname">{{ item.roster.displayName || "" }}</div>
-              <div>语音通话中</div>
+  <v-touch @doubletap="toggleFullScreen">
+    <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef" :id="wrapVideoId">
+      <div class="video">
+        <div class="video-content" :style="{ border }">
+          <div class="video-model">
+            <div :class="audioOnlyClass">
+              <div class="center">
+                <div class="name">{{ item.roster.displayName || '' }}</div>
+                <div>语音通话中</div>
+              </div>
             </div>
-          </div>
 
-          <div :class="videoMuteClass">
-            <div class="center">
-              <div v-if="item.roster.isLocal">视频暂停</div>
-              <div v-else>对方忙，暂时关闭视频</div>
+            <div :class="videoMuteClass">
+              <div class="center">
+                <div v-if="item.roster.isLocal">视频暂停</div>
+                <div v-else>对方忙，暂时关闭视频</div>
+              </div>
             </div>
-          </div>
 
-          <div :class="videoRequestClass">
-            <div class="center">
-              <div>视频请求中...</div>
+            <div :class="videoRequestClass">
+              <div class="center">
+                <div>视频请求中...</div>
+              </div>
             </div>
-          </div>
 
-          <div class="video-status">
-            <div
-              v-if="!item.roster.isContent"
-              :class="
-                item.roster.audioTxMute
-                  ? 'audio-muted-status'
-                  : 'audio-unmuted-status'
-              "
-            ></div>
-            <div class="name">
-              {{ `${item.roster.displayName || "Local"}` }}
+            <div class="video-status">
+              <div
+                v-if="!item.roster.isContent"
+                :class="item.roster.audioTxMute ? 'audio-muted-status' : 'audio-unmuted-status'"
+              ></div>
+              <div class="name">
+                {{ `${item.roster.displayName || 'Local'}` }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <video :style="videoStyle" autoPlay></video>
+        <video :style="videoStyle" autoPlay></video>
+      </div>
     </div>
-  </div>
+  </v-touch>
 </template>
 <script>
 export default {
-  props: ["item", "model", "id", "forceLayoutId", "client"],
+  props: ['item', 'model', 'id', 'forceLayoutId', 'client'],
   computed: {
     isFullScreen() {
       return this.forceLayoutId === this.item.roster.id;
@@ -64,12 +56,12 @@ export default {
       // 全屏
       if (this.isFullScreen) {
         return (wrapStyle = {
-          position: "fixed",
-          width: "100%",
-          height: "100%",
-          left: "0",
-          top: "0",
-          zIndex: "101",
+          position: 'fixed',
+          width: '100%',
+          height: '100%',
+          left: '0',
+          top: '0',
+          zIndex: '101',
         });
       }
       const positionStyle = this.item.positionStyle;
@@ -81,11 +73,11 @@ export default {
       return wrapStyle;
     },
     border() {
-      let border = "";
-      if (this.model === "gallery" && this.item.roster.isActiveSpeaker) {
-        border = "2px solid #1483eb";
+      let border = '';
+      if (this.model === 'gallery' && this.item.roster.isActiveSpeaker) {
+        border = '2px solid #1483eb';
       } else {
-        border = "none";
+        border = 'none';
       }
       return border;
     },
@@ -95,9 +87,9 @@ export default {
 
       if (this.isFullScreen) {
         fullStyle = {
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
         };
       }
 
@@ -114,29 +106,21 @@ export default {
     },
     audioOnlyClass() {
       return `video-bg ${
-        this.state === "AUDIO_TEL" ||
-        this.state === "AUDIO_CONTENT" ||
-        this.state === "AUDIO_ONLY"
-          ? "video-show"
-          : "video-hidden"
+        this.state === 'AUDIO_TEL' || this.state === 'AUDIO_CONTENT' || this.state === 'AUDIO_ONLY'
+          ? 'video-show'
+          : 'video-hidden'
       }`;
     },
     videoMuteClass() {
-      return `video-bg ${
-        this.state === "MUTE" || this.state === "INVALID"
-          ? "video-show"
-          : "video-hidden"
-      }`;
+      return `video-bg ${this.state === 'MUTE' || this.state === 'INVALID' ? 'video-show' : 'video-hidden'}`;
     },
     videoRequestClass() {
-      return `video-bg ${
-        this.state === "REQUEST" ? "video-show" : "video-hidden"
-      }`;
+      return `video-bg ${this.state === 'REQUEST' ? 'video-show' : 'video-hidden'}`;
     },
   },
   data() {
     return {
-      wrapVideoId: "wrap-" + this.id,
+      wrapVideoId: 'wrap-' + this.id,
     };
   },
   mounted() {
@@ -144,11 +128,11 @@ export default {
   },
   methods: {
     async toggleFullScreen() {
-      this.$emit("forceFullScreen", this.isFullScreen ? "" : this.id);
+      this.$emit('forceFullScreen', this.isFullScreen ? '' : this.id);
     },
     renderVideo(newValue) {
       if (newValue && this.client) {
-        this.client.setVideoRenderer(newValue, "wrap-" + newValue);
+        this.client.setVideoRenderer(newValue, 'wrap-' + newValue);
       }
     },
   },
@@ -238,7 +222,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   transition: opacity ease 0.2s;
-  background: url("./img/meeting_bg.png") center center no-repeat;
+  background: url('./img/meeting_bg.png') center center no-repeat;
   background-size: cover;
 }
 .video .video-model .video-hidden {
@@ -257,7 +241,7 @@ export default {
   position: relative;
   z-index: 1;
 }
-.video .video-model .displayname {
+.video .video-model .name {
   margin-bottom: 5px;
 }
 .video .video-model .audio-muted-status,
@@ -267,11 +251,11 @@ export default {
   margin: 0 -8px 0 -2px;
 }
 .video .video-model .audio-muted-status {
-  background: url("./img/audio_mute.png") center center no-repeat;
+  background: url('./img/audio_mute.png') center center no-repeat;
   background-size: 60%;
 }
 .video .video-model .audio-unmuted-status {
-  background: url("./img/audio_unmute.png") center center no-repeat;
+  background: url('./img/audio_unmute.png') center center no-repeat;
   background-size: 60%;
 }
 .status {

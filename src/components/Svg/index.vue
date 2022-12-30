@@ -5,19 +5,19 @@
 </template>
 <script>
 export default {
-  name: "SvgIcon",
+  name: 'SvgIcon',
   props: {
     icon: {
       type: String,
-      default: "",
+      default: '',
     },
     className: {
       type: String,
-      default: "",
+      default: '',
     },
     type: {
       type: String,
-      default: "default",
+      default: 'default',
     },
   },
   computed: {
@@ -25,14 +25,12 @@ export default {
       return `#icon-${this.icon}`;
     },
     svgClass() {
-      return `svg-icon ${this.type === "danger" ? "svg-icon-danger" : ""} ${
-        this.className
-      }`;
+      return `svg-icon ${this.type ? `svg-icon-${this.type}` : ''} ${this.className}`;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import "./index.scss";
+@import './index.scss';
 </style>

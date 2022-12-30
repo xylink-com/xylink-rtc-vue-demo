@@ -1,18 +1,15 @@
 <template>
-  <el-dialog custom-class="xy__setting-modal" :visible="visible" width="720px" top = "10vh">
+  <el-dialog v-if="isPc" custom-class="xy__setting-modal" :visible="visible">
+    <div class="setting__header">
+      设置
+      <div class="close" @click="onCancel" />
+    </div>
     <div class="setting__container">
-      <div class="close" @click="onCancel">
-        <span class="close-icon" />
-      </div>
-      <div class="setting__header">
-        <el-menu
-          :default-active="current"
-          class="xy__setting-menu"
-          @select="handleSelect"
-        >
+      <div class="setting__menu">
+        <el-menu :default-active="current" class="xy__setting-menu" @select="handleSelect">
           <el-menu-item index="common">
             <i class="el-icon-setting"></i>
-            <span slot="title">常规</span>
+            <span slot="title">常规设置</span>
           </el-menu-item>
           <el-menu-item index="device">
             <i class="el-icon-video-camera"></i>
@@ -39,27 +36,63 @@
           :layoutMode="layoutMode"
           @setting="onHandleSetting"
         />
-        <Device
-          v-if="current === 'device'"
-          :setting="setting"
-          :current="current"
-          @setting="onHandleSetting"
-        />
+        <Device v-if="current === 'device'" :setting="setting" :current="current" @setting="onHandleSetting" />
         <Feedback v-if="current === 'feedback'" />
         <Version v-if="current === 'about'" />
       </div>
     </div>
   </el-dialog>
+
+  <div v-else>
+    <el-drawer
+      :visible.sync="visible"
+      direction="btt"
+      :append-to-body="true"
+      :withHeader="false"
+      custom-class="xy__drawer-setting"
+      :before-close="onCancel"
+    >
+      <Version />
+      <Common
+        :isInMeeting="isInMeeting"
+        :isThird="isThird"
+        :localHide="localHide"
+        :layoutMode="layoutMode"
+        @setting="onHandleSetting"
+      />
+      <div class="list-item">
+        <div class="key">快速反馈</div>
+        <div class="value" @click="feedbackVisible = true">
+          <i class="el-icon-arrow-right"></i>
+        </div>
+      </div>
+    </el-drawer>
+    <el-drawer
+      :visible.sync="feedbackVisible"
+      direction="btt"
+      :append-to-body="true"
+      :withHeader="false"
+      custom-class="xy__drawer-setting"
+    >
+      <div class="mobile-drawer-back" @click="feedbackVisible = false">
+        返回
+      </div>
+      <div class="mobile-drawer-content">
+        <Feedback />
+      </div>
+    </el-drawer>
+  </div>
 </template>
 <script>
-import Common from "./Common.vue";
-import Device from "./Device.vue";
-import Feedback from "./Feedback.vue";
-import Version from "./Version.vue";
-import store from "@/utils/store";
+import Common from './Common.vue';
+import Device from './Device.vue';
+import Feedback from './Feedback.vue';
+import Version from './Version.vue';
+import store from '@/utils/store';
+import { isPc } from '@/utils/browser';
 
 export default {
-  props: ["visible", "setting", "isInMeeting"],
+  props: ['visible', 'setting', 'isInMeeting'],
   components: {
     Common,
     Device,
@@ -67,14 +100,15 @@ export default {
     Version,
   },
   data() {
-    const { localHide = false, layoutMode = "AUTO", isThird = false } =
-      this.setting || {};
+    const { localHide = false, layoutMode, isThird } = this.setting || {};
 
     return {
-      current: "common",
+      current: 'common',
       isThird,
       layoutMode,
       localHide,
+      isPc,
+      feedbackVisible: false,
     };
   },
   methods: {
@@ -83,28 +117,28 @@ export default {
     },
     onHandleSetting(data) {
       const values = {};
-      const SETTING_KEYS = ["selectedDevice", "localHide"];
+      const SETTING_KEYS = ['selectedDevice', 'localHide'];
 
       SETTING_KEYS.forEach((key) => {
         if (data[key]) {
-          if (key === "selectedDevice") {
-            store.set("selectedDevice", data.selectedDevice);
+          if (key === 'selectedDevice') {
+            store.set('selectedDevice', data.selectedDevice);
 
-            this.$emit("cancel");
+            this.$emit('cancel');
           } else {
             values[key] = data[key];
           }
         }
       });
 
-      this.$emit("setting", data);
+      this.$emit('setting', data);
     },
     onCancel() {
-      this.$emit("cancel");
+      this.$emit('cancel');
     },
   },
 };
 </script>
 <style lang="scss">
-@import "./style/index.scss";
+@import './style/index.scss';
 </style>

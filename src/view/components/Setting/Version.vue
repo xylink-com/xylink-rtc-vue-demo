@@ -2,7 +2,7 @@
   <div class="setting__content-about">
     <img width="150" src="@/assets/img/login-logo.png" alt="logo" />
     <div class="about-version">版本号：{{ version }}</div>
-    <div class="about-version about-time">变更时间：{{ update }}</div>
+    <!-- <div class="about-version about-time">变更时间：{{ update }}</div> -->
   </div>
 </template>
 <script>

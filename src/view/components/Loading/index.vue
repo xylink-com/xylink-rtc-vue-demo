@@ -10,7 +10,6 @@
       </div>
       <div class="stop-btn" @click="stop('OK')">
         <svg-icon icon="hang_up" />
-        <!-- <img src="@/assets/img/svg/hang_up.svg" alt="end-call" /> -->
       </div>
 
       <audio ref="bgmAudioRef" autoPlay loop src="@/assets/ring.wav"></audio>
