@@ -1,26 +1,37 @@
-// import { RATE } from '@/utils/template';
+import { RATE } from '@/utils/template';
+import { TYPEOF } from '@/utils';
 
 export const calculateBaseLayoutList = (orderLayoutList, rateWidth, rateHeight, positionInfo) => {
   let positionStyle = { left: '0px', top: '0px', width: '0px', height: '0px' };
 
   const layoutList = orderLayoutList.map((item, index) => {
-    const position = positionInfo[index].position;
+    let { position, customStyle = {} } =  positionInfo[index] || {};
     const [x, y, w, h] = position;
 
     let layoutX = Math.round(rateWidth * x);
     let layoutY = Math.round(rateHeight * y);
     let layoutWidth = Math.round(rateWidth * w);
-    let layoutHeight = Math.round(layoutWidth * 0.5625);
+    let layoutHeight = Math.round(layoutWidth * RATE);
     if (w === 1 && h === 1) {
       layoutHeight = Math.round(rateHeight * h);
     }
 
-    positionStyle = {
-      left: `${layoutX}px`,
-      top: `${layoutY}px`,
-      width: `${layoutWidth}px`,
-      height: `${layoutHeight}px`,
-    };
+    if (!TYPEOF.isObject(customStyle)) {
+      customStyle = {};
+    }
+
+    positionStyle = Object.assign(
+      {
+        left: `${layoutX}px`,
+        top: `${layoutY}px`,
+        width: `${layoutWidth}px`,
+        height: `${layoutHeight}px`,
+      },
+      customStyle
+    );
+
+    layoutWidth = customStyle?.layoutWidth || layoutWidth;
+    layoutHeight = customStyle?.layoutHeight || layoutHeight;
 
     const cachePositionInfo = {
       width: layoutWidth,

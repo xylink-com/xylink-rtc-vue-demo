@@ -27,22 +27,14 @@
     bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 8px 40px;
+    padding: 0 40px;
     user-select: none;
-
     height: $meeting-footer-height;
-    height: calc(#{$meeting-footer-height} + constant(safe-area-inset-bottom) / 2);
-    height: calc(#{$meeting-footer-height} + env(safe-area-inset-bottom) / 2);
-    padding-bottom: constant(safe-area-inset-bottom);
-    padding-bottom: env(safe-area-inset-bottom);
-
     color: #e7e7e7;
     background: $toolbar-bg-color;
     border-radius: 3px;
     transition: all 0.5s linear;
-
     z-index: 10;
-
     .middle {
       display: flex;
       align-items: center;
@@ -250,9 +242,9 @@
     border-radius: 0 3px 3px 0;
   }
 
-  .horizontal-screen-mask {
-    display: none;
-  }
+  // .horizontal-screen-mask {
+  //   display: none;
+  // }
 }
 
 .xy__show {

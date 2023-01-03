@@ -185,8 +185,8 @@ export const SPEAKER_TEMPLATE = {
   ],
 };
 
-// 移动端 对称布局 竖屏模板
-const MOBILE_GALLERY_TEMPLATE = {
+// 移动端 竖屏模板
+const MOBILE_VERTICAL_TEMPLATE = {
   '1-1': [
     {
       position: [0, 0, 1, 1],
@@ -348,28 +348,89 @@ export const TEMPLATE = (isPc = true) => {
     };
   }
 
-  // 移动端布局模版
+  const isVertical = document.body.clientWidth < document.body.clientHeight;
+
+  if (isVertical) {
+    return {
+      length: 7,
+      temp: {
+        0: MOBILE_VERTICAL_TEMPLATE['1-1'],
+        1: MOBILE_VERTICAL_TEMPLATE['1-1'],
+        2: MOBILE_VERTICAL_TEMPLATE['2-1'],
+        3: MOBILE_VERTICAL_TEMPLATE['3-1'],
+        4: MOBILE_VERTICAL_TEMPLATE['4-1'],
+        5: MOBILE_VERTICAL_TEMPLATE['5-1'],
+        6: MOBILE_VERTICAL_TEMPLATE['6-1'],
+        7: MOBILE_VERTICAL_TEMPLATE['7-1'],
+      },
+      rate: {
+        0: 1,
+        1: 1,
+        2: 1.125,
+        3: 0.8437,
+        4: 1.125,
+        5: 1.125,
+        6: 1.40625,
+        7: 1.40625,
+      },
+    };
+  }
+
   return {
     length: 7,
     temp: {
-      0: MOBILE_GALLERY_TEMPLATE['1-1'],
-      1: MOBILE_GALLERY_TEMPLATE['1-1'],
-      2: MOBILE_GALLERY_TEMPLATE['2-1'],
-      3: MOBILE_GALLERY_TEMPLATE['3-1'],
-      4: MOBILE_GALLERY_TEMPLATE['4-1'],
-      5: MOBILE_GALLERY_TEMPLATE['5-1'],
-      6: MOBILE_GALLERY_TEMPLATE['6-1'],
-      7: MOBILE_GALLERY_TEMPLATE['7-1'],
+      0: Get_MOBILE_HORIZONTAL_TEMPLATE(1),
+      1: Get_MOBILE_HORIZONTAL_TEMPLATE(1),
+      2: Get_MOBILE_HORIZONTAL_TEMPLATE(2),
+      3: Get_MOBILE_HORIZONTAL_TEMPLATE(3),
+      4: Get_MOBILE_HORIZONTAL_TEMPLATE(4),
+      5: Get_MOBILE_HORIZONTAL_TEMPLATE(5),
+      6: Get_MOBILE_HORIZONTAL_TEMPLATE(6),
+      7: Get_MOBILE_HORIZONTAL_TEMPLATE(7),
     },
     rate: {
       0: 1,
       1: 1,
-      2: 1.125,
-      3: 0.8437,
-      4: 1.125,
-      5: 1.125,
-      6: 1.40625,
-      7: 1.40625,
+      2: 1,
+      3: 1,
+      4: 1,
+      5: 1,
+      6: 1,
+      7: 1,
     },
   };
+};
+
+// 移动端 横屏模式
+const Get_MOBILE_HORIZONTAL_TEMPLATE = (size) => {
+  const list = [
+    {
+      position: [0, 0, 1, 1],
+      resolution: 2,
+    },
+  ];
+
+  if (size > 1) {
+    const layoutWidth = Math.round((document.body.clientWidth - 4 * 7) / 6);
+    const layoutHeight = Math.round(layoutWidth * RATE);
+
+    for (let i = 1; i < size; i++) {
+      list.push({
+        position: [0, 0, 0, 0],
+        resolution: 1,
+        customStyle: {
+          width: layoutWidth + 'px',
+          height: layoutHeight + 'px',
+          layoutWidth,
+          layoutHeight,
+          top: 'auto',
+          bottom: '8px',
+          left: layoutWidth * (i - 1) + 4 * i + 'px',
+          border: '1px solid #fff',
+        },
+      });
+    }
+  }
+
+  return list;
 };

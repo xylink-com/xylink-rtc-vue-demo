@@ -56,6 +56,7 @@
             <Video
               v-for="item in layout"
               :model="templateMode"
+              :layoutMode="setting.layoutMode"
               :item="item"
               :key="item.roster.id"
               :id="item.roster.id"
@@ -75,10 +76,10 @@
           </div>
           <Barrage v-if="!onhold && subTitle.content && subTitle.action === 'push'" :subTitle="subTitle" />
           <InOutReminder v-if="!onhold" :reminders="reminders" />
-          <div v-if="!isPc" class="horizontal-screen-mask">
+          <!-- <div v-if="!isPc" class="horizontal-screen-mask">
             <svg-icon icon="rotate" class="icon-rotate"></svg-icon>
             目前不支持横屏，请旋转至竖屏使用
-          </div>
+          </div> -->
         </div>
         <div :class="toolVisible ? 'meeting-footer xy__show' : 'meeting-footer xy__hide'">
           <div class="middle">
@@ -537,6 +538,14 @@ export default {
       // CUSTOM 布局不需要监听此数据
       client.on('layout', (e) => {
         this.layout = e;
+
+        if (this.forceLayoutId) {
+          const forceLayout = this.layout.find((item) => item.roster.id === this.forceLayoutId);
+
+          if (!forceLayout) {
+            this.forceLayoutId = '';
+          }
+        }
       });
 
       // CUSTOM 自定义布局处理此数据
@@ -710,11 +719,6 @@ export default {
         if (type === 'audio') {
           console.log('[xyRTC on]audio play failed:' + key, error);
         }
-      });
-
-      // current forceLayout roster id
-      client.on('force-full-screen', (id) => {
-        this.forceLayoutId = id;
       });
     },
     // 参会者信息
@@ -914,6 +918,7 @@ export default {
       e = getOrderLayoutList(e);
 
       const { rate, temp } = TEMPLATE(isPc);
+
       const nextTemplateRate = rate[e.length] || 0.5625;
       const positionInfo = temp[e.length];
 
@@ -1097,10 +1102,14 @@ export default {
       }
 
       await this.client.forceFullScreen(id);
+
+      this.forceLayoutId = id;
     },
 
     // 分页
     async switchPage(type) {
+      this.forceLayoutId = '';
+
       if (this.setting.layoutMode === 'CUSTOM') {
         this.customSwitchPage(type);
         return;

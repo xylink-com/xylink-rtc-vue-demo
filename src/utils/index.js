@@ -30,3 +30,21 @@ export const transformTime = (timestamp = +new Date()) => {
 export const getErrorMsg = (err) => {
   return JSON.stringify(err, Object.getOwnPropertyNames(err), 2);
 };
+
+export const TYPEOF = {
+  isNumber(num) {
+    return typeof num === 'number';
+  },
+  isObject(obj) {
+    return Object.prototype.toString.call(obj).toLocaleLowerCase() === '[object object]';
+  },
+  isArray(arr) {
+    return Array.isArray(arr);
+  },
+  isString(str) {
+    return typeof str === 'string';
+  },
+  isBoolean(str) {
+    return typeof str === 'boolean';
+  },
+};

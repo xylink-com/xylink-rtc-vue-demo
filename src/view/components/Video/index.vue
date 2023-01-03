@@ -1,58 +1,95 @@
 <template>
   <!-- <v-touch @doubletap="toggleFullScreen"> -->
-    <div
-      class="wrap-video"
-      :style="item.positionStyle"
-      ref="videoWrapRef"
-      :id="wrapVideoId"
-      @dblclick="toggleFullScreen"
-    >
-      <div class="video">
-        <div class="video-content" :style="{ border }">
-          <div class="video-model">
-            <div :class="audioOnlyClass">
-              <div class="center">
-                <div class="name">{{ item.roster.displayName || '' }}</div>
-                <div>语音通话中</div>
-              </div>
+  <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef" :id="wrapVideoId" @dblclick="toggleFullScreen">
+    <div class="video">
+      <div class="video-content" :style="{ border }">
+        <div class="video-model">
+          <div :class="audioOnlyClass">
+            <div class="center">
+              <div class="name">{{ item.roster.displayName || '' }}</div>
+              <div>语音通话中</div>
             </div>
+          </div>
 
-            <div :class="videoMuteClass">
-              <div class="center">
-                <div v-if="item.roster.isLocal">视频暂停</div>
-                <div v-else>对方忙，暂时关闭视频</div>
-              </div>
+          <div :class="videoMuteClass">
+            <div class="center">
+              <div v-if="item.roster.isLocal">视频暂停</div>
+              <div v-else>对方忙，暂时关闭视频</div>
             </div>
+          </div>
 
-            <div :class="videoRequestClass">
-              <div class="center">
-                <div>视频请求中...</div>
-              </div>
+          <div :class="videoRequestClass">
+            <div class="center">
+              <div>视频请求中...</div>
             </div>
+          </div>
 
-            <div class="video-status">
-              <div
-                v-if="!item.roster.isContent"
-                :class="item.roster.audioTxMute ? 'audio-muted-status' : 'audio-unmuted-status'"
-              ></div>
-              <div class="name">
-                {{ `${item.roster.displayName || 'Local'}` }}
-              </div>
+          <div class="video-status">
+            <div
+              v-if="!item.roster.isContent"
+              :class="item.roster.audioTxMute ? 'audio-muted-status' : 'audio-unmuted-status'"
+            ></div>
+            <div class="name">
+              {{ `${item.roster.displayName || 'Local'}` }}
             </div>
           </div>
         </div>
-
-        <video :style="item.rotate" autoPlay></video>
       </div>
+
+      <video :style="videoStyle" autoPlay></video>
     </div>
+  </div>
   <!-- </v-touch> -->
 </template>
 <script>
 export default {
-  props: ['item', 'model', 'id', 'forceLayoutId', 'client'],
+  props: ['id', 'item', 'layoutMode', 'model', 'forceLayoutId', 'client'],
   computed: {
     state() {
       return this.item.state;
+    },
+    videoWrapStyle() {
+      let wrapStyle = {};
+      // 全屏
+      if (this.isFullScreen) {
+        return (wrapStyle = {
+          position: 'fixed',
+          width: '100%',
+          height: '100%',
+          left: '0',
+          top: '0',
+          zIndex: '101',
+        });
+      }
+      const positionStyle = this.item.positionStyle;
+      if (positionStyle && positionStyle.width) {
+        wrapStyle = positionStyle;
+      }
+      return wrapStyle;
+    },
+    videoStyle() {
+      let style = this.item.rotate || {};
+
+      if (this.layoutMode === 'AUTO') {
+        let fullStyle = {};
+
+        if (this.isFullScreen) {
+          fullStyle = {
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          };
+        }
+
+        if (this.item.roster.isContent || this.isFullScreen) {
+          style = {
+            ...style,
+            ...fullStyle,
+          };
+        }
+      }
+
+      return style;
     },
     border() {
       let border = '';
@@ -76,6 +113,10 @@ export default {
     videoRequestClass() {
       return `video-bg ${this.state === 'REQUEST' ? 'video-show' : 'video-hidden'}`;
     },
+    // 是否全屏
+    isFullScreen() {
+      return this.forceLayoutId === this.item.roster.id;
+    },
   },
   data() {
     return {
@@ -87,9 +128,7 @@ export default {
   },
   methods: {
     async toggleFullScreen() {
-      const isFullScreen = this.forceLayoutId === this.item.roster.id;
-
-      this.$emit('forceFullScreen', isFullScreen ? '' : this.id);
+      this.$emit('forceFullScreen', this.isFullScreen ? '' : this.id);
     },
     renderVideo(newValue) {
       if (newValue && this.client) {
@@ -110,10 +149,10 @@ export default {
 <style scoped>
 .wrap-video {
   position: absolute;
-
   background: #000;
   user-select: none;
   overflow: hidden;
+  z-index: 1;
 }
 .video {
   width: 100%;
