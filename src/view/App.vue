@@ -955,6 +955,7 @@ export default {
           // 提供 item 和 layoutItemContainerWidth 和 height 计算旋转信息
           // 返回旋转角度和宽高样式，此数据和AUTO布局的计算结果一致
           rotateInfo = getLayoutRotateInfo(item, width, height);
+
           cacheNextLayoutList[index]['rotate'] = rotateInfo;
         }
       });

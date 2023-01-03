@@ -12,6 +12,7 @@ export const calculateBaseLayoutList = (orderLayoutList, rateWidth, rateHeight, 
     let layoutY = Math.round(rateHeight * y);
     let layoutWidth = Math.round(rateWidth * w);
     let layoutHeight = Math.min(Math.round(layoutWidth * RATE), rateHeight);
+
     if (w === 1 && h === 1) {
       layoutHeight = Math.round(rateHeight * h);
     }
@@ -30,8 +31,13 @@ export const calculateBaseLayoutList = (orderLayoutList, rateWidth, rateHeight, 
       customStyle
     );
 
-    layoutWidth = customStyle?.layoutWidth || layoutWidth;
-    layoutHeight = customStyle?.layoutHeight || layoutHeight;
+    if (customStyle?.layoutWidth) {
+      layoutWidth = Math.min(customStyle.layoutWidth, rateWidth);
+    }
+
+    if (customStyle?.layoutHeight) {
+      layoutHeight = Math.min(customStyle?.layoutHeight, rateHeight);
+    }
 
     const cachePositionInfo = {
       width: layoutWidth,
