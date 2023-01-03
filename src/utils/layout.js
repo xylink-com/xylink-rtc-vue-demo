@@ -5,13 +5,13 @@ export const calculateBaseLayoutList = (orderLayoutList, rateWidth, rateHeight, 
   let positionStyle = { left: '0px', top: '0px', width: '0px', height: '0px' };
 
   const layoutList = orderLayoutList.map((item, index) => {
-    let { position, customStyle = {} } =  positionInfo[index] || {};
+    let { position, customStyle = {} } = positionInfo[index] || {};
     const [x, y, w, h] = position;
 
     let layoutX = Math.round(rateWidth * x);
     let layoutY = Math.round(rateHeight * y);
     let layoutWidth = Math.round(rateWidth * w);
-    let layoutHeight = Math.round(layoutWidth * RATE);
+    let layoutHeight = Math.min(Math.round(layoutWidth * RATE), rateHeight);
     if (w === 1 && h === 1) {
       layoutHeight = Math.round(rateHeight * h);
     }
