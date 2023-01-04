@@ -15,7 +15,7 @@
     <div v-if="isLocalShareContent" class="meeting-prompt-box">本地共享中</div>
 
     <div v-if="content" class="meeting-prompt-box">
-      <span>{{ content.displayName }}</span>
+      <span class="meeting-prompt-content-name">{{ content.displayName }}</span>
       正在共享
     </div>
   </div>

@@ -54,12 +54,13 @@
           </div>
           <div class="meeting-layout" :style="layoutStyle">
             <Video
-              v-for="item in layout"
+              v-for="(item, index) in layout"
+              :key="item.roster.id"
+              :id="item.roster.id"
+              :index="index"
               :model="templateMode"
               :layoutMode="setting.layoutMode"
               :item="item"
-              :key="item.roster.id"
-              :id="item.roster.id"
               :forceLayoutId="forceLayoutId"
               :client="client"
               @forceFullScreen="forceFullScreen"
@@ -76,10 +77,6 @@
           </div>
           <Barrage v-if="!onhold && subTitle.content && subTitle.action === 'push'" :subTitle="subTitle" />
           <InOutReminder v-if="!onhold" :reminders="reminders" />
-          <!-- <div v-if="!isPc" class="horizontal-screen-mask">
-            <svg-icon icon="rotate" class="icon-rotate"></svg-icon>
-            目前不支持横屏，请旋转至竖屏使用
-          </div> -->
         </div>
         <div :class="toolVisible ? 'meeting-footer xy__show' : 'meeting-footer xy__hide'">
           <div class="middle">
@@ -177,12 +174,12 @@ import VideoButton from './components/VideoButton/index.vue';
 import AudioButton from './components/AudioButton/index.vue';
 import PromptInfo from './components/PromptInfo/index.vue';
 import store from '@/utils/store';
-import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE, DEFAULT_SETTING, DEFAULT_CALL_INFO } from '@/utils/enum';
+import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE, DEFAULT_SETTING, DEFAULT_CALL_INFO, TEMPLATE_TYPE } from '@/utils/enum';
 import { SERVER, ACCOUNT } from '@/utils/config';
 import { TEMPLATE } from '@/utils/template';
 import { message } from '@/utils/index';
 import { getLayoutIndexByRotateInfo, getScreenInfo, calculateBaseLayoutList, getOrderLayoutList } from '@/utils/layout';
-import { isPc } from '@/utils/browser';
+import { isPc, isSupportMobileJoinMeeting, isVertical } from '@/utils/browser';
 import { WindowResize } from '@/utils/resize';
 
 const user = store.get('xy-user') || DEFAULT_LOCAL_USER;
@@ -326,7 +323,7 @@ export default {
       const result = await (isPc ? xyRTC.checkSupportWebRTC() : xyRTC.checkSupportMobileWebRTC());
       const { result: isSupport } = result;
 
-      if (!isSupport) {
+      if (!isSupport || (!isPc && !isSupportMobileJoinMeeting())) {
         message.info('浏览器版本太低，请升级最新的Chrome浏览器访问');
 
         return;
@@ -455,7 +452,13 @@ export default {
     onResize() {
       // CUSTOM 模式
       if (this.setting.layoutMode === 'CUSTOM') {
-        this.createCustomLayout();
+        // content模式，横竖屏显示数量不一致，需重新请流
+        // content模式，只需转换layout布局即可
+        if (this.confChangeInfo.contentUri) {
+          this.customRequestLayout();
+        } else {
+          this.createCustomLayout();
+        }
       }
     },
     // 挂断会议
@@ -477,6 +480,9 @@ export default {
       this.client && this.client.destroy();
 
       // 清理组件状
+      rotationInfoRef = [];
+      nextLayoutListRef = [];
+
       this.callMeeting = false;
       this.callLoading = false;
       this.isLocalShareContent = false;
@@ -813,7 +819,7 @@ export default {
           calluri: endpointId,
           mediagroupid,
           resolution,
-          quality: 2,
+          quality: resolution === 4 ? 2 : 1,
         });
 
         let extReqList = [];
@@ -852,42 +858,42 @@ export default {
         }
       }
 
-      if (currentPage === 0) {
-        // 只有第一页显示local, 减去Local，剩下为实际请流人数
-        realLen -= 1;
-
-        // 只在首页显示content和主会场
-        if (chairManUrl) {
-          reqList.push({
-            calluri: chairManUrl,
-            mediagroupid: 0,
-            resolution: 3,
-            quality: 2,
-          });
-
-          realLen -= 1;
-        }
-
-        if (contentUri) {
-          reqList.push({
-            calluri: contentUri,
-            mediagroupid: 1,
-            resolution: 4,
-            quality: 2,
-          });
-
-          realLen -= 1;
-        }
+      // 移动端横屏模式下，接收content，只显示content+远端
+      if (!isVertical() && currentPage === 0 && contentUri) {
+        realLen = 2;
       }
 
-      for (let i = 0; i < realLen; i++) {
+      const { temp, length } = TEMPLATE(isPc);
+      let templateLayout = temp[realLen] || temp[Math.max(1, length)];
+      const isRequest = (currentPage === 0 && contentUri) || currentPage > 1;
+
+      templateLayout.forEach((item, index) => {
+        let { resolution = 2, quality = 1, type } = item;
+        let calluri = '';
+        let mediagroupid = 0;
+
+        if (type === TEMPLATE_TYPE.LOCAL && !isRequest) {
+          return;
+        }
+
+        // 只在第一页显示content和主会场
+        if (currentPage === 0 && index === 0) {
+          calluri = contentUri || chairManUrl;
+          mediagroupid = contentUri ? 1 : 0;
+
+          if (contentUri) {
+            resolution = 4;
+            quality = 2;
+          }
+        }
+
         reqList.push({
-          calluri: '',
-          mediagroupid: 0,
-          resolution: 1,
-          quality: 1,
+          mediagroupid,
+          calluri,
+          resolution,
+          quality,
         });
-      }
+      });
 
       this.client?.requestNewLayout(reqList, pageSize, currentPage, extReqList, {
         uiShowLocalWhenPageMode: false,
@@ -916,6 +922,13 @@ export default {
       // 此示例程序通过配置一个一组 TEMPLATE 模版数据，来计算layout container容器大小和layout item position/size/rotate 信息
       // 如果不想通过此方式实现，第三方获取到customLayoutList数据后，自行处理数据即可
       e = getOrderLayoutList(e);
+
+      // 移动端横屏模式下，首页，接收content, 只显示content+远端
+      const { contentUri, participantCount } = this.confChangeInfo;
+
+      if (!isVertical() && this.pageInfo.currentPage === 0 && contentUri && participantCount > 1) {
+        e = e.filter((item) => !item.roster.isLocal);
+      }
 
       const { rate, temp } = TEMPLATE(isPc);
 

@@ -26,6 +26,11 @@
   &-up {
     top: 8px;
   }
+
+  &-content-name {
+    max-width: 180px;
+    @include text-ellipsis;
+  }
 }
 
 .lock-btn {

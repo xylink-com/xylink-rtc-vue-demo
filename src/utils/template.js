@@ -5,6 +5,8 @@
  * @date  2019-10-24 20:41:38
  */
 
+import { TEMPLATE_TYPE } from '@/utils/enum';
+import { isVertical } from '@/utils/browser';
 // 分辨率配置：
 // 0: 90P
 // 1: 180P
@@ -190,7 +192,9 @@ const MOBILE_VERTICAL_TEMPLATE = {
   '1-1': [
     {
       position: [0, 0, 1, 1],
-      resolution: 2,
+      resolution: 3,
+      quality: 0,
+      type: TEMPLATE_TYPE.LOCAL,
     },
   ],
   '2-1': [
@@ -201,16 +205,19 @@ const MOBILE_VERTICAL_TEMPLATE = {
     {
       position: [0, 0.5, 1, 0.5],
       resolution: 2,
+      type: TEMPLATE_TYPE.LOCAL,
     },
   ],
   '3-1': [
     {
       position: [0, 0, 1, 0.5625],
       resolution: 3,
+      quality: 0,
     },
     {
       position: [0, 0.6667, 0.5, 0.28125],
       resolution: 1,
+      type: TEMPLATE_TYPE.LOCAL,
     },
     {
       position: [0.5, 0.6667, 0.5, 0.28125],
@@ -221,10 +228,12 @@ const MOBILE_VERTICAL_TEMPLATE = {
     {
       position: [0, 0, 1, 0.5625],
       resolution: 3,
+      quality: 0,
     },
     {
       position: [0, 0.5, 0.5, 0.28125],
       resolution: 1,
+      type: TEMPLATE_TYPE.LOCAL,
     },
     {
       position: [0.5, 0.5, 0.5, 0.28125],
@@ -239,10 +248,12 @@ const MOBILE_VERTICAL_TEMPLATE = {
     {
       position: [0, 0, 1, 0.5625],
       resolution: 3,
+      quality: 0,
     },
     {
       position: [0, 0.5, 0.5, 0.28125],
       resolution: 1,
+      type: TEMPLATE_TYPE.LOCAL,
     },
     {
       position: [0.5, 0.5, 0.5, 0.28125],
@@ -261,10 +272,12 @@ const MOBILE_VERTICAL_TEMPLATE = {
     {
       position: [0, 0, 1, 0.5625],
       resolution: 3,
+      quality: 0,
     },
     {
       position: [0, 0.4, 0.5, 0.28125],
       resolution: 1,
+      type: TEMPLATE_TYPE.LOCAL,
     },
     {
       position: [0.5, 0.4, 0.5, 0.28125],
@@ -287,10 +300,12 @@ const MOBILE_VERTICAL_TEMPLATE = {
     {
       position: [0, 0, 1, 0.5625],
       resolution: 3,
+      quality: 0,
     },
     {
       position: [0, 0.4, 0.5, 0.28125],
       resolution: 1,
+      type: TEMPLATE_TYPE.LOCAL,
     },
     {
       position: [0.5, 0.4, 0.5, 0.28125],
@@ -348,9 +363,7 @@ export const TEMPLATE = (isPc = true) => {
     };
   }
 
-  const isVertical = document.body.clientWidth < document.body.clientHeight;
-
-  if (isVertical) {
+  if (isVertical()) {
     return {
       length: 7,
       temp: {
@@ -406,7 +419,8 @@ const Get_MOBILE_HORIZONTAL_TEMPLATE = (size) => {
   const list = [
     {
       position: [0, 0, 1, 1],
-      resolution: 2,
+      resolution: 3,
+      quality: 0,
     },
   ];
 
@@ -428,6 +442,7 @@ const Get_MOBILE_HORIZONTAL_TEMPLATE = (size) => {
           left: layoutWidth * (i - 1) + 4 * i + 'px',
           border: '1px solid #fff',
         },
+        ...(i === 1 && { type: TEMPLATE_TYPE.LOCAL }),
       });
     }
   }

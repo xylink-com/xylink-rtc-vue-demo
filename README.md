@@ -1,6 +1,6 @@
 # XYLINK WEBRTC SDK
 
-小鱼易连 webrtc sdk demo 项目。
+小鱼易连 WebRTC sdk demo 项目。
 
 此项目使用到的技术栈：vue
 
@@ -10,6 +10,7 @@
 
 - extId：企业 id
 - clientId： Client id
+- clientSecret: Client Secret
 
 ## 运行
 

@@ -97,7 +97,7 @@
         class="link"
         rel="noopener noreferrer"
         target="_blank"
-        href="http://openapi.xylink.com/doc_web/product/description"
+        href="https://openapi.xylink.com/common/meeting/doc/description?platform=web"
         >小鱼易连WebRTC SDK开发文档
       </a>
       <div class="version">版本：{{ xyRTC.version }}</div>

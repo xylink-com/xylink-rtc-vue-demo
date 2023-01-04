@@ -266,6 +266,9 @@
       }
     }
   }
+  .debug {
+    height: 100%;
+  }
 
   @media (orientation: landscape) {
     .xy__drawer-setting {
@@ -274,37 +277,13 @@
         margin-bottom: 32px;
       }
     }
-    
+
     .meeting {
       .wrap-video:first-child {
         .video .video-model .video-status {
           top: 0;
         }
       }
-
-      
-      // .horizontal-screen-mask {
-      //   display: block;
-      //   .icon-rotate {
-      //     width: 80px;
-      //     height: 68px;
-      //     margin-bottom: 16px;
-      //   }
-
-      //   position: absolute;
-      //   top: 0;
-      //   left: 0;
-      //   width: 100%;
-      //   height: 100%;
-      //   display: flex;
-      //   align-items: center;
-      //   justify-content: center;
-      //   background: $container-bg-color;
-      //   color: $white-color;
-      //   font-size: 12px;
-      //   flex-direction: column;
-      //   z-index: 99;
-      // }
     }
   }
 }

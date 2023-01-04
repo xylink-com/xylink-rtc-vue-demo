@@ -168,7 +168,7 @@ export const getOrderLayoutList = (layoutList) => {
   for (let key in baseLayout) {
     orderedLayoutList = orderedLayoutList.concat(baseLayout[key]);
   }
-
+  
   return setSelfRoster(orderedLayoutList, selfRoster);
 };
 

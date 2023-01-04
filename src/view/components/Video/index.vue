@@ -43,7 +43,7 @@
 </template>
 <script>
 export default {
-  props: ['id', 'item', 'layoutMode', 'model', 'forceLayoutId', 'client'],
+  props: ['index', 'id', 'item', 'layoutMode', 'model', 'forceLayoutId', 'client'],
   computed: {
     state() {
       return this.item.state;
@@ -85,6 +85,14 @@ export default {
           style = {
             ...style,
             ...fullStyle,
+          };
+        }
+      } else {
+        // 大屏，除content外，全屏显示
+        if (!this.item.roster.isContent && this.index === 0) {
+          style = {
+            ...style,
+            ...{ objectFit: 'cover' },
           };
         }
       }
