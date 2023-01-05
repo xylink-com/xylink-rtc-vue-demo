@@ -166,9 +166,17 @@ export const getOrderLayoutList = (layoutList) => {
   }
 
   for (let key in baseLayout) {
-    orderedLayoutList = orderedLayoutList.concat(baseLayout[key]);
+    let newLayout = baseLayout[key];
+
+    if ((newLayout.length > 1 && key === 'audioVideoUnmute') || key === 'videoUnmute') {
+      newLayout.sort((a, b) => {
+        return b.roster.ExpectWidth - a.roster.ExpectWidth;
+      });
+    }
+
+    orderedLayoutList = orderedLayoutList.concat(newLayout);
   }
-  
+
   return setSelfRoster(orderedLayoutList, selfRoster);
 };
 

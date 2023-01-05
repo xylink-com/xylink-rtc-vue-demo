@@ -1,6 +1,6 @@
 <template>
   <!-- <v-touch @doubletap="toggleFullScreen"> -->
-  <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef" :id="wrapVideoId" @dblclick="toggleFullScreen">
+  <div class="wrap-video" :style="videoWrapStyle" ref="videoWrapRef" :id="wrapVideoId" @dblclick.stop="toggleFullScreen">
     <div class="video">
       <div class="video-content" :style="{ border }">
         <div class="video-model">

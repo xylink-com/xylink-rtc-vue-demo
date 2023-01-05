@@ -441,6 +441,11 @@ export default {
           this.client.publish(this.stream, { isSharePeople: true });
 
           WindowResize.init(elementId, this.onResize);
+
+          // 移动端 锁屏、退出后台等 需关掉本地视频、声音
+          if (!isPc && !this.onhold) {
+            document.addEventListener('visibilitychange', this.visibilitychange);
+          }
         }
       } catch (err) {
         console.log('入会失败: ', err);
@@ -461,6 +466,17 @@ export default {
         }
       }
     },
+
+    async visibilitychange() {
+      xyRTC.logger.log('[demo] visibility change:', document.visibilityState);
+
+      // if (document.visibilityState === 'hidden') {
+      //   await this.client.muteVideo();
+      //   await this.client.muteAudio();
+
+      //   xyRTC.logger.log('[demo] document hidden video mute...');
+      // }
+    },
     // 挂断会议
     disconnected(msg = '') {
       message.info(msg);
@@ -471,6 +487,7 @@ export default {
     // 结束会议操作
     stop() {
       WindowResize.destroy();
+      document.removeEventListener('visibilitychange', this.visibilitychange);
 
       // 重置audio、video状态
       this.audio = this.user.muteAudio ? 'muteAudio' : 'unmuteAudio';
@@ -819,7 +836,7 @@ export default {
           calluri: endpointId,
           mediagroupid,
           resolution,
-          quality: resolution === 4 ? 2 : 1,
+          quality: resolution === 4 ? 2 : 0,
         });
 
         let extReqList = [];
