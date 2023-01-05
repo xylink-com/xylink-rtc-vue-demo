@@ -901,6 +901,7 @@ export default {
     },
     // CUSTOM布局
     createCustomLayout(e = this.layout) {
+      xyRTC.logger.log('[demo] createCustomLayout:', e);
       // 如果forceFullScreen 的情况下，layout返回空，则说明当前终端已不在会，则需重新请流
       if (this.forceLayoutId) {
         const forceLayoutList = e.filter((item) => item.roster.id === this.forceLayoutId);
@@ -947,6 +948,8 @@ export default {
 
       // 计算屏幕旋转信息
       nextLayoutListRef = this.calculateRotate();
+
+      xyRTC.logger.log('[demo] nextLayoutListRef:', nextLayoutListRef);
 
       this.layout = nextLayoutListRef;
     },

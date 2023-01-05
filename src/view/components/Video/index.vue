@@ -87,14 +87,6 @@ export default {
             ...fullStyle,
           };
         }
-      } else {
-        // 大屏，除content外，全屏显示
-        if (!this.item.roster.isContent && this.index === 0) {
-          style = {
-            ...style,
-            ...{ objectFit: 'cover' },
-          };
-        }
       }
 
       return style;
