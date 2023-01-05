@@ -979,17 +979,27 @@ export default {
 
       rotationInfo.forEach((item) => {
         let rotateInfo = {};
-        const { participantId, mediagroupid } = item;
+        const { participantId, mediagroupid, rotation } = item;
         const index = getLayoutIndexByRotateInfo(nextLayoutListRef, participantId, mediagroupid);
 
         if (index >= 0) {
           const layoutItem = cacheNextLayoutList[index];
-          const { width, height } = layoutItem?.positionInfo;
+
+          let { width, height } = layoutItem?.positionInfo;
 
           // 调用 xy-rtc-sdk 库提供的 helper 函数【getLayoutRotateInfo】方便第三方计算旋转信息
           // 提供 item 和 layoutItemContainerWidth 和 height 计算旋转信息
           // 返回旋转角度和宽高样式，此数据和AUTO布局的计算结果一致
           rotateInfo = getLayoutRotateInfo(item, width, height);
+
+          // 1和3对应需要将分辨率画面进行旋转90deg和270deg
+          const isRotate = rotation === 1 || rotation === 3;
+          
+          if (isRotate) {
+            rotateInfo = { ...rotateInfo, maxWidth: height + 'px' };
+          } else {
+            rotateInfo = { ...rotateInfo, maxHeight: '100%' };
+          }
 
           cacheNextLayoutList[index]['rotate'] = rotateInfo;
         }
