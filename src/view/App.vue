@@ -875,14 +875,16 @@ export default {
         }
       }
 
+      let isRequest = currentPage > 1;
+
       // 移动端横屏模式下，接收content，只显示content+远端
       if (!isVertical() && currentPage === 0 && contentUri) {
         realLen = 2;
+        isRequest = true;
       }
 
       const { temp, length } = TEMPLATE(isPc);
       let templateLayout = temp[realLen] || temp[Math.max(1, length)];
-      const isRequest = (currentPage === 0 && contentUri) || currentPage > 1;
 
       templateLayout.forEach((item, index) => {
         let { resolution = 2, quality = 1, type } = item;
