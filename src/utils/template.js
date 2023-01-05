@@ -200,11 +200,11 @@ const MOBILE_VERTICAL_TEMPLATE = {
   '2-1': [
     {
       position: [0, 0, 1, 0.5],
-      resolution: 2,
+      resolution: 3,
     },
     {
       position: [0, 0.5, 1, 0.5],
-      resolution: 2,
+      resolution: 1,
       type: TEMPLATE_TYPE.LOCAL,
     },
   ],
