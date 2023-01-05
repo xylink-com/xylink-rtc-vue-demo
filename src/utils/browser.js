@@ -309,5 +309,5 @@ export const isSupportMobileJoinMeeting = () => {
 
 // 判断移动端横竖屏 true:竖屏； false:横屏
 export const isVertical = () => {
-  return window.innerHeight >= window.innerWidth;
+  return window.matchMedia('(orientation: portrait)').matches;
 };
