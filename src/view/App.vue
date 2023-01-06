@@ -179,7 +179,7 @@ import { SERVER, ACCOUNT } from '@/utils/config';
 import { TEMPLATE } from '@/utils/template';
 import { message } from '@/utils/index';
 import { getLayoutIndexByRotateInfo, getScreenInfo, calculateBaseLayoutList, getOrderLayoutList } from '@/utils/layout';
-import { isPc, isSupportMobileJoinMeeting, isVertical } from '@/utils/browser';
+import { isPc, isSupportMobileJoinMeeting } from '@/utils/browser';
 import { WindowResize } from '@/utils/resize';
 
 const user = store.get('xy-user') || DEFAULT_LOCAL_USER;
@@ -885,7 +885,7 @@ export default {
       let isRequest = currentPage > 1;
 
       // 移动端横屏模式下，接收content，只显示content+远端
-      if (!isVertical() && currentPage === 0 && contentUri) {
+      if (currentPage === 0 && contentUri) {
         realLen = 2;
         isRequest = true;
       }
@@ -953,7 +953,7 @@ export default {
       // 移动端横屏模式下，首页，接收content, 只显示content+远端
       const { contentUri, participantCount } = this.confChangeInfo;
 
-      if (!isVertical() && this.pageInfo.currentPage === 0 && contentUri && participantCount > 1) {
+      if (this.pageInfo.currentPage === 0 && contentUri && participantCount > 1) {
         e = e.filter((item) => !item.roster.isLocal);
       }
 

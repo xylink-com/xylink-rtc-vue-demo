@@ -201,10 +201,12 @@ const MOBILE_VERTICAL_TEMPLATE = {
     {
       position: [0, 0, 1, 0.5],
       resolution: 3,
+      quality: 0,
     },
     {
       position: [0, 0.5, 1, 0.5],
-      resolution: 1,
+      resolution: 3,
+      quality: 0,
       type: TEMPLATE_TYPE.LOCAL,
     },
   ],
@@ -431,7 +433,8 @@ const Get_MOBILE_HORIZONTAL_TEMPLATE = (size) => {
     for (let i = 1; i < size; i++) {
       list.push({
         position: [0, 0, 0, 0],
-        resolution: 1,
+        resolution: size === 2 ? 3 : 1,
+        quality: size === 2 ? 0 : 1,
         customStyle: {
           width: layoutWidth + 'px',
           height: layoutHeight + 'px',
