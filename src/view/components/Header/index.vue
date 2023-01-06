@@ -14,14 +14,14 @@
         <i class="el-icon-warning-outline"></i>
       </div>
 
-      <el-popover v-if="isPc" popper-class="meeting-popover" placement="top" title="" trigger="click">
+      <el-popover v-if="isPc" popper-class="meeting-popover" placement="top" title="" trigger="hover">
         <div>
           <div class="meeting-info-name" :title="conferenceInfo.displayName">
             {{ conferenceInfo.displayName }}
           </div>
           <div class="meeting-info-number">
             会议号<span class="number">{{ conferenceInfo.number }}</span>
-            <span class="copy-btn" id="copyBtn" :data-clipboard-text="conferenceInfo.number" />
+            <span class="copy-btn" @click="copyNumber" />
           </div>
         </div>
         <div class="meeting-info-btn" slot="reference">
@@ -43,7 +43,7 @@
       </div>
       <div class="meeting-info-number">
         会议号<span class="number">{{ conferenceInfo.number }}</span>
-        <span class="copy-btn" id="copyBtn" :data-clipboard-text="conferenceInfo.number" />
+        <span class="copy-btn" @click="copyNumber" />
       </div>
     </el-drawer>
 
@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import Clipboard from 'clipboard';
 import Timmer from '@/components/Timmer';
 import EndCall from '@/view/components/EndCall';
 import { isPc } from '@/utils/browser';
@@ -70,13 +69,6 @@ export default {
       isPc,
     };
   },
-  mounted() {
-    const clipboard = new Clipboard('#copyBtn');
-
-    clipboard.on('success', function() {
-      message.info('已复制到剪贴板');
-    });
-  },
   methods: {
     cancel() {
       this.infoVisible = false;
@@ -86,6 +78,13 @@ export default {
     },
     stop() {
       this.$emit('stop');
+    },
+
+    // 复制
+    copyNumber() {
+      this.$copyText(this.conferenceInfo.number).then(() => {
+        message.info('已复制到剪贴板');
+      });
     },
   },
 };

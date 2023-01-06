@@ -280,7 +280,7 @@ export const { isPc } = platform();
 /**
  * ios 12.2+ safari
  * ios 14.3+ 微信浏览器
- *  android 8+ 微信浏览器 QQ浏览器
+ *  android 8+ 微信浏览器 QQ浏览器等
  */
 export const isSupportMobileJoinMeeting = () => {
   const { isAndroid, isPhone, isIPad, isSafari, iswxwork } = platform();

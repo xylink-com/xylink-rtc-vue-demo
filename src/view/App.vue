@@ -324,7 +324,20 @@ export default {
       const { result: isSupport } = result;
 
       if (!isSupport || (!isPc && !isSupportMobileJoinMeeting())) {
-        message.info('浏览器版本太低，请升级最新的Chrome浏览器访问');
+        let msg = '浏览器版本太低，请升级最新的Chrome浏览器访问';
+
+        /**
+         * 手机端支持以下系统版本及浏览器
+         *
+         * ios 12.2+ safari
+         * ios 14.3+ 微信浏览器
+         *  android 8+ 微信浏览器 QQ浏览器等
+         */
+        if (!isPc) {
+          msg = '请升级手机系统版本或尝试其他浏览器';
+        }
+
+        message.info(msg);
 
         return;
       }
