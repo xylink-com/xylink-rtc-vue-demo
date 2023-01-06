@@ -470,12 +470,19 @@ export default {
     async visibilitychange() {
       xyRTC.logger.log('[demo] visibility change:', document.visibilityState);
 
-      // if (document.visibilityState === 'hidden') {
-      //   await this.client.muteVideo();
-      //   await this.client.muteAudio();
+      if (document.visibilityState === 'hidden') {
+        if (this.video === 'unmuteVideo') {
+          await this.client.muteVideo();
+        }
 
-      //   xyRTC.logger.log('[demo] document hidden video mute...');
-      // }
+        xyRTC.logger.log('[demo] document hidden video mute...');
+      } else {
+        if (this.video === 'unmuteVideo') {
+          await this.client.unmuteVideo();
+
+          xyRTC.logger.log('[web]document visible video play...');
+        }
+      }
     },
     // 挂断会议
     disconnected(msg = '') {
@@ -994,7 +1001,7 @@ export default {
 
           // 1和3对应需要将分辨率画面进行旋转90deg和270deg
           const isRotate = rotation === 1 || rotation === 3;
-          
+
           if (isRotate) {
             rotateInfo = { ...rotateInfo, maxWidth: height + 'px' };
           } else {
