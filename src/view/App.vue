@@ -357,7 +357,7 @@ export default {
         const { clientId } = ACCOUNT;
 
         // 这里三方可以根据环境修改sdk log等级
-        // xyRTC.logger.setLogLevel('NONE');
+        xyRTC.logger.setLogLevel('NONE');
 
         this.client = xyRTC.createClient({
           // 注意，第三方集成时，默认是prd环境，不需要配置wss/http/log server地址；
@@ -481,19 +481,13 @@ export default {
     },
 
     async visibilitychange() {
-      xyRTC.logger.log('[demo] visibility change:', document.visibilityState);
-
       if (document.visibilityState === 'hidden') {
         if (this.video === 'unmuteVideo') {
           await this.client.muteVideo();
         }
-
-        xyRTC.logger.log('[demo] document hidden video mute...');
       } else {
         if (this.video === 'unmuteVideo') {
           await this.client.unmuteVideo();
-
-          xyRTC.logger.log('[web]document visible video play...');
         }
       }
     },
@@ -940,7 +934,6 @@ export default {
     },
     // CUSTOM布局
     createCustomLayout(e = this.layout) {
-      xyRTC.logger.log('[demo] createCustomLayout:', e);
       // 如果forceFullScreen 的情况下，layout返回空，则说明当前终端已不在会，则需重新请流
       if (this.forceLayoutId) {
         const forceLayoutList = e.filter((item) => item.roster.id === this.forceLayoutId);
@@ -987,8 +980,6 @@ export default {
 
       // 计算屏幕旋转信息
       nextLayoutListRef = this.calculateRotate();
-
-      xyRTC.logger.log('[demo] nextLayoutListRef:', nextLayoutListRef);
 
       this.layout = nextLayoutListRef;
     },
