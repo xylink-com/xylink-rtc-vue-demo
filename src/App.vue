@@ -406,7 +406,7 @@ export default {
         // xyRTC.logger.setLogLevel("NONE");
 
         this.client = xyRTC.createClient({
-          // 注意，第三方集成时，默认是prd环境，不需要配置wss/http/log server地址；
+          // 注意：内外网探测，如果没有得到locatorServer，则需配置wss为外网地址(wss://cloudapi.xylink.com)
           wssServer: locatorServer ? `wss://${locatorServer}` : wssServer,
           httpServer,
           logServer,
@@ -424,7 +424,8 @@ export default {
             offset: [32, 60, 20, 20],
           },
           clientId,
-          isSupportHybridCloud: !!locatorServer,
+          // 注意：内外网探测，如果得到locatorServer，则需配置此值为true；(默认: false)
+          isSupportHybridCloud: !!locatorServer, 
         });
 
         this.initEventListener(this.client);
