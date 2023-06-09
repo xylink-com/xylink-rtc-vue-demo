@@ -31,7 +31,7 @@
         <Common
           v-if="current === 'common'"
           :isInMeeting="isInMeeting"
-          :isThird="isThird"
+          :loginType="loginType"
           :localHide="localHide"
           :layoutMode="layoutMode"
           @setting="onHandleSetting"
@@ -55,7 +55,7 @@
       <Version />
       <Common
         :isInMeeting="isInMeeting"
-        :isThird="isThird"
+        :loginType="loginType"
         :localHide="localHide"
         :layoutMode="layoutMode"
         @setting="onHandleSetting"
@@ -100,11 +100,11 @@ export default {
     Version,
   },
   data() {
-    const { localHide = false, layoutMode, isThird } = this.setting || {};
+    const { localHide = false, layoutMode, loginType } = this.setting || {};
 
     return {
       current: 'common',
-      isThird,
+      loginType,
       layoutMode,
       localHide,
       isPc,

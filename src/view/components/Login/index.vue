@@ -11,7 +11,7 @@
     </div>
     <div class="login-container">
       <div class="login-content">
-        <div class="login-title">加入会议</div>
+        <div class="login-title">加入会议{{ loginType }}</div>
         <el-form
           :model="loginForm"
           status-icon
@@ -21,7 +21,7 @@
           class="login-form"
         >
           <el-form-item
-            v-if="isThird"
+            v-if="menu.extUserId"
             prop="extUserId"
             :rules="{
               required: true,
@@ -33,7 +33,7 @@
           </el-form-item>
 
           <el-form-item
-            v-if="!isThird"
+            v-if="menu.phone"
             prop="phone"
             :rules="{
               required: true,
@@ -45,7 +45,7 @@
           </el-form-item>
 
           <el-form-item
-            v-if="!isThird"
+            v-if="menu.phone"
             prop="password"
             :rules="{
               required: true,
@@ -59,6 +59,30 @@
               autocomplete="off"
               placeholder="输入账号密码"
             ></el-input>
+          </el-form-item>
+
+          <el-form-item
+            v-if="menu.authCode"
+            prop="authCode"
+            :rules="{
+              required: true,
+              message: '请输入授权码',
+              trigger: 'blur',
+            }"
+          >
+            <el-input v-model="loginForm.authCode" autocomplete="off" placeholder="输入授权码"></el-input>
+          </el-form-item>
+
+          <el-form-item
+            v-if="menu.channelId"
+            prop="channelId"
+            :rules="{
+              required: true,
+              message: '请输入渠道id',
+              trigger: 'blur',
+            }"
+          >
+            <el-input v-model="loginForm.channelId" autocomplete="off" placeholder="输入渠道id"></el-input>
           </el-form-item>
 
           <el-form-item prop="meeting">
@@ -76,6 +100,10 @@
 
           <el-form-item prop="meetingName">
             <el-input v-model="loginForm.meetingName" autocomplete="off" placeholder="输入会议中显示的名称"></el-input>
+          </el-form-item>
+
+          <el-form-item class="login-form-checkbox" v-if="menu.authCode">
+            <el-checkbox v-model="loginForm.isTempUser">临时账号</el-checkbox>
           </el-form-item>
 
           <el-button class="join-btn" type="primary" @click="submitForm('loginForm')">加入会议</el-button>
@@ -107,10 +135,16 @@
 <script>
 import store from '@/utils/store';
 import xyRTC from '@xylink/xy-rtc-sdk';
+import { loginTypeMap } from '@/utils/loginConfig';
 
 export default {
-  props: ['user', 'isThird'],
-  computed: {},
+  props: ['user', 'loginType'],
+
+  computed: {
+    menu() {
+      return loginTypeMap[this.loginType].menu;
+    },
+  },
   data() {
     return {
       xyRTC,
@@ -129,7 +163,6 @@ export default {
         if (!valid) {
           return false;
         }
-
         this.$emit('submitForm', this.loginForm);
       });
     },

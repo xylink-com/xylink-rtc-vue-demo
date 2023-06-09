@@ -4,7 +4,7 @@
       <Login
         v-if="!callMeeting && !callLoading"
         :user="user"
-        :isThird="setting.isThird"
+        :loginType="setting.loginType"
         @submitForm="submitForm"
         @onToggleSetting="onToggleSetting"
       />
@@ -39,9 +39,7 @@
             <div class="previous-button" @click.stop="switchPage('previous')">
               <svg-icon icon="previous" />
             </div>
-            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">
-              回首页
-            </div>
+            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">回首页</div>
           </div>
           <div v-if="pageStatus.next && isPc" class="next-box">
             <div class="next-button" @click.stop="switchPage('next')">
@@ -351,7 +349,19 @@ export default {
       let callStatus = true;
 
       try {
-        const { meeting, meetingPassword, meetingName, muteAudio, muteVideo, extUserId } = this.user;
+        const {
+          meeting,
+          meetingPassword,
+          meetingName,
+          muteAudio,
+          muteVideo,
+          extUserId,
+          phone = '',
+          password = '',
+          authCode = '',
+          channelId = '',
+          isTempUser = false
+        } = this.user;
         const { layoutMode = 'AUTO' } = this.setting;
         const { wssServer, httpServer, logServer } = SERVER;
         const { clientId } = ACCOUNT;
@@ -394,18 +404,33 @@ export default {
          */
         let result;
         const { extId } = ACCOUNT;
+        const { loginType } = this.setting;
 
         // 第三方企业用户登录
-        if (this.setting.isThird) {
+        if (loginType === 'THIRD') {
           result = await this.client.loginExternalAccount({
             // 用户名自行填写
             displayName: 'thirdName',
             extId,
             extUserId,
           });
-        } else {
+        }
+
+        if (loginType === 'XYLINK') {
           // 小鱼登录
-          result = await this.client.loginXYlinkAccount(user.phone || '', user.password || '');
+          result = await this.client.loginXYlinkAccount(phone, password);
+        }
+
+        if (loginType === 'AUTHCODE') {
+          // 授权码登录
+          result = await this.client.loginWithAuthCode({
+            displayName: meetingName || 'thirdName',
+            extId,
+            extUserId,
+            oauthCode: authCode,
+            channelId,
+            isTempUser,
+          });
         }
 
         // XYSDK:950120 成功

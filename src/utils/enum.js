@@ -13,7 +13,7 @@ import bruce from '@/assets/img/type/bruce.png';
 export const DEFAULT_SETTING = {
   localHide: false,
   layoutMode: isPc ? 'AUTO' : 'CUSTOM',
-  isThird: true,
+  loginType: "THIRD",
 };
 
 export const DEFAULT_LOCAL_USER = {
@@ -25,6 +25,7 @@ export const DEFAULT_LOCAL_USER = {
   muteVideo: false,
   muteAudio: false,
   extUserId: '',
+  authCode:"",
 };
 
 export const DEFAULT_CALL_INFO = {

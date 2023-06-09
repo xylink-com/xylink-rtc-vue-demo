@@ -15,9 +15,9 @@
       <div v-if="isPc" class="item">
         <div class="key">登录方式</div>
         <div class="value">
-          <el-select popper-class="xy-select" v-model="loginType" @change="onChangeLoginType">
-            <el-option v-for="key in Object.keys(loginTypeMap)" :key="key" :label="loginTypeMap[key]" :value="key">
-              {{ loginTypeMap[key] }}
+          <el-select popper-class="xy-select" v-model="loginTypeModal" @change="onChangeLoginType">
+            <el-option v-for="key in Object.keys(loginTypeMap)" :key="key" :label="loginTypeMap[key].title" :value="key">
+              {{ loginTypeMap[key].title }}
             </el-option>
           </el-select>
         </div>
@@ -34,20 +34,18 @@
 </template>
 <script>
 import { isPc } from '@/utils/browser';
+import { loginTypeMap } from '@/utils/loginConfig';
 
 export default {
-  props: ['isThird', 'layoutMode', 'localHide', 'isInMeeting'],
+  props: ['loginType', 'layoutMode', 'localHide', 'isInMeeting'],
   data() {
     return {
       layoutModeMap: {
         AUTO: '自动布局',
         CUSTOM: '自定义布局',
       },
-      loginTypeMap: {
-        XYLINK: '小鱼账号登录',
-        THIRD: '第三方账号登录',
-      },
-      loginType: this.isThird ? 'THIRD' : 'XYLINK',
+      loginTypeMap,
+      loginTypeModal: this.loginType,
       isLocalHide: this.localHide,
       mode: this.layoutMode,
       isPc,
@@ -58,7 +56,7 @@ export default {
       this.$emit('setting', { layoutMode: value });
     },
     onChangeLoginType(value) {
-      this.$emit('setting', { isThird: value === 'THIRD' });
+      this.$emit('setting', { loginType: value });
     },
     onChangeLocalHide(value) {
       this.$emit('setting', { localHide: value });
