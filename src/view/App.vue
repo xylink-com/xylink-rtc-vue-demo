@@ -360,7 +360,7 @@ export default {
           password = '',
           authCode = '',
           channelId = '',
-          isTempUser = false
+          isTempUser = false,
         } = this.user;
         const { layoutMode = 'AUTO' } = this.setting;
         const { wssServer, httpServer, logServer } = SERVER;
@@ -433,18 +433,17 @@ export default {
           });
         }
 
-        // XYSDK:950120 成功
-        // XYSDK:950104 账号密码错误
         if (result.code === 'XYSDK:950104') {
           message.info('登录密码错误');
 
           this.callMeeting = false;
           this.callLoading = false;
           return;
-        }
+        } else if (result.code !== 'XYSDK:950120') {
+          // 其他错误信息
+          const { err } = result.detail;
 
-        if (result.code !== 'XYSDK:950120') {
-          message.info('登录失败');
+          message.info(err?.response?.data?.userMessage || '登录失败');
 
           this.callMeeting = false;
           this.callLoading = false;
