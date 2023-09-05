@@ -11,7 +11,9 @@ export default class Resize {
     this.onResize = onResize;
 
     this.resizeObserver = new ResizeObserver(() => {
-      this.onResize();
+      const isHorizontal = window.innerWidth > window.innerHeight;
+
+      this.onResize({ isHorizontal });
     });
 
     this.element = document.getElementById(this.eleId);

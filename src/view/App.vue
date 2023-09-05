@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <div id="container" class="container">
+    <div
+      id="container"
+      class="container"
+    >
       <Login
         v-if="!callMeeting && !callLoading"
         :user="user"
@@ -16,7 +19,10 @@
         @stop="stop"
       />
 
-      <div class="meeting" v-if="callMeeting && !callLoading">
+      <div
+        class="meeting"
+        v-if="callMeeting && !callLoading"
+      >
         <MeetingHeader
           :className="toolVisible ? 'xy__show' : 'xy__hide'"
           :conferenceInfo="conferenceInfo"
@@ -34,25 +40,49 @@
           @forceFullScreen="forceFullScreen"
         />
 
-        <div class="meeting-content" id="meeting" @click.stop="handleToolVisible">
-          <div v-if="pageStatus.previous && isPc" class="previous-box">
-            <div class="previous-button" @click.stop="switchPage('previous')">
+        <div
+          class="meeting-content"
+          id="meeting"
+          @click.stop="handleToolVisible"
+        >
+          <div
+            v-if="pageStatus.previous && toolVisible"
+            class="previous-box"
+          >
+            <div
+              class="previous-button"
+              @click.stop="switchPage('previous')"
+            >
               <svg-icon icon="previous" />
             </div>
-            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">
-              回首页
-            </div>
+            <div
+              v-if="pageInfo.currentPage > 1"
+              class="home-button"
+              @click.stop="switchPage('home')"
+            >回首页</div>
           </div>
-          <div v-if="pageStatus.next && isPc" class="next-box">
-            <div class="next-button" @click.stop="switchPage('next')">
+          <div
+            v-if="pageStatus.next && toolVisible"
+            class="next-box"
+          >
+            <div
+              class="next-button"
+              @click.stop="switchPage('next')"
+            >
               <svg-icon icon="next" />
-              <div v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0" class="page-number">
+              <div
+                v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0"
+                class="page-number"
+              >
                 {{ pageInfo.currentPage }} /
                 {{ pageInfo.totalPage > 100 ? '...' : pageInfo.totalPage }}
               </div>
             </div>
           </div>
-          <div class="meeting-layout" :style="layoutStyle">
+          <div
+            class="meeting-layout"
+            :style="layoutStyle"
+          >
             <Video
               v-for="(item, index) in layout"
               :key="item.roster.id"
@@ -75,12 +105,21 @@
               :client="client"
             />
           </div>
-          <Barrage v-if="!onhold && subTitle.content && subTitle.action === 'push'" :subTitle="subTitle" />
-          <InOutReminder v-if="!onhold" :reminders="reminders" />
+          <Barrage
+            v-if="!onhold && subTitle.content && subTitle.action === 'push'"
+            :subTitle="subTitle"
+          />
+          <InOutReminder
+            v-if="!onhold"
+            :reminders="reminders"
+          />
         </div>
         <div :class="toolVisible ? 'meeting-footer xy__show' : 'meeting-footer xy__hide'">
           <div class="middle">
-            <div class="button setting" @click.stop="onToggleSetting">
+            <div
+              class="button setting"
+              @click.stop="onToggleSetting"
+            >
               <svg-icon icon="setting" />
               <div class="title">设置</div>
             </div>
@@ -94,13 +133,24 @@
               <div class="tag">{{ participantsCount }}</div>
             </div>
 
-            <div v-if="isPc" class="button layout" @click="switchLayout">
+            <div
+              v-if="isPc"
+              class="button layout"
+              @click="switchLayout"
+            >
               <svg-icon icon="layout" />
               <div class="title">窗口布局</div>
             </div>
 
-            <div v-if="isPc && isLocalShareContent" @click="stopShareContent" class="button button-warn share-stop">
-              <svg-icon icon="share_stop" type="danger" />
+            <div
+              v-if="isPc && isLocalShareContent"
+              @click="stopShareContent"
+              class="button button-warn share-stop"
+            >
+              <svg-icon
+                icon="share_stop"
+                type="danger"
+              />
               <div class="title">结束共享</div>
             </div>
 
@@ -113,7 +163,10 @@
               <div class="title">共享</div>
             </div>
 
-            <div v-if="isPc" class="line" />
+            <div
+              v-if="isPc"
+              class="line"
+            />
 
             <AudioButton
               :permission="permission"
@@ -124,9 +177,16 @@
               @audioOperate="audioOperate"
             />
 
-            <VideoButton :permission="permission" :video="video" @videoOperate="videoOperate" />
+            <VideoButton
+              :permission="permission"
+              :video="video"
+              @videoOperate="videoOperate"
+            />
 
-            <EndCall v-if="isPc" @stop="stop" />
+            <EndCall
+              v-if="isPc"
+              @stop="stop"
+            />
           </div>
         </div>
 
@@ -139,7 +199,11 @@
           @showParticipant="participantVisible = false"
         />
 
-        <Internels v-if="debug" :senderStatus="senderStatus" @switchDebug="switchDebug"></Internels>
+        <Internels
+          v-if="debug"
+          :senderStatus="senderStatus"
+          @switchDebug="switchDebug"
+        ></Internels>
       </div>
 
       <Setting
@@ -157,7 +221,7 @@
 </template>
 
 <script>
-import xyRTC, { getLayoutRotateInfo } from '@xylink/xy-rtc-sdk';
+import xyRTC, { getLayoutRotateInfo, LayoutOrientationType } from '@xylink/xy-rtc-sdk';
 import cloneDeep from 'clone-deep';
 import Login from './components/Login/index.vue';
 import Loading from './components/Loading/index.vue';
@@ -323,7 +387,7 @@ export default {
       const result = await (isPc ? xyRTC.checkSupportWebRTC() : xyRTC.checkSupportMobileWebRTC());
       const { result: isSupport } = result;
 
-      if (!isSupport || (!isPc && !isSupportMobileJoinMeeting())) {
+      if (!isSupport) {
         let msg = '浏览器版本太低，请升级最新的Chrome浏览器访问';
 
         /**
@@ -333,7 +397,7 @@ export default {
          * ios 14.3+ 微信浏览器
          *  android 8+ 微信浏览器 QQ浏览器等
          */
-        if (!isPc) {
+        if (!isPc && !isSupportMobileJoinMeeting()) {
           msg = '请升级手机系统版本或尝试其他浏览器';
         }
 
@@ -354,7 +418,7 @@ export default {
         const { meeting, meetingPassword, meetingName, muteAudio, muteVideo, extUserId } = this.user;
         const { layoutMode = 'AUTO' } = this.setting;
         const { wssServer, httpServer, logServer } = SERVER;
-        const { clientId } = ACCOUNT;
+        const { clientId, clientSecret } = ACCOUNT;
 
         // 这里三方可以根据环境修改sdk log等级
         xyRTC.logger.setLogLevel('NONE');
@@ -379,6 +443,12 @@ export default {
             offset: [0, 0, 0, 0],
           },
           clientId,
+          clientSecret,
+        });
+
+        this.client.setFeatureConfig({
+          enableAutoResizeLayout: false,
+          enableLayoutAvatar: true,
         });
 
         this.initEventListener(this.client);
@@ -408,9 +478,11 @@ export default {
           result = await this.client.loginXYlinkAccount(user.phone || '', user.password || '');
         }
 
+        const { code, msg, detail } = result || {};
+
         // XYSDK:950120 成功
         // XYSDK:950104 账号密码错误
-        if (result.code === 'XYSDK:950104') {
+        if (code === 'XYSDK:950104') {
           message.info('登录密码错误');
 
           this.callMeeting = false;
@@ -418,15 +490,15 @@ export default {
           return;
         }
 
-        if (result.code !== 'XYSDK:950120') {
-          message.info('登录失败');
+        if (code !== 'XYSDK:950120') {
+          message.info(msg || '登录失败');
 
           this.callMeeting = false;
           this.callLoading = false;
           return;
         }
 
-        const token = result.detail.access_token;
+        const token = detail.access_token;
 
         callStatus = await this.client.makeCall({
           token,
@@ -467,7 +539,21 @@ export default {
       }
     },
 
-    onResize() {
+    // 切换移动端布局方向
+    async handleOrientationChange(isHorizontal) {
+      if (isPc) return;
+
+      const { MOBILE_HORIZONTAL, MOBILE_VERTICAL } = LayoutOrientationType;
+      const orientation = isHorizontal ? MOBILE_HORIZONTAL : MOBILE_VERTICAL;
+
+      this.client.setLayoutOrientation(orientation);
+
+      this.orientation = orientation;
+    },
+
+    onResize({ isHorizontal }) {
+      if (!this.client) return;
+
       // CUSTOM 模式
       if (this.setting.layoutMode === 'CUSTOM') {
         // content模式，横竖屏显示数量不一致，需重新请流
@@ -477,7 +563,15 @@ export default {
         } else {
           this.createCustomLayout();
         }
+        return;
       }
+
+      // AUTO 模式
+      // 通过resize监听横竖屏变化，兼容性会更好
+      // 监听手机端方向 设置layout方向
+      this.handleOrientationChange(isHorizontal);
+
+      this.client.updateLayoutSize();
     },
 
     async visibilitychange() {
@@ -501,6 +595,7 @@ export default {
     // 结束会议操作
     stop() {
       WindowResize.destroy();
+      
       document.removeEventListener('visibilitychange', this.visibilitychange);
 
       // 重置audio、video状态
@@ -869,18 +964,15 @@ export default {
     customRequestLayout(cacheCustomPageInfo = this.pageInfo) {
       // forceFullScreen 请流
       this.calcForceFullScreenRequestLayout();
-
       if (this.forceLayoutId) {
         return;
       }
-
       const { chairManUrl, contentUri, participantCount } = this.confChangeInfo;
       const { pageSize, currentPage } = cacheCustomPageInfo;
       let reqList = [];
       let extReqList = [];
       const realContentLen = currentPage === 0 && contentUri ? 1 : 0;
       let realLen = participantCount + realContentLen;
-
       if (realLen > pageSize) {
         if (realLen < currentPage * pageSize) {
           realLen = realLen - (currentPage - 1) * pageSize;
@@ -888,38 +980,30 @@ export default {
           realLen = pageSize;
         }
       }
-
       let isRequest = currentPage > 1;
-
       // 移动端横屏模式下，接收content，只显示content+远端
       if (currentPage === 0 && contentUri) {
         realLen = 2;
         isRequest = true;
       }
-
-      const { temp, length } = TEMPLATE(isPc);
+      const { temp, length } = TEMPLATE();
       let templateLayout = temp[realLen] || temp[Math.max(1, length)];
-
       templateLayout.forEach((item, index) => {
         let { resolution = 2, quality = 1, type } = item;
         let calluri = '';
         let mediagroupid = 0;
-
         if (type === TEMPLATE_TYPE.LOCAL && !isRequest) {
           return;
         }
-
         // 只在第一页显示content和主会场
         if (currentPage === 0 && index === 0) {
           calluri = contentUri || chairManUrl;
           mediagroupid = contentUri ? 1 : 0;
-
           if (contentUri) {
             resolution = 4;
             quality = 2;
           }
         }
-
         reqList.push({
           mediagroupid,
           calluri,
@@ -927,7 +1011,6 @@ export default {
           quality,
         });
       });
-
       this.client?.requestNewLayout(reqList, pageSize, currentPage, extReqList, {
         uiShowLocalWhenPageMode: false,
       });
@@ -937,50 +1020,37 @@ export default {
       // 如果forceFullScreen 的情况下，layout返回空，则说明当前终端已不在会，则需重新请流
       if (this.forceLayoutId) {
         const forceLayoutList = e.filter((item) => item.roster.id === this.forceLayoutId);
-
         const item = forceLayoutList[0];
-
         // 当前layout为空，则说明当前终端已不在会，则需重新请流
         // 全屏对象是content, 但是远端已取消content或者取消指定广播该content
         if (!item || (item.roster.mediagroupid === 1 && !this.confChangeInfo.contentUri)) {
           this.forceLayoutId = '';
-
           this.customRequestLayout();
           return;
         }
-
         e = forceLayoutList;
       }
       // 此处渲染没有排序处理，需要自行将回调数据排序并展示
       // 此示例程序通过配置一个一组 TEMPLATE 模版数据，来计算layout container容器大小和layout item position/size/rotate 信息
       // 如果不想通过此方式实现，第三方获取到customLayoutList数据后，自行处理数据即可
       e = getOrderLayoutList(e);
-
       // 移动端横屏模式下，首页，接收content, 只显示content+远端
       const { contentUri, participantCount } = this.confChangeInfo;
-
       if (this.pageInfo.currentPage === 0 && contentUri && participantCount > 1) {
         e = e.filter((item) => !item.roster.isLocal);
       }
-
-      const { rate, temp } = TEMPLATE(isPc);
-
+      const { rate, temp } = TEMPLATE();
       const nextTemplateRate = rate[e.length] || 0.5625;
       const positionInfo = temp[e.length];
-
       const { rateWidth, rateHeight } = getScreenInfo(elementId, nextTemplateRate);
-
       // 设置layout container容器的大小
       this.screenInfo = { rateWidth, rateHeight };
-
       // 计算初始layoutList数据
       // 包含计算每个参会成员的大小、位置
       // 如果不需要做上述的getOrderLayoutList的排序操作，那么直接在calculateBaseLayoutList中的第一个参数配置e即可
       nextLayoutListRef = calculateBaseLayoutList(e, rateWidth, rateHeight, positionInfo);
-
       // 计算屏幕旋转信息
       nextLayoutListRef = this.calculateRotate();
-
       this.layout = nextLayoutListRef;
     },
     // CUSTOM布局 计算 layout 成员渲染
@@ -1330,5 +1400,5 @@ export default {
 };
 </script>
 <style lang="scss">
-@import '@/assets/style/index.scss';
+@import "@/assets/style/index.scss";
 </style>

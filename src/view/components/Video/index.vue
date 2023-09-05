@@ -1,13 +1,16 @@
 <template>
   <div
-    class="wrap-video"
-    :style="videoWrapStyle"
+    :class="['wrap-video', { 'video-small': item.templateConfig && item.templateConfig.isPIP }]"
+    :style="item.positionStyle"
     ref="videoWrapRef"
     :id="wrapVideoId"
-    @dblclick.stop="toggleFullScreen"
+    @click="toggleFullScreen($event)"
   >
     <div class="video">
-      <div class="video-content" :style="{ border }">
+      <div
+        class="video-content"
+        :style="{ border }"
+      >
         <div class="video-model">
           <div :class="audioOnlyClass">
             <div class="center">
@@ -18,15 +21,16 @@
 
           <div :class="videoMuteClass">
             <div class="center">
-              <div v-if="item.roster.isLocal">视频暂停</div>
-              <div v-else>对方忙，暂时关闭视频</div>
+              <FitAvatar
+                :textAvatar="item.textAvatar"
+                :avatar="item.avatar"
+                :containerWidth="containerWidth"
+              />
             </div>
           </div>
 
           <div :class="videoRequestClass">
-            <div class="center">
-              <div>视频请求中...</div>
-            </div>
+            <div class="request-loading"></div>
           </div>
 
           <div class="video-status">
@@ -41,59 +45,23 @@
         </div>
       </div>
 
-      <video :style="videoStyle" autoPlay></video>
+      <video
+        :style="item.rotate"
+        autoPlay
+      ></video>
     </div>
   </div>
 </template>
 <script>
+import FitAvatar from '../FitAvatar';
+import { Event } from "@/utils/event";
+
 export default {
   props: ['index', 'id', 'item', 'layoutMode', 'model', 'forceLayoutId', 'client'],
+  components: { FitAvatar },
   computed: {
     state() {
       return this.item.state;
-    },
-    videoWrapStyle() {
-      let wrapStyle = {};
-      // 全屏
-      if (this.isFullScreen) {
-        return (wrapStyle = {
-          position: 'fixed',
-          width: '100%',
-          height: '100%',
-          left: '0',
-          top: '0',
-          zIndex: '101',
-        });
-      }
-      const positionStyle = this.item.positionStyle;
-      if (positionStyle && positionStyle.width) {
-        wrapStyle = positionStyle;
-      }
-      return wrapStyle;
-    },
-    videoStyle() {
-      let style = this.item.rotate || {};
-
-      if (this.layoutMode === 'AUTO') {
-        let fullStyle = {};
-
-        if (this.isFullScreen) {
-          fullStyle = {
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-          };
-        }
-
-        if (this.item.roster.isContent || this.isFullScreen) {
-          style = {
-            ...style,
-            ...fullStyle,
-          };
-        }
-      }
-
-      return style;
     },
     border() {
       let border = '';
@@ -105,11 +73,10 @@ export default {
       return border;
     },
     audioOnlyClass() {
-      return `video-bg ${
-        this.state === 'AUDIO_TEL' || this.state === 'AUDIO_CONTENT' || this.state === 'AUDIO_ONLY'
-          ? 'video-show'
-          : 'video-hidden'
-      }`;
+      return `video-bg ${this.state === 'AUDIO_TEL' || this.state === 'AUDIO_CONTENT' || this.state === 'AUDIO_ONLY'
+        ? 'video-show'
+        : 'video-hidden'
+        }`;
     },
     videoMuteClass() {
       return `video-bg ${this.state === 'MUTE' || this.state === 'INVALID' ? 'video-show' : 'video-hidden'}`;
@@ -121,6 +88,9 @@ export default {
     isFullScreen() {
       return this.forceLayoutId === this.item.roster.id;
     },
+    containerWidth() {
+      return this.item.positionInfo?.width || 0;
+    },
   },
   data() {
     return {
@@ -131,9 +101,14 @@ export default {
     this.renderVideo(this.id);
   },
   methods: {
-    async toggleFullScreen() {
-      this.$emit('forceFullScreen', this.isFullScreen ? '' : this.id);
+    async toggleFullScreen(event) {
+      Event.click(event, () => {
+        event.stopPropagation();
+        
+        this.$emit('forceFullScreen', this.isFullScreen ? '' : this.id);
+      });
     },
+
     renderVideo(newValue) {
       if (newValue && this.client) {
         this.client.setVideoRenderer(newValue, 'wrap-' + newValue);
@@ -158,6 +133,11 @@ export default {
   overflow: hidden;
   z-index: 1;
 }
+.video-small {
+  border: 1px solid #fff;
+  box-sizing: content-box;
+}
+
 .video {
   width: 100%;
   height: 100%;
@@ -226,8 +206,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   transition: opacity ease 0.2s;
-  background: url('./img/meeting_bg.png') center center no-repeat;
-  background-size: cover;
+  background: linear-gradient(315deg, #282828 0%, #3d3d3d 100%);
 }
 .video .video-model .video-hidden {
   position: absolute;
@@ -253,11 +232,11 @@ export default {
   margin: 0 -8px 0 -2px;
 }
 .video .video-model .audio-muted-status {
-  background: url('./img/audio_mute.png') center center no-repeat;
+  background: url("./img/audio_mute.png") center center no-repeat;
   background-size: 60%;
 }
 .video .video-model .audio-unmuted-status {
-  background: url('./img/audio_unmute.png') center center no-repeat;
+  background: url("./img/audio_unmute.png") center center no-repeat;
   background-size: 60%;
 }
 .status {
@@ -297,5 +276,14 @@ export default {
 }
 .operate-icon:hover {
   background-color: rgba(42, 46, 51, 0.8);
+}
+
+.request-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url(~@/assets/img/loading.png) no-repeat;
+  background-size: 100% 100%;
+  animation: circleRoate 1s infinite linear;
 }
 </style>

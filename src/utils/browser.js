@@ -171,17 +171,8 @@ export const getWeixinVersion = () => {
 };
 
 export const getOperationSystem = () => {
-  const {
-    isIPad,
-    isMac,
-    isWindowsWechat,
-    isWindowsWxWechat,
-    isWindows,
-    isPhone,
-    isAndroid,
-    isLinux,
-    isMiniProgram,
-  } = platform();
+  const { isIPad, isMac, isWindowsWechat, isWindowsWxWechat, isWindows, isPhone, isAndroid, isLinux, isMiniProgram } =
+    platform();
 
   if (isWindowsWxWechat) {
     return 'Windows WXWechat';
@@ -207,17 +198,8 @@ export const getOperationSystem = () => {
 };
 
 export const getBrowserName = () => {
-  const {
-    isFirefox,
-    isChrome,
-    isSafari,
-    isWindowsWechat,
-    isWindowsWxWechat,
-    isZhazha,
-    isEdge,
-    isWeixin,
-    iswxwork,
-  } = platform();
+  const { isFirefox, isChrome, isSafari, isWindowsWechat, isWindowsWxWechat, isZhazha, isEdge, isWeixin, iswxwork } =
+    platform();
 
   if (isFirefox) {
     return 'Firefox';
@@ -305,9 +287,4 @@ export const isSupportMobileJoinMeeting = () => {
   isMinBrowser = isMinBrowser && !iswxwork;
 
   return isMinBrowser;
-};
-
-// 判断移动端横竖屏 true:竖屏； false:横屏
-export const isVertical = () => {
-  return window.matchMedia('(orientation: portrait)').matches;
 };
