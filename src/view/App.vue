@@ -39,9 +39,7 @@
             <div class="previous-button" @click.stop="switchPage('previous')">
               <svg-icon icon="previous" />
             </div>
-            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">
-              回首页
-            </div>
+            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">回首页</div>
           </div>
           <div v-if="pageStatus.next && isPc" class="next-box">
             <div class="next-button" @click.stop="switchPage('next')">
@@ -83,6 +81,11 @@
             <div class="button setting" @click.stop="onToggleSetting">
               <svg-icon icon="setting" />
               <div class="title">设置</div>
+            </div>
+
+            <div class="button setting" @click.stop="onMeetingUrl">
+              <svg-icon icon="setting" />
+              <div class="title">测试会控地址</div>
             </div>
 
             <div
@@ -354,7 +357,7 @@ export default {
         const { meeting, meetingPassword, meetingName, muteAudio, muteVideo, extUserId } = this.user;
         const { layoutMode = 'AUTO' } = this.setting;
         const { wssServer, httpServer, logServer } = SERVER;
-        const { clientId } = ACCOUNT;
+        const { clientId, clientSecret } = ACCOUNT;
 
         // 这里三方可以根据环境修改sdk log等级
         xyRTC.logger.setLogLevel('NONE');
@@ -379,6 +382,7 @@ export default {
             offset: [0, 0, 0, 0],
           },
           clientId,
+          clientSecret,
         });
 
         this.initEventListener(this.client);
@@ -407,6 +411,8 @@ export default {
           // 小鱼登录
           result = await this.client.loginXYlinkAccount(user.phone || '', user.password || '');
         }
+
+        console.log('result: ', result);
 
         // XYSDK:950120 成功
         // XYSDK:950104 账号密码错误
@@ -1192,6 +1198,12 @@ export default {
     // 打开/关闭 设置弹框
     onToggleSetting() {
       this.settingVisible = !this.settingVisible;
+    },
+
+    async onMeetingUrl() {
+      const meeting = await this.client.getConfMgmtUrl();
+
+      console.log('meeting: ', meeting);
     },
 
     // 隐藏本地画面

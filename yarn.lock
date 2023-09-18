@@ -1737,17 +1737,15 @@
   resolved "https://registry.npmmirror.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@2.0.8":
-  version "2.0.8"
-  resolved "https://registry.npmmirror.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-2.0.8.tgz#3e566142823d72a9c6215799cc5625edfa06c408"
-  integrity sha512-zKgOikti2LyHPzg1849Hb6L5VAQ0QfJ87+U+QdtJ+S6R3iL8UoEoSp5y0lcVEdtG+2HQUg1Sfb605sXcK92IIw==
+"@xylink/xy-rtc-sdk@^3.9.0":
+  version "3.9.0"
+  resolved "https://registry.npmmirror.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-3.9.0.tgz#fa82ac76d9be9aa49ee107afd34435e2f413e262"
+  integrity sha512-SkzJQwvAEqcAq+JkAPfBn/zWEr/qIEmiXMyAObGhIU8k81b5UUm2NSI8y7L92yH9KXp1vDBuOB7Oy6KoGeG64g==
   dependencies:
     crypto-browserify "^3.12.0"
     crypto-js "^4.1.1"
-    dexie "^2.0.4"
-    dexie-export-import "^1.0.0-rc.1"
+    encryptlong "^3.1.4"
     js-base64 "^3.6.1"
-    qs "^6.9.4"
     uuid "^7.0.2"
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.8:
@@ -3421,16 +3419,6 @@ detect-node@^2.0.4:
   resolved "https://registry.npmmirror.com/detect-node/-/detect-node-2.1.0.tgz#c9c70775a49c3d03bc2c06d9a73be550f978f8b1"
   integrity sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==
 
-dexie-export-import@^1.0.0-rc.1:
-  version "1.0.3"
-  resolved "https://registry.npmmirror.com/dexie-export-import/-/dexie-export-import-1.0.3.tgz#e93926a0a3939c68f5e2b80b48517ea4c6d88fde"
-  integrity sha512-oun27bUUEaeOfSZ8Cv3Nvj5s0LeANYBYQ7ROpF/3Zg1X/IALUnrX0hk5ZUMlYC3s99kFHimXX57ac5AlOdMzWw==
-
-dexie@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.npmmirror.com/dexie/-/dexie-2.0.4.tgz#6027a5e05879424e8f9979d8c14e7420f27e3a11"
-  integrity sha512-aQ/s1U2wHxwBKRrt2Z/mwFNHMQWhESerFsMYzE+5P5OsIe5o1kgpFMWkzKTtkvkyyEni6mWr/T4HUJuY9xIHLA==
-
 diffie-hellman@^5.0.0:
   version "5.0.3"
   resolved "https://registry.npmmirror.com/diffie-hellman/-/diffie-hellman-5.0.3.tgz#40e8ee98f55a2149607146921c63e1ae5f3d2875"
@@ -3658,6 +3646,11 @@ encodeurl@~1.0.2:
   version "1.0.2"
   resolved "https://registry.npmmirror.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==
+
+encryptlong@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.npmmirror.com/encryptlong/-/encryptlong-3.1.4.tgz#ef5543d8f1db91e7d05ee9122d5872e453956996"
+  integrity sha512-nx+om7MXaSBSBPBNKKPrOWMot/C0L0Ru8dy9WTyjO5k8Wo+1hsnK0d8uX1UjctkgcgEWhkKhVScniYDjXvnKgw==
 
 end-of-stream@^1.0.0, end-of-stream@^1.1.0:
   version "1.4.4"
@@ -7245,7 +7238,7 @@ qs@6.11.0:
   dependencies:
     side-channel "^1.0.4"
 
-qs@^6.11.0, qs@^6.9.4:
+qs@^6.11.0:
   version "6.11.2"
   resolved "https://registry.npmmirror.com/qs/-/qs-6.11.2.tgz#64bea51f12c1f5da1bc01496f48ffcff7c69d7d9"
   integrity sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==
