@@ -971,6 +971,13 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
+"@babel/runtime@^7.16.3":
+  version "7.22.15"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.22.15.tgz#38f46494ccf6cf020bd4eed7124b425e83e523b8"
+  integrity sha512-T0O+aa+4w0u06iNmapipJXMV4HoUir03hpx3/YqXXhu9xim3w+dVphjFWl1OH8NbZHw5Lbm9k45drDkgq2VNNA==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/template@^7.22.5":
   version "7.22.5"
   resolved "https://registry.npmmirror.com/@babel/template/-/template-7.22.5.tgz#0c8c4d944509875849bd0344ff0050756eefc6ec"
@@ -1190,6 +1197,18 @@
   version "7.0.12"
   resolved "https://registry.npmmirror.com/@types/json-schema/-/json-schema-7.0.12.tgz#d70faba7039d5fca54c83c7dbab41051d2b6f6cb"
   integrity sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==
+
+"@types/lodash-es@^4.17.7":
+  version "4.17.9"
+  resolved "https://registry.npmjs.org/@types/lodash-es/-/lodash-es-4.17.9.tgz#49dbe5112e23c54f2b387d860b7d03028ce170c2"
+  integrity sha512-ZTcmhiI3NNU7dEvWLZJkzG6ao49zOIjEgIE0RgV7wbPxU0f2xT3VSAHw2gmst8swH6V0YkLRGp4qPlX/6I90MQ==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.14.198"
+  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.198.tgz#4d27465257011aedc741a809f1269941fa2c5d4c"
+  integrity sha512-trNJ/vtMZYMLhfN45uLq4ShQSw0/S7xCTLLVM+WM1rmFpba/VS42jVUgaO3w/NOLiWR/09lnYk0yMaA/atdIsg==
 
 "@types/mime@*":
   version "3.0.1"
@@ -1737,16 +1756,33 @@
   resolved "https://registry.npmmirror.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@^3.9.0":
-  version "3.9.0"
-  resolved "https://registry.npmmirror.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-3.9.0.tgz#fa82ac76d9be9aa49ee107afd34435e2f413e262"
-  integrity sha512-SkzJQwvAEqcAq+JkAPfBn/zWEr/qIEmiXMyAObGhIU8k81b5UUm2NSI8y7L92yH9KXp1vDBuOB7Oy6KoGeG64g==
+"@xylink/xy-rtc-sdk@^3.9.1":
+  version "3.9.1"
+  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-3.9.1.tgz#9fb9f4624f44b00b9a9a6089af9bf37f2fa5eb1c"
+  integrity sha512-rOEgHJTvL78SNL9uF+lBbvXLOIzqHs8VCBXweoL7uXCVaAT0gIys7ccEctAHp96/KpRT5HIH40nc2VraWq8W3Q==
   dependencies:
+    "@xylink/xy_api_gateway" "^0.4.2"
     crypto-browserify "^3.12.0"
     crypto-js "^4.1.1"
     encryptlong "^3.1.4"
     js-base64 "^3.6.1"
     uuid "^7.0.2"
+
+"@xylink/xy_api_gateway@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.npmjs.org/@xylink/xy_api_gateway/-/xy_api_gateway-0.4.2.tgz#71df0581abe295bfd8530dda40cef9db0ff31a57"
+  integrity sha512-ajWTjIIzgAbW1r0T3WIVUaX7KPaZLBpM/EZ+QWR7WokrnfQfoAn8np7ALOEe7t+h52fIiNSbU/7UwmUf/WlaAQ==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@types/lodash-es" "^4.17.7"
+    axios "^0.25.0"
+    crypto-js "4.0.0"
+    dayjs "^1.11.6"
+    elliptic "^6.5.4"
+    lodash-es "^4.17.21"
+    qwebchannel "^6.2.0"
+    sm-crypto "^0.3.11"
+    url "^0.11.0"
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.8:
   version "1.3.8"
@@ -2057,6 +2093,13 @@ aws4@^1.8.0:
   version "1.12.0"
   resolved "https://registry.npmmirror.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
   integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
+
+axios@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.npmjs.org/axios/-/axios-0.25.0.tgz#349cfbb31331a9b4453190791760a8d35b093e0a"
+  integrity sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==
+  dependencies:
+    follow-redirects "^1.14.7"
 
 babel-eslint@^10.1.0:
   version "10.1.0"
@@ -3067,9 +3110,14 @@ crypto-browserify@^3.11.0, crypto-browserify@^3.12.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
+crypto-js@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/crypto-js/-/crypto-js-4.0.0.tgz#2904ab2677a9d042856a2ea2ef80de92e4a36dcc"
+  integrity sha512-bzHZN8Pn+gS7DQA6n+iUmBfl0hO5DJq++QP3U6uTucDtk/0iGpXd/Gg7CGR0p8tJhofJyaKoWBuJI4eAO00BBg==
+
 crypto-js@^4.1.1:
   version "4.1.1"
-  resolved "https://registry.npmmirror.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  resolved "https://registry.npmjs.org/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
   integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
 css-color-names@0.0.4, css-color-names@^0.0.4:
@@ -3252,6 +3300,11 @@ dashdash@^1.12.0:
   integrity sha512-jRFi8UDGo6j+odZiEpjazZaWqEal3w/basFjQHQEwVtZJGDpxbH1MeYluwCS8Xq5wmLJooDlMgvVarmWfGM44g==
   dependencies:
     assert-plus "^1.0.0"
+
+dayjs@^1.11.6:
+  version "1.11.10"
+  resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
+  integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
 
 de-indent@^1.0.2:
   version "1.0.2"
@@ -3609,7 +3662,7 @@ element-ui@^2.14.1:
     resize-observer-polyfill "^1.5.0"
     throttle-debounce "^1.0.1"
 
-elliptic@^6.5.3:
+elliptic@^6.5.3, elliptic@^6.5.4:
   version "6.5.4"
   resolved "https://registry.npmmirror.com/elliptic/-/elliptic-6.5.4.tgz#da37cebd31e79a1367e941b592ed1fbebd58abbb"
   integrity sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==
@@ -3649,7 +3702,7 @@ encodeurl@~1.0.2:
 
 encryptlong@^3.1.4:
   version "3.1.4"
-  resolved "https://registry.npmmirror.com/encryptlong/-/encryptlong-3.1.4.tgz#ef5543d8f1db91e7d05ee9122d5872e453956996"
+  resolved "https://registry.npmjs.org/encryptlong/-/encryptlong-3.1.4.tgz#ef5543d8f1db91e7d05ee9122d5872e453956996"
   integrity sha512-nx+om7MXaSBSBPBNKKPrOWMot/C0L0Ru8dy9WTyjO5k8Wo+1hsnK0d8uX1UjctkgcgEWhkKhVScniYDjXvnKgw==
 
 end-of-stream@^1.0.0, end-of-stream@^1.1.0:
@@ -4266,6 +4319,11 @@ follow-redirects@^1.0.0:
   version "1.15.2"
   resolved "https://registry.npmmirror.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+
+follow-redirects@^1.14.7:
+  version "1.15.3"
+  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
+  integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -5455,7 +5513,7 @@ js-base64@^2.1.9:
 
 js-base64@^3.6.1:
   version "3.7.5"
-  resolved "https://registry.npmmirror.com/js-base64/-/js-base64-3.7.5.tgz#21e24cf6b886f76d6f5f165bfcd69cc55b9e3fca"
+  resolved "https://registry.npmjs.org/js-base64/-/js-base64-3.7.5.tgz#21e24cf6b886f76d6f5f165bfcd69cc55b9e3fca"
   integrity sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==
 
 js-message@1.0.7:
@@ -5475,6 +5533,11 @@ js-yaml@^3.13.1:
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
+
+jsbn@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/jsbn/-/jsbn-1.1.0.tgz#b01307cb29b618a1ed26ec79e911f803c4da0040"
+  integrity sha512-4bYVV3aAMtDTTu4+xsDYa6sy9GyJ69/amsu9sYF2zqjiEoZA5xJi3BrfX3uY+/IekIu7MwdObdbDWpoZdBv3/A==
 
 jsbn@~0.1.0:
   version "0.1.1"
@@ -5672,6 +5735,11 @@ locate-path@^5.0.0:
   integrity sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==
   dependencies:
     p-locate "^4.1.0"
+
+lodash-es@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
 lodash.debounce@^4.0.8:
   version "4.0.8"
@@ -7268,6 +7336,11 @@ querystringify@^2.1.1:
   resolved "https://registry.npmmirror.com/querystringify/-/querystringify-2.2.0.tgz#3345941b4153cb9d082d8eee4cda2016a9aef7f6"
   integrity sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==
 
+qwebchannel@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.npmjs.org/qwebchannel/-/qwebchannel-6.2.0.tgz#6270c5bb7382abe56afbda52edf6939a0289e6a5"
+  integrity sha512-DfJMFZutES2w/v2L3q6id+RoqG92PxnWIkW6dBQh1Be3mo6y2BEckvNfymXlIyCxks5dz0UbmzKZ2jT1qjOCzw==
+
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmmirror.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -7367,6 +7440,11 @@ regenerator-runtime@^0.13.11:
   version "0.13.11"
   resolved "https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
   integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
+
+regenerator-runtime@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.14.0.tgz#5e19d68eb12d486f797e15a3c6a918f7cec5eb45"
+  integrity sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==
 
 regenerator-transform@^0.15.1:
   version "0.15.1"
@@ -7890,6 +7968,13 @@ slice-ansi@^2.1.0:
     ansi-styles "^3.2.0"
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
+
+sm-crypto@^0.3.11:
+  version "0.3.12"
+  resolved "https://registry.npmjs.org/sm-crypto/-/sm-crypto-0.3.12.tgz#c23ec52b5f8a23b2fc4e7467f5738a90cee7b0d2"
+  integrity sha512-272PBzB4PYaBdeGa41TH9ZlMGLPVRmS36Gs4FjmHwXIdihQypAbhhFWZTaa/3de69q2KfMme1M5O2W5+spAdrg==
+  dependencies:
+    jsbn "^1.1.0"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
@@ -8844,7 +8929,7 @@ uuid@^3.3.2:
 
 uuid@^7.0.2:
   version "7.0.3"
-  resolved "https://registry.npmmirror.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
   integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
 
 uuid@^8.3.2:

@@ -270,19 +270,52 @@
     height: 100%;
   }
 
+  .previous-box,
+  .next-box {
+    width: 44px;
+    height: auto;
+    margin-top: -44px;
+
+    .svg-icon {
+      width: 20px;
+      height: 20px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .previous-button,
+  .next-button,
+  .home-button {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+  }
+
+  .video .video-model .name {
+    font-size: 12px;
+    transform: scale(0.8);
+    margin-right: 2px;
+    margin-left: 2px;
+  }
+
+  .video .video-model .audio-muted-status,
+  .video .video-model .audio-unmuted-status {
+    width: 18px;
+    height: 19px;
+  }
+
+  .video-content {
+    // iOS 拖拽视频时，导致名称等元素消失
+    // 如果设置transform了属性，可能会导致z-index层级表现异常，层级高的元素被层级低的覆盖了。
+    // 解决方法：层级高的元素额外添加属性transform: translateZ(1px)，把元素提升上来
+    transform: translateZ(1px);
+  }
+
   @media (orientation: landscape) {
     .xy__drawer-setting {
       .feedback__footer {
         margin-top: 20px;
         margin-bottom: 32px;
-      }
-    }
-
-    .meeting {
-      .wrap-video:first-child {
-        .video .video-model .video-status {
-          top: 0;
-        }
       }
     }
   }

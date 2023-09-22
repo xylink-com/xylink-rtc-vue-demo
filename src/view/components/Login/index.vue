@@ -3,9 +3,7 @@
     <div class="login-header">
       <el-row type="flex" justify="center" align="center">
         <el-col :xs="24" :lg="22" :xl="16">
-          <a href="https://www.xylink.com/" target="_blank" rel="noopener noreferrer">
-            <img class="login-header-logo" src="@/assets/img/login-logo.png" alt="logo" />
-          </a>
+          <img class="login-header-logo" src="@/assets/img/login-logo.png" alt="logo" />
         </el-col>
       </el-row>
     </div>

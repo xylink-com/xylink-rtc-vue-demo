@@ -1,9 +1,7 @@
 /**
  * enum tools
  */
-import { isPc } from '@/utils/browser';
 
-import confernece from '@/assets/img/type/confernece.png';
 import h323 from '@/assets/img/type/h323.png';
 import nemo from '@/assets/img/type/nemo.png';
 import tvbox from '@/assets/img/type/tvbox.png';
@@ -12,7 +10,7 @@ import bruce from '@/assets/img/type/bruce.png';
 
 export const DEFAULT_SETTING = {
   localHide: false,
-  layoutMode: isPc ? 'AUTO' : 'CUSTOM',
+  layoutMode: 'AUTO',
   isThird: true,
 };
 
@@ -70,7 +68,6 @@ export const DEVICE_TYPE_MAP = {
   h323,
   bruce,
   desk: noicon,
-  confernece,
   default: noicon,
 };
 
