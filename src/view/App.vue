@@ -416,7 +416,7 @@ export default {
 
       try {
         const { meeting, meetingPassword, meetingName, muteAudio, muteVideo, extUserId } = this.user;
-        const { layoutMode = 'AUTO' } = this.setting;
+        const { layoutMode = 'AUTO', localHide = false } = this.setting;
         const { wssServer, httpServer, logServer } = SERVER;
         const { clientId, clientSecret } = ACCOUNT;
 
@@ -444,6 +444,8 @@ export default {
           },
           clientId,
           clientSecret,
+          // 隐藏本地画面
+          localHide
         });
 
         this.client.setFeatureConfig({
@@ -595,7 +597,7 @@ export default {
     // 结束会议操作
     stop() {
       WindowResize.destroy();
-      
+
       document.removeEventListener('visibilitychange', this.visibilitychange);
 
       // 重置audio、video状态
