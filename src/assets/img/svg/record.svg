@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="31px" height="23px" viewBox="0 0 31 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title></title>
+    <g id="Web-RTC" stroke="none" stroke-width="1" fill-rule="evenodd">
+        <g id="icon-录制-normal" transform="translate(0.169880, 0.000000)">
+            <path d="M15,1 C20.7989899,1 25.5,5.70101013 25.5,11.5 C25.5,17.2989899 20.7989899,22 15,22 C9.20101013,22 4.5,17.2989899 4.5,11.5 C4.5,5.70101013 9.20101013,1 15,1 Z M15,3 C10.3055796,3 6.5,6.80557963 6.5,11.5 C6.5,16.1944204 10.3055796,20 15,20 C19.6944204,20 23.5,16.1944204 23.5,11.5 C23.5,6.80557963 19.6944204,3 15,3 Z" id="椭圆形备份-6"></path>
+            <circle id="椭圆形备份-7" cx="15" cy="11.5" r="5.01166825"></circle>
+            <rect id="矩形" fill-opacity="0"  x="0" y="0" width="30" height="23"></rect>
+        </g>
+    </g>
+</svg>

@@ -37,6 +37,7 @@
           :content="content"
           :localHide="setting.localHide"
           :isLocalShareContent="isLocalShareContent"
+          :recordStatus="recordStatus"
           @forceFullScreen="forceFullScreen"
         />
 
@@ -161,6 +162,16 @@
             >
               <svg-icon icon="share" />
               <div class="title">共享</div>
+            </div>
+
+            <div
+              @click="toggleRecord"
+              :class="['button share', { 'disabled-button': disableRecord }]"
+            >
+              <svg-icon :icon="recordStatus=== 0? 'record':'record_stop'" />
+              <div class="title">
+                {{recordStatus === 1 ? '停止录制' : '开始录制'}}
+              </div>
             </div>
 
             <div
@@ -312,6 +323,17 @@ export default {
         next, // 下一页
       };
     },
+
+    disableRecord() {
+      const { meeting, control } = this.recordPermission;
+
+      return (
+        !meeting ||
+        !control ||
+        this.recordStatus === 2 ||
+        this.recordStatus === 3
+      );
+    }
   },
   data() {
     return {
@@ -360,6 +382,11 @@ export default {
       },
       isPc, // 是否是PC端
       toolVisible: true, // 操作条是否显示
+      recordStatus: 0, // 录制状态  0-未开启录制 1-本地开启录制 2-远端开启录制 3-远端录制暂停中
+      recordPermission: {
+        meeting: false, // 会议室 录制权限
+        control: false // 会控上报录制权限
+      }
     };
   },
   beforeMount() {
@@ -451,6 +478,7 @@ export default {
         this.client.setFeatureConfig({
           enableAutoResizeLayout: false,
           enableLayoutAvatar: true,
+          enableCheckRecordPermission: true  // 开启检测录制权限
         });
 
         this.initEventListener(this.client);
@@ -722,12 +750,18 @@ export default {
         }
       });
 
-      // 麦克风状态
+      // 会控相关状态
       client.on('meeting-control', (e) => {
-        const { disableMute, muteOperation, contentIsDisabled, chairmanUri } = e;
+        const { disableMute, muteOperation, contentIsDisabled, chairmanUri, recordIsDisabled } = e;
         let info = '';
         this.disableAudio = disableMute;
         this.contentIsDisabled = contentIsDisabled;
+
+        // 会控录制权限
+        this.recordPermission = {
+          ...this.recordPermission,
+          control: !recordIsDisabled
+        }
 
         this.chairman = {
           ...this.chairman,
@@ -751,6 +785,7 @@ export default {
         if (!this.onhold && info) {
           message.info(info);
         }
+
       });
 
       // 麦克风状态
@@ -852,6 +887,61 @@ export default {
 
         if (type === 'audio') {
           console.log('[xyRTC on]audio play failed:' + key, error);
+        }
+      });
+
+      // 录制权限
+      client.on('record-permission', (data) => {
+        const { authorize } = data;
+
+        // 会议室录制权限
+        this.recordPermission = {
+          ...this.recordPermission,
+          meeting: authorize
+        }
+      });
+
+      // 处理 本地录制结果上报
+      client.on('recording-state-changed', (data) => {
+        const { reason, state, reasonText, recordInfo } = data;
+        const { recordSessionId } = recordInfo;
+
+        // 开启录制成功
+        if (state === 'RECORD_STATE_STARTED') {
+          this.recordStatus = 1;
+
+          console.log('recordSessionId:::', recordSessionId);
+        }
+
+        // 停止录制成功
+        if (state === 'RECORD_STATE_IDLE') {
+          this.recordStatus = 0;
+
+          if (reason !== 'STATE:200') {
+            message.info(reasonText);
+          } else {
+            message.info('录制完成，录制视频已保存到云会议室管理员的文件夹中');
+          }
+        }
+      });
+
+      // 处理 远端录制状态/会控录制状态 上报
+      client.on('record-status-notification', (data) => {
+        const { isStart, isLocal, status, recordInfo } = data;
+        const { recordSessionId } = recordInfo;
+
+        console.log('recordSessionId:::', recordSessionId);
+
+
+        if (isStart && !isLocal) {
+          // 录制暂停
+          this.recordStatus = status === 'RECORDING_STATE_PAUSED'
+            ? 3
+            : 2
+        }
+
+        if (!isStart) {
+          this.recordStatus = 0;
         }
       });
     },
@@ -1398,6 +1488,17 @@ export default {
 
       this.client.switchDebug(this.debug);
     },
+
+    // 录制
+    async toggleRecord() {
+      if (this.recordStatus === 0) {
+        // 开启录制
+        await this.client.startCloudRecord();
+      } else if (this.recordStatus === 1) {
+        // 结束录制
+        await this.client.stopCloudRecord();
+      }
+    }
   },
 };
 </script>
