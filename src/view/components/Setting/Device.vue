@@ -1,15 +1,25 @@
 <template>
   <div class="setting__content-device">
-    <el-alert v-if="isShowStreamFailTips" title="" type="error">
+    <el-alert
+      v-if="isShowStreamFailTips"
+      title=""
+      type="error"
+    >
       <div class="stream-fail">
         <span class="stream-fail-tip">摄像头或麦克风打开失败</span>
-        <span class="click-me" @click="guideVisible = true">
+        <span
+          class="click-me"
+          @click="guideVisible = true"
+        >
           点我
         </span>
       </div>
     </el-alert>
 
-    <div v-if="iauth === 'prompt'" class="fixed">
+    <div
+      v-if="iauth === 'prompt'"
+      class="fixed"
+    >
       <div class="request__loading">
         <div class="init">
           请求获取摄像头&麦克风权限，请点击【允许】按钮进行授权操作
@@ -17,11 +27,21 @@
       </div>
     </div>
 
-    <div v-if="iauth === 'pending'" class="fixed">
-      <div class="request__loading" v-loading="true" element-loading-text="设备检测中..." />
+    <div
+      v-if="iauth === 'pending'"
+      class="fixed"
+    >
+      <div
+        class="request__loading"
+        v-loading="true"
+        element-loading-text="设备检测中..."
+      />
     </div>
 
-    <div v-if="iauth === 'error'" class="fixed">
+    <div
+      v-if="iauth === 'error'"
+      class="fixed"
+    >
       <div class="request__loading">
         <div class="init">
           浏览器版本太低，请升级最新的Chrome浏览器访问
@@ -36,8 +56,17 @@
             摄像头
           </div>
           <div class="value">
-            <el-select popper-class="xy-select" v-model="select.videoInValue" @change="changeVideoIn">
-              <el-option v-for="item in videoInList" :key="item.deviceId" :label="item.label" :value="item.deviceId">
+            <el-select
+              popper-class="xy-select"
+              v-model="select.videoInValue"
+              @change="changeVideoIn"
+            >
+              <el-option
+                v-for="item in videoInList"
+                :key="item.deviceId"
+                :label="item.label"
+                :value="item.deviceId"
+              >
               </el-option>
             </el-select>
           </div>
@@ -49,15 +78,31 @@
             <div :class="[videoStatusVisible ? 'visible' : 'hidden', 'preview-video-bg']">
               预览不可用
             </div>
-            <video class="preview-video" autoPlay :muted="true" ref="videoRef" :controls="false" playsInline></video>
+            <video
+              class="preview-video"
+              autoPlay
+              :muted="true"
+              ref="videoRef"
+              :controls="false"
+              playsInline
+            ></video>
           </div>
         </div>
 
         <div class="item">
           <div class="key">麦克风</div>
           <div class="value">
-            <el-select popper-class="xy-select" v-model="select.audioInputValue" @change="changeAudioInput">
-              <el-option v-for="item in audioInputList" :key="item.deviceId" :label="item.label" :value="item.deviceId">
+            <el-select
+              popper-class="xy-select"
+              v-model="select.audioInputValue"
+              @change="changeAudioInput"
+            >
+              <el-option
+                v-for="item in audioInputList"
+                :key="item.deviceId"
+                :label="item.label"
+                :value="item.deviceId"
+              >
               </el-option>
             </el-select>
           </div>
@@ -66,9 +111,15 @@
         <div class="item">
           <div class="key">音量</div>
           <div class="value">
-            <svg-icon icon="icon_device_volume" class="volume"/>
+            <svg-icon
+              icon="icon_device_volume"
+              class="volume"
+            />
             <div class="level-process">
-              <div class="level-value" :style="{ transform: `translateX(${audioLevel}%)` }"></div>
+              <div
+                class="level-value"
+                :style="{ transform: `translateX(${audioLevel}%)` }"
+              ></div>
             </div>
           </div>
         </div>
@@ -76,7 +127,11 @@
         <div class="item">
           <div class="key">扬声器</div>
           <div class="value">
-            <el-select popper-class="xy-select" v-model="select.audioOutputValue" @change="changeAudioOutput">
+            <el-select
+              popper-class="xy-select"
+              v-model="select.audioOutputValue"
+              @change="changeAudioOutput"
+            >
               <el-option
                 v-for="item in audioOutputList"
                 :key="item.deviceId"
@@ -91,8 +146,14 @@
         <div class="item">
           <div class="key"></div>
           <div class="value">
-            <span class="play-audio" @click="play">{{ testAudioStatus ? '停止扬声器' : '测试扬声器' }}</span>
-            <span v-if="testAudioStatus" class="play-audio-status">正在播放声音...</span>
+            <span
+              class="play-audio"
+              @click="play"
+            >{{ testAudioStatus ? '停止扬声器' : '测试扬声器' }}</span>
+            <span
+              v-if="testAudioStatus"
+              class="play-audio-status"
+            >正在播放声音...</span>
             <audio
               class="preview-audio"
               ref="audioRef"
@@ -106,18 +167,28 @@
       <div class="item">
         <div class="key">详细检测</div>
         <div class="value">
-          <a href="https://cdn.xylink.com/webrtc/web/index.html#/detect" rel="noopener noreferrer" target="_blank">
+          <a
+            href="https://cdn.xylink.com/webrtc/web/index.html#/detect"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             开始检测
           </a>
         </div>
       </div>
 
       <div class="setting__footer">
-        <el-button type="primary" @click="handleOk">保存</el-button>
+        <el-button
+          type="primary"
+          @click="handleOk"
+        >保存</el-button>
       </div>
     </div>
 
-    <Guide :visible="guideVisible" @close="guideVisible = false" />
+    <Guide
+      :visible="guideVisible"
+      @close="guideVisible = false"
+    />
   </div>
 </template>
 <script>
@@ -354,11 +425,11 @@ export default {
     },
 
     async handleChange(key, e) {
-      if (key === 'audioInputValue' || key === 'videoInValue') {
+      if (key === 'videoInValue') {
         await this.getVideoStream(e);
       }
 
-      if (key === 'videoInValue') {
+      if (key === 'audioInputValue') {
         await this.getAudioStream(e);
       }
 
