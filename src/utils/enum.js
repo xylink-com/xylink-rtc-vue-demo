@@ -33,27 +33,6 @@ export const DEFAULT_CALL_INFO = {
   callNumber: '',
 };
 
-export const NEXT_DEVICE = {
-  deviceId: '',
-  label: '',
-};
-
-/**
- * 默认设备列表信息
- */
-export const DEFAULT_DEVICE = {
-  detail: {
-    audioInputList: [],
-    audioOutputList: [],
-    videoInList: [],
-  },
-  nextDevice: {
-    audioInput: NEXT_DEVICE,
-    videoInput: NEXT_DEVICE,
-    audioOutput: NEXT_DEVICE,
-  },
-};
-
 /**
  * 参会者默认头像
  */
@@ -104,4 +83,13 @@ export const VIDEO_QUALITY = {
   LOW: 0,
   NORMAL: 1,
   HIGH: 2,
+};
+
+
+export const STORAGE_KEY = {
+  audioInput: 'XY-SETTING-AUDIO-INPUT-DEVICE-LIST',
+  audioOutput: 'XY-SETTING-AUDIO-OUTPUT-DEVICE-LIST',
+  videoInput: 'XY-SETTING-VIDEO-INPUT-DEVICE-LIST',
+  specifiedDevice: 'XY-SETTING-SPECIFIED-DEVICE',
+  xySetting: 'xy-setting'
 };

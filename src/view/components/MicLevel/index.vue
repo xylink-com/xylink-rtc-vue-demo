@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  props: ["audio", "stream"],
+  props: ["audio", "videoAudioTrack"],
   data() {
     return {
       audioLevelTimmer: null,
@@ -39,9 +39,9 @@ export default {
       }
 
       this.audioLevelTimmer = setInterval(async () => {
-        if (this.stream) {
+        if (this.videoAudioTrack) {
           try {
-            const level = await this.stream.getAudioLevel();
+            const level = await this.videoAudioTrack.getAudioLevel();
 
             // 更新Audio的实时音量显示
             this.micLevel = level;

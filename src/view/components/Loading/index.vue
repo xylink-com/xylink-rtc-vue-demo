@@ -17,13 +17,13 @@
   </div>
 </template>
 <script>
-import xyRTC from "@xylink/xy-rtc-sdk";
+import { setOutputAudioDevice } from "@xylink/xy-rtc-sdk";
 export default {
   props: ["conferenceInfo", "audioOutputValue"],
   async mounted() {
     const bgmAudioEle = this.$refs["bgmAudioRef"];
 
-    xyRTC.setOutputAudioDevice(bgmAudioEle, this.audioOutputValue || "default");
+    setOutputAudioDevice(bgmAudioEle, this.audioOutputValue || "default");
 
     if (bgmAudioEle.paused) {
       try {

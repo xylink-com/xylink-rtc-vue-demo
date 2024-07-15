@@ -1,9 +1,6 @@
 <template>
   <div id="app">
-    <div
-      id="container"
-      class="container"
-    >
+    <div id="container" class="container">
       <Login
         v-if="!callMeeting && !callLoading"
         :user="user"
@@ -15,14 +12,11 @@
       <Loading
         v-if="callMeeting && callLoading"
         :conferenceInfo="conferenceInfo"
-        :audioOutputValue="selectedDevice.audioOutput.deviceId"
+        :audioOutputValue="specifiedDevice.audioOutput.deviceId"
         @stop="stop"
       />
 
-      <div
-        class="meeting"
-        v-if="callMeeting && !callLoading"
-      >
+      <div class="meeting" v-if="callMeeting && !callLoading">
         <MeetingHeader
           :className="toolVisible ? 'xy__show' : 'xy__hide'"
           :conferenceInfo="conferenceInfo"
@@ -41,53 +35,27 @@
           @forceFullScreen="forceFullScreen"
         />
 
-        <div
-          class="meeting-content"
-          id="meeting"
-          @click.stop="handleToolVisible"
-        >
-          <div
-            v-if="pageStatus.previous && toolVisible"
-            class="previous-box"
-          >
-            <div
-              class="previous-button"
-              @click.stop="switchPage('previous')"
-            >
+        <div class="meeting-content" id="meeting" @click.stop="handleToolVisible">
+          <div v-if="pageStatus.previous && toolVisible" class="previous-box">
+            <div class="previous-button" @click.stop="switchPage('previous')">
               <svg-icon icon="previous" />
             </div>
-            <div
-              v-if="pageInfo.currentPage > 1"
-              class="home-button"
-              @click.stop="switchPage('home')"
-            >回首页</div>
+            <div v-if="pageInfo.currentPage > 1" class="home-button" @click.stop="switchPage('home')">回首页</div>
           </div>
-          <div
-            v-if="pageStatus.next && toolVisible"
-            class="next-box"
-          >
-            <div
-              class="next-button"
-              @click.stop="switchPage('next')"
-            >
+          <div v-if="pageStatus.next && toolVisible" class="next-box">
+            <div class="next-button" @click.stop="switchPage('next')">
               <svg-icon icon="next" />
-              <div
-                v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0"
-                class="page-number"
-              >
+              <div v-if="pageInfo.totalPage > 1 && pageInfo.currentPage > 0" class="page-number">
                 {{ pageInfo.currentPage }} /
                 {{ pageInfo.totalPage > 100 ? '...' : pageInfo.totalPage }}
               </div>
             </div>
           </div>
-          <div
-            class="meeting-layout"
-            :style="layoutStyle"
-          >
+          <div class="meeting-layout" :style="layoutStyle">
             <Video
               v-for="(item, index) in layout"
-              :key="item.roster.id"
-              :id="item.roster.id"
+              :key="item.id"
+              :id="item.id"
               :index="index"
               :model="templateMode"
               :layoutMode="setting.layoutMode"
@@ -106,21 +74,12 @@
               :client="client"
             />
           </div>
-          <Barrage
-            v-if="!onhold && subTitle.content && subTitle.action === 'push'"
-            :subTitle="subTitle"
-          />
-          <InOutReminder
-            v-if="!onhold"
-            :reminders="reminders"
-          />
+          <Barrage v-if="!onhold && subTitle.content && subTitle.action === 'push'" :subTitle="subTitle" />
+          <InOutReminder v-if="!onhold" :reminders="reminders" />
         </div>
         <div :class="toolVisible ? 'meeting-footer xy__show' : 'meeting-footer xy__hide'">
           <div class="middle">
-            <div
-              class="button setting"
-              @click.stop="onToggleSetting"
-            >
+            <div class="button setting" @click.stop="onToggleSetting">
               <svg-icon icon="setting" />
               <div class="title">设置</div>
             </div>
@@ -134,24 +93,13 @@
               <div class="tag">{{ participantsCount }}</div>
             </div>
 
-            <div
-              v-if="isPc"
-              class="button layout"
-              @click="switchLayout"
-            >
+            <div v-if="isPc" class="button layout" @click="switchLayout">
               <svg-icon icon="layout" />
               <div class="title">窗口布局</div>
             </div>
 
-            <div
-              v-if="isPc && isLocalShareContent"
-              @click="stopShareContent"
-              class="button button-warn share-stop"
-            >
-              <svg-icon
-                icon="share_stop"
-                type="danger"
-              />
+            <div v-if="isPc && isLocalShareContent" @click="stopShareContent" class="button button-warn share-stop">
+              <svg-icon icon="share_stop" type="danger" />
               <div class="title">结束共享</div>
             </div>
 
@@ -164,40 +112,27 @@
               <div class="title">共享</div>
             </div>
 
-            <div
-              @click="toggleRecord"
-              :class="['button share', { 'disabled-button': disableRecord }]"
-            >
-              <svg-icon :icon="recordStatus=== 0? 'record':'record_stop'" />
+            <div @click="toggleRecord" :class="['button share', { 'disabled-button': disableRecord }]">
+              <svg-icon :icon="recordStatus === 0 ? 'record' : 'record_stop'" />
               <div class="title">
-                {{recordStatus === 1 ? '停止录制' : '开始录制'}}
+                {{ recordStatus === 1 ? '停止录制' : '开始录制' }}
               </div>
             </div>
 
-            <div
-              v-if="isPc"
-              class="line"
-            />
+            <div v-if="isPc" class="line" />
 
             <AudioButton
               :permission="permission"
               :audio="audio"
               :disableAudio="disableAudio"
               :handStatus="handStatus"
-              :stream="stream"
+              :videoAudioTrack="videoAudioTrack"
               @audioOperate="audioOperate"
             />
 
-            <VideoButton
-              :permission="permission"
-              :video="video"
-              @videoOperate="videoOperate"
-            />
+            <VideoButton :permission="permission" :video="video" @videoOperate="videoOperate" />
 
-            <EndCall
-              v-if="isPc"
-              @stop="stop"
-            />
+            <EndCall v-if="isPc" @stop="stop" />
           </div>
         </div>
 
@@ -210,18 +145,14 @@
           @showParticipant="participantVisible = false"
         />
 
-        <Internels
-          v-if="debug"
-          :senderStatus="senderStatus"
-          @switchDebug="switchDebug"
-        ></Internels>
+        <Internels v-if="debug" :senderStatus="senderStatus" @switchDebug="switchDebug"></Internels>
       </div>
 
       <Setting
         v-if="settingVisible"
         :setting="{
           ...setting,
-          selectedDevice,
+          specifiedDevice,
         }"
         :visible="settingVisible"
         @cancel="onToggleSetting"
@@ -232,7 +163,7 @@
 </template>
 
 <script>
-import xyRTC, { getLayoutRotateInfo, LayoutOrientationType } from '@xylink/xy-rtc-sdk';
+import XYRTC, { getLayoutRotateInfo, LayoutOrientationType } from '@xylink/xy-rtc-sdk';
 import cloneDeep from 'clone-deep';
 import Login from './components/Login/index.vue';
 import Loading from './components/Loading/index.vue';
@@ -249,13 +180,14 @@ import VideoButton from './components/VideoButton/index.vue';
 import AudioButton from './components/AudioButton/index.vue';
 import PromptInfo from './components/PromptInfo/index.vue';
 import store from '@/utils/store';
-import { DEFAULT_LOCAL_USER, DEFAULT_DEVICE, DEFAULT_SETTING, DEFAULT_CALL_INFO, TEMPLATE_TYPE } from '@/utils/enum';
+import { DEFAULT_LOCAL_USER, DEFAULT_SETTING, DEFAULT_CALL_INFO, TEMPLATE_TYPE } from '@/utils/enum';
 import { SERVER, ACCOUNT } from '@/utils/config';
 import { TEMPLATE } from '@/utils/template';
 import { message } from '@/utils/index';
 import { getLayoutIndexByRotateInfo, getScreenInfo, calculateBaseLayoutList, getOrderLayoutList } from '@/utils/layout';
 import { isPc, isSupportMobileJoinMeeting } from '@/utils/browser';
 import { WindowResize } from '@/utils/resize';
+import { STORAGE_KEY } from '@/utils/enum';
 
 const user = store.get('xy-user') || DEFAULT_LOCAL_USER;
 
@@ -327,18 +259,13 @@ export default {
     disableRecord() {
       const { meeting, control } = this.recordPermission;
 
-      return (
-        !meeting ||
-        !control ||
-        this.recordStatus === 2 ||
-        this.recordStatus === 3
-      );
-    }
+      return !meeting || !control || this.recordStatus === 2 || this.recordStatus === 3;
+    },
   },
   data() {
     return {
       client: null,
-      stream: null,
+      videoAudioTrack: null,
       user: store.get('xy-user') || DEFAULT_LOCAL_USER, // 登录者信息
       callMeeting: false, // 呼叫状态
       callLoading: false, // 是否呼叫中
@@ -357,8 +284,12 @@ export default {
       debug: false, // 是否是调试模式（开启则显示所有画面的呼叫数据）
       settingVisible: false, // 设置
       setting: store.get('xy-setting') || DEFAULT_SETTING, // 设置信息
-      selectedDevice: DEFAULT_DEVICE.nextDevice, // 选择的设备信息
-      version: xyRTC.version,
+      specifiedDevice: store.get(STORAGE_KEY.specifiedDevice) || {
+        audioInput: null,
+        audioOutput: null,
+        videoInput: null,
+      }, // 选择的设备信息
+      version: XYRTC.version,
       permission: {
         camera: '',
         microphone: '',
@@ -385,8 +316,8 @@ export default {
       recordStatus: 0, // 录制状态  0-未开启录制 1-本地开启录制 2-远端开启录制 3-远端录制暂停中
       recordPermission: {
         meeting: false, // 会议室 录制权限
-        control: false // 会控上报录制权限
-      }
+        control: false, // 会控上报录制权限
+      },
     };
   },
   beforeMount() {
@@ -411,7 +342,7 @@ export default {
     async submitForm(values) {
       this.setUserInfo(values);
 
-      const result = await (isPc ? xyRTC.checkSupportWebRTC() : xyRTC.checkSupportMobileWebRTC());
+      const result = await XYRTC.checkSupportWebRTC();
       const { result: isSupport } = result;
 
       if (!isSupport) {
@@ -439,26 +370,17 @@ export default {
     async join() {
       this.callMeeting = true;
       this.callLoading = true;
-      let callStatus = true;
 
       try {
         const { meeting, meetingPassword, meetingName, muteAudio, muteVideo, extUserId } = this.user;
         const { layoutMode = 'AUTO', localHide = false } = this.setting;
-        const { wssServer, httpServer, logServer } = SERVER;
-        const { clientId, clientSecret } = ACCOUNT;
+        const { clientId, clientSecret, extId } = ACCOUNT;
 
         // 这里三方可以根据环境修改sdk log等级
-        xyRTC.logger.setLogLevel('NONE');
+        XYRTC.logger.setLogLevel('NONE');
 
-        this.client = xyRTC.createClient({
-          // 注意，第三方集成时，默认是prd环境，不需要配置wss/http/log server地址；
-          wssServer,
-          httpServer,
-          logServer,
-          // 入会是否是自动静音
-          muteAudio,
-          // 入会是否是关闭摄像头
-          muteVideo,
+        this.client = XYRTC.createClient({
+          server: SERVER,
           // 使用哪一种布局方式：
           // AUTO：自动布局，第三方只需要监听layout回调消息即可渲染布局和视频画面
           // CUSTOM：自定义布局，灵活性更高，但是实现较为复杂，自定义控制参会成员的位置、大小和画面质量
@@ -471,15 +393,18 @@ export default {
           },
           clientId,
           clientSecret,
-          // 隐藏本地画面
-          localHide
+          extId,
         });
 
         this.client.setFeatureConfig({
           enableAutoResizeLayout: false,
           enableLayoutAvatar: true,
-          enableCheckRecordPermission: true  // 开启检测录制权限
+          enableCheckRecordPermission: true, // 开启检测录制权限
+          // 隐藏 Local 画面配置项
+          enableHideLocalView: localHide,
         });
+
+        this.enableHideLocalView = localHide;
 
         this.initEventListener(this.client);
 
@@ -492,12 +417,10 @@ export default {
          * 重要提示
          * 重要提示
          */
-        let result;
-        const { extId } = ACCOUNT;
 
         // 第三方企业用户登录
         if (this.setting.isThird) {
-          result = await this.client.loginExternalAccount({
+          await this.client.loginExternalAccount({
             // 用户名自行填写
             displayName: 'thirdName',
             extId,
@@ -505,68 +428,92 @@ export default {
           });
         } else {
           // 小鱼登录
-          result = await this.client.loginXYlinkAccount(user.phone || '', user.password || '');
+          await this.client.loginXYlinkAccount(user.phone || '', user.password || '');
         }
 
-        const { code, msg, detail } = result || {};
-
-        // XYSDK:950120 成功
-        // XYSDK:950104 账号密码错误
-        if (code === 'XYSDK:950104') {
-          message.info('登录密码错误');
-
-          this.callMeeting = false;
-          this.callLoading = false;
-          return;
-        }
-
-        if (code !== 'XYSDK:950120') {
-          message.info(msg || '登录失败');
-
-          this.callMeeting = false;
-          this.callLoading = false;
-          return;
-        }
-
-        const token = detail.access_token;
-
-        callStatus = await this.client.makeCall({
-          token,
+        await this.client.makeCall({
           confNumber: meeting,
           password: meetingPassword,
           displayName: meetingName,
+          muteAudio,
+          muteVideo,
         });
 
-        if (callStatus) {
-          // 订阅全部参会者信息
-          this.client.subscribeBulkRoster();
+        this.videoAudioTrack = await this.client.createVideoAudioTrack();
 
-          this.stream = xyRTC.createStream();
+        this.initPeopleTrackEvent();
 
-          const { audioInput, audioOutput, videoInput } = this.selectedDevice;
+        const { audioInput, audioOutput, videoInput } = this.specifiedDevice;
 
-          await this.stream.init({
-            devices: {
-              audioInputValue: audioInput.deviceId || 'default',
-              audioOutputValue: audioOutput.deviceId || 'default',
-              videoInValue: videoInput.deviceId || '',
-            },
-          });
+        await this.videoAudioTrack.capture({
+          audioInputId: audioInput?.isDefault ? '' : audioInput?.deviceId,
+          audioOutputId: audioOutput?.isDefault ? '' : audioOutput?.deviceId,
+          videoInputId: videoInput?.isDefault ? '' : videoInput?.deviceId,
+        });
 
-          this.client.publish(this.stream, { isSharePeople: true });
+        this.client.publish(this.videoAudioTrack);
 
-          WindowResize.init(elementId, this.onResize);
+        WindowResize.init(elementId, this.onResize);
 
-          // 移动端 锁屏、退出后台等 需关掉本地视频、声音
-          if (!isPc && !this.onhold) {
-            document.addEventListener('visibilitychange', this.visibilitychange);
-          }
+        // 移动端 锁屏、退出后台等 需关掉本地视频、声音
+        if (!isPc && !this.onhold) {
+          document.addEventListener('visibilitychange', this.visibilitychange);
         }
       } catch (err) {
+        this.callMeeting = false;
+        this.callLoading = false;
+
         console.log('入会失败: ', err);
 
         this.disconnected(err.msg || '呼叫异常，请稍后重试');
       }
+    },
+
+    initPeopleTrackEvent() {
+      if (!this.videoAudioTrack) return;
+
+      // 设备切换
+      this.videoAudioTrack.on('device', async (e) => {
+        const { detail, nextDevice } = e;
+
+        this.updateDeviceList(detail);
+        this.deviceChangeTips(nextDevice);
+      });
+
+      // 设备权限
+      this.videoAudioTrack.on('permission', async (e) => {
+        this.permission = e;
+      });
+
+      this.videoAudioTrack.on('track-error', (e) => {
+        const { msg = '' } = e;
+
+        msg && message.info(msg);
+      });
+    },
+
+    // 获取最新的设备列表，直接更新
+    updateDeviceList(device) {
+      const { audioInputList, audioOutputList, videoInputList } = device;
+
+      this.audioInputList = audioInputList;
+      this.audioOutputList = audioOutputList;
+      this.videoInputList = videoInputList;
+    },
+    // 设备切换提示
+    deviceChangeTips(nextDevice) {
+      const { audioInput, videoInput, audioOutput } = nextDevice;
+      const { label: aiLabel } = audioInput || {};
+      const { label: aoLabel } = audioOutput || {};
+      const { label: viLabel } = videoInput || {};
+
+      videoInput && message.info(`摄像头设备已切换至 ${viLabel}`);
+
+      audioInput && message.info(`麦克风设备已切换至 ${aiLabel}`);
+
+      setTimeout(() => {
+        audioOutput && message.info(`扬声器设备已切换至 ${aoLabel}`);
+      }, 500);
     },
 
     // 切换移动端布局方向
@@ -647,7 +594,6 @@ export default {
       this.settingVisible = false;
 
       this.client = null;
-      this.stream = null;
       this.content = null;
       this.participantsCount = 0;
       this.conferenceInfo = DEFAULT_CALL_INFO;
@@ -697,24 +643,24 @@ export default {
       });
 
       // AUTO 布局回调layout数据，使用此数据直接渲染画面即可
-      // CUSTOM 布局不需要监听此数据
+      // [v4.0.0] CUSTOM 布局需要监听此数据
       client.on('layout', (e) => {
-        this.layout = e;
+        if (this.setting.layoutMode === 'AUTO') {
+          this.layout = e;
 
-        if (this.forceLayoutId) {
-          const forceLayout = this.layout.find((item) => item.roster.id === this.forceLayoutId);
+          if (this.forceLayoutId) {
+            const forceLayout = this.layout.find((item) => item.id === this.forceLayoutId);
 
-          if (!forceLayout) {
-            this.forceLayoutId = '';
+            if (!forceLayout) {
+              this.forceLayoutId = '';
+            }
           }
+        } else {
+          // CUSTOM 自定义布局处理此数据
+          // 通过 requestLayout 请求视频流之后，会通过此回调返回所有的参会者列表数据
+          // 通过处理处理此数据，展示画面
+          this.createCustomLayout(e);
         }
-      });
-
-      // CUSTOM 自定义布局处理此数据
-      // 通过 requestLayout 请求视频流之后，会通过此回调返回所有的参会者列表数据
-      // 通过处理处理此数据，展示画面
-      client.on('custom-layout', (e) => {
-        this.createCustomLayout(e);
       });
 
       // 动态计算的显示容器信息
@@ -760,8 +706,8 @@ export default {
         // 会控录制权限
         this.recordPermission = {
           ...this.recordPermission,
-          control: !recordIsDisabled
-        }
+          control: !recordIsDisabled,
+        };
 
         this.chairman = {
           ...this.chairman,
@@ -785,7 +731,6 @@ export default {
         if (!this.onhold && info) {
           message.info(info);
         }
-
       });
 
       // 麦克风状态
@@ -835,22 +780,6 @@ export default {
         }
       });
 
-      // 设备切换
-      client.on('devices', async (e) => {
-        const { audioInput, videoInput, audioOutput } = e.nextDevice;
-
-        videoInput?.label && message.info(`视频设备已自动切换至 ${videoInput.label}`);
-        audioInput?.label && message.info(`音频输入设备已自动切换至 ${audioInput.label}`);
-        setTimeout(() => {
-          audioOutput?.label && message.info(`音频输出设备已自动切换至 ${audioOutput.label}`);
-        }, 500);
-      });
-
-      // 设备权限
-      client.on('permission', async (e) => {
-        this.permission = e;
-      });
-
       // 被移入等候室
       client.on('onhold', (e) => {
         this.onhold = e;
@@ -897,8 +826,8 @@ export default {
         // 会议室录制权限
         this.recordPermission = {
           ...this.recordPermission,
-          meeting: authorize
-        }
+          meeting: authorize,
+        };
       });
 
       // 处理 本地录制结果上报
@@ -932,12 +861,9 @@ export default {
 
         console.log('recordSessionId:::', recordSessionId);
 
-
         if (isStart && !isLocal) {
           // 录制暂停
-          this.recordStatus = status === 'RECORDING_STATE_PAUSED'
-            ? 3
-            : 2
+          this.recordStatus = status === 'RECORDING_STATE_PAUSED' ? 3 : 2;
         }
 
         if (!isStart) {
@@ -1358,75 +1284,17 @@ export default {
 
     // 隐藏本地画面
     async toggleLocal() {
-      const { status } = await this.client.toggleLocal();
+      this.enableHideLocalView = !this.enableHideLocalView;
+
+      const { status } = await this.client.setHideLocalView(this.enableHideLocalView);
       const msg = status ? '已开启隐藏本地画面模式' : '已关闭隐藏本地画面模式';
       message.info(msg);
     },
 
-    // 切换设备
-    async switchDevice(key, device) {
-      const deviceMap = {
-        audioInput: {
-          key: 'audio',
-          zh_text: '音频输入设备',
-        },
-        audioOutput: {
-          key: 'video',
-          zh_text: '音频输出设备',
-        },
-        videoInput: {
-          key: 'video',
-          zh_text: '视频设备',
-        },
-      };
-
-      const { deviceId, label } = device;
-      try {
-        if (key === 'audioOutput') {
-          await this.stream.setAudioOutput(deviceId);
-        } else if (key === 'audioInput' || key === 'videoInput') {
-          await this.stream.switchDevice(deviceMap[key]['key'], deviceId);
-        }
-        message.info(`${deviceMap[key]['zh_text']}已自动切换至 ${label}`);
-      } catch (err) {
-        message.error('设备切换失败');
-        return Promise.reject(err);
-      }
-    },
-
-    async onSwitchDevice(nextDevice) {
-      const { audioInput, videoInput, audioOutput } = nextDevice || DEFAULT_DEVICE.nextDevice;
-
-      try {
-        if (audioInput?.deviceId !== this.selectedDevice?.audioInput?.deviceId) {
-          await this.switchDevice('audioInput', audioInput);
-        }
-
-        if (audioOutput?.deviceId !== this.selectedDevice?.audioOutput?.deviceId) {
-          await this.switchDevice('audioOutput', audioOutput);
-        }
-
-        if (videoInput?.deviceId !== this.selectedDevice?.videoInput?.deviceId) {
-          await this.switchDevice('videoInput', videoInput);
-        }
-      } catch (err) {
-        return Promise.reject(err);
-      }
-    },
-
     async onSaveSetting(data) {
-      if (data['selectedDevice']) {
-        this.settingVisible = false;
-
-        try {
-          if (this.stream) {
-            await this.onSwitchDevice(data['selectedDevice']);
-          }
-          this.selectedDevice = data.selectedDevice;
-        } catch (err) {
-          console.log('switch device err:', err);
-        }
-
+      if (data['specifiedDevice']) {
+        this.specifiedDevice = data['specifiedDevice'];
+        store.set(STORAGE_KEY.specifiedDevice, { ...this.specifiedDevice });
         return;
       }
 
@@ -1448,37 +1316,36 @@ export default {
 
     // 停止分享content
     stopShareContent() {
-      this.client.stopShareContent();
+      if (this.contentTrack) {
+        this.contentTrack.close();
+        this.contentTrack = null;
+      }
+
       this.isLocalShareContent = false;
     },
 
     // 分享content内容
     async shareContent() {
       try {
+        this.contentTrack = await this.client.createContentTrack();
+
+        this.contentTrack.on('start-share-content', () => {
+          this.client.publish(this.contentTrack);
+        });
+
+        this.contentTrack.on('stop-share-content', () => {
+          this.stopShareContent();
+        });
+
         // screenAudio 共享时，是否采集系统音频。 true: 采集； false: 不采集
-        const result = await this.stream.createContentStream({
+        await this.contentTrack.capture({
           screenAudio: true,
         });
 
         // 创建分享屏幕stream成功
-        if (result) {
-          this.isLocalShareContent = true;
-
-          this.stream.on('start-share-content', () => {
-            this.client.publish(this.stream, { isShareContent: true });
-          });
-
-          this.stream.on('stop-share-content', () => {
-            this.stopShareContent();
-          });
-        } else {
-          message.info('分享屏幕失败');
-        }
+        this.isLocalShareContent = true;
       } catch (err) {
-        console.log('share content failed:', err);
-        if (err && err.code !== 'XYSDK:950501') {
-          message.info(err.msg || '分享屏幕失败');
-        }
+        this.stopShareContent();
       }
     },
 
@@ -1498,10 +1365,10 @@ export default {
         // 结束录制
         await this.client.stopCloudRecord();
       }
-    }
+    },
   },
 };
 </script>
 <style lang="scss">
-@import "@/assets/style/index.scss";
+@import '@/assets/style/index.scss';
 </style>

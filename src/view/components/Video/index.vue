@@ -79,7 +79,7 @@ export default {
         }`;
     },
     videoMuteClass() {
-      return `video-bg ${this.state === 'MUTE' || this.state === 'INVALID' ? 'video-show' : 'video-hidden'}`;
+      return `video-bg ${this.state === 'MUTE'  ? 'video-show' : 'video-hidden'}`;
     },
     videoRequestClass() {
       return `video-bg ${this.state === 'REQUEST' ? 'video-show' : 'video-hidden'}`;

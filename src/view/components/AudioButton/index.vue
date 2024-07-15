@@ -3,7 +3,7 @@
     <div class="mic-icon">
       <MicLevel
         v-if="permission.microphone !== 'denied' && !disableAudio"
-        :stream="stream"
+        :videoAudioTrack="videoAudioTrack"
         :audio="audio"
       />
       <svg-icon :icon="audioValue.svgIcon" :type="audioValue.svgType" />
@@ -16,7 +16,7 @@
 import MicLevel from "../MicLevel/index.vue";
 
 export default {
-  props: ["stream", "permission", "audio", "disableAudio", "handStatus"],
+  props: ["videoAudioTrack", "permission", "audio", "disableAudio", "handStatus"],
   components: {
     MicLevel,
   },
