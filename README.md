@@ -1,6 +1,6 @@
-# XYLINK WEBRTC SDK
+# XYLink WebRTC SDK
 
-小鱼易连 WebRTC sdk demo 项目。
+小鱼易连 WebRTC SDK DEMO 项目。
 
 此项目使用到的技术栈：vue
 
@@ -8,9 +8,10 @@
 
 1. 注意在`src/utils/config.js`中配置第三方登录所需的
 
-- extId：企业 id
-- clientId： Client id
-- clientSecret: Client Secret
+- extId
+- clientId
+- clientSecret
+- SERVER
 
 ## 运行
 
