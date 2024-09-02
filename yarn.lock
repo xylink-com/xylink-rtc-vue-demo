@@ -1737,10 +1737,10 @@
   resolved "https://registry.npmmirror.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-4.0.0.tgz#fe04fdc496be687c25ce17284fa76fce2d41cf1d"
-  integrity sha512-j8QMgB2kyLfkHoigOwK082HrKAcC3MwWQvqaEiHABVAl3BAMjw67iEHZQRI4oLIErlYK/JieSJ2Q5MwzY0w3Mg==
+"@xylink/xy-rtc-sdk@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.npmmirror.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-4.0.1.tgz#043b42c627206b540659fb7f3d4a5da8b4b3520e"
+  integrity sha512-fJRiDizT3o5qAzgRop8MNEgLSndRKO6Eg5NYUZsO5eIg4RIoDBBeeib9zSA547itZQDuzskj5+TM6GEVfV9S1g==
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.8:
   version "1.3.8"
