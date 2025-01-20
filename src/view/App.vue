@@ -12,7 +12,7 @@
       <Loading
         v-if="callMeeting && callLoading"
         :conferenceInfo="conferenceInfo"
-        :audioOutputValue="specifiedDevice.audioOutput.deviceId"
+        :audioOutputValue="specifiedDevice?.audioOutput?.deviceId || ''"
         @stop="stop"
       />
 
