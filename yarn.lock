@@ -1737,10 +1737,19 @@
   resolved "https://registry.npmmirror.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@4.0.3":
-  version "4.0.3"
-  resolved "https://registry.npmmirror.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-4.0.3.tgz#7f45ecfef9ed2800b8ab61edaacb8cce2a80214d"
-  integrity sha512-Zn5LSRXg0JMHSd270FFk7Su2M83HvY9REa7LZHssX/tsP6zVDZXUxjmVA8DHJO7L/SX4yIYR2JY8dcDgjVvIsg==
+"@xylink/xy-rtc-sdk@4.0.4":
+  version "4.0.4"
+  resolved "https://fe-private-npm.xylink.com/@xylink%2fxy-rtc-sdk/-/xy-rtc-sdk-4.0.4.tgz#d19f359455865afb1622b5043c481b9c6805405c"
+  integrity sha512-XXjsLXYw9RlvPxieCa3NbQ2GlOI5LI55pdZyKBt1apa4r1xtSI+SJTMyR4GfU8kDP6mMXlLRXWbhwwiVA5DR0A==
+  dependencies:
+    "@xylink/xy-toolkit" "^0.1.0"
+
+"@xylink/xy-toolkit@^0.1.0":
+  version "0.1.0"
+  resolved "https://fe-private-npm.xylink.com/@xylink%2fxy-toolkit/-/xy-toolkit-0.1.0.tgz#6cd975a38cbc5fa64cedc00735a1c0e7b5e1e425"
+  integrity sha512-XMonQ3660mPfbJgVZs+veSEMKU55d6nUG2Q3Ex1m7Q7380zYayJQfLtVXmb4OlGcA9PGxYeLGo8pxty7BQD7MA==
+  dependencies:
+    core-js "3"
 
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.8:
   version "1.3.8"
@@ -2953,6 +2962,11 @@ core-js-compat@^3.31.0, core-js-compat@^3.6.5:
   integrity sha512-wIDWd2s5/5aJSdpOJHfSibxNODxoGoWOBHt8JSPB41NOE94M7kuTPZCYLOlTtuoXTsBPKobpJ6T+y0SSy5L9SA==
   dependencies:
     browserslist "^4.21.9"
+
+core-js@3:
+  version "3.41.0"
+  resolved "https://fe-private-npm.xylink.com/core-js/-/core-js-3.41.0.tgz#57714dafb8c751a6095d028a7428f1fb5834a776"
+  integrity sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA==
 
 core-js@^2.4.0:
   version "2.6.12"
