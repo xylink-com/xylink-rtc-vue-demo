@@ -1737,16 +1737,16 @@
   resolved "https://registry.npmmirror.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@xylink/xy-rtc-sdk@4.0.4":
-  version "4.0.4"
-  resolved "https://registry.npmmirror.com/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-4.0.4.tgz#d19f359455865afb1622b5043c481b9c6805405c"
-  integrity sha512-XXjsLXYw9RlvPxieCa3NbQ2GlOI5LI55pdZyKBt1apa4r1xtSI+SJTMyR4GfU8kDP6mMXlLRXWbhwwiVA5DR0A==
+"@xylink/xy-rtc-sdk@4.0.5":
+  version "4.0.5"
+  resolved "https://registry.npmjs.org/@xylink/xy-rtc-sdk/-/xy-rtc-sdk-4.0.5.tgz#5175fa65121a513f15dcc793aa17449d9638b61e"
+  integrity sha512-1/TXCL+Tb/v0bjVolWFspRnWVQki9Uno15sWqmckLqmaQhexX6bOAk4jJuqPTBZBKvNwVS2EK1OpZrMkOaYYZA==
   dependencies:
     "@xylink/xy-toolkit" "^0.1.0"
 
 "@xylink/xy-toolkit@^0.1.0":
   version "0.1.0"
-  resolved "https://registry.npmmirror.com/@xylink/xy-toolkit/-/xy-toolkit-0.1.0.tgz#6cd975a38cbc5fa64cedc00735a1c0e7b5e1e425"
+  resolved "https://registry.npmjs.org/@xylink/xy-toolkit/-/xy-toolkit-0.1.0.tgz#6cd975a38cbc5fa64cedc00735a1c0e7b5e1e425"
   integrity sha512-XMonQ3660mPfbJgVZs+veSEMKU55d6nUG2Q3Ex1m7Q7380zYayJQfLtVXmb4OlGcA9PGxYeLGo8pxty7BQD7MA==
   dependencies:
     core-js "3"
@@ -2964,9 +2964,9 @@ core-js-compat@^3.31.0, core-js-compat@^3.6.5:
     browserslist "^4.21.9"
 
 core-js@3:
-  version "3.41.0"
-  resolved "https://registry.npmmirror.com/core-js/-/core-js-3.41.0.tgz#57714dafb8c751a6095d028a7428f1fb5834a776"
-  integrity sha512-SJ4/EHwS36QMJd6h/Rg+GyR4A5xE0FSI3eZ+iBVpfqf1x0eTSg1smWLHrA+2jQThZSh97fmSgFSU8B61nxosxA==
+  version "3.44.0"
+  resolved "https://registry.npmjs.org/core-js/-/core-js-3.44.0.tgz#db4fd4fa07933c1d6898c8b112a1119a9336e959"
+  integrity sha512-aFCtd4l6GvAXwVEh3XbbVqJGHDJt0OZRa+5ePGx3LLwi12WfexqQxcsohb2wgsa/92xtl19Hd66G/L+TaAxDMw==
 
 core-js@^2.4.0:
   version "2.6.12"
