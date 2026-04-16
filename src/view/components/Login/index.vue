@@ -83,6 +83,9 @@
           <el-form-item class="login-form-checkbox">
             <el-checkbox v-model="loginForm.muteAudio">入会时静音</el-checkbox>
           </el-form-item>
+          <el-form-item class="login-form-checkbox">
+            <el-checkbox v-model="loginForm.useMeetingKit">使用 MeetingKit 入会界面（React）</el-checkbox>
+          </el-form-item>
         </el-form>
         <div class="setting-btn">
           <span @click="onOpenSetting"> 设置 <i class="el-icon-setting"></i> </span>

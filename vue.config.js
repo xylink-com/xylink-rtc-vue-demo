@@ -24,6 +24,14 @@ function resolve(dir) {
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
   lintOnSave: true,
+  transpileDependencies: [
+    '@xylink/meetingkit',
+    /@xylink\//,
+    'antd',
+    /@ant-design\//,
+    /rc-/,
+    '@babel/runtime',
+  ],
   chainWebpack: (config) => {
     config.resolve.alias.set('@$', resolve('src'));
 

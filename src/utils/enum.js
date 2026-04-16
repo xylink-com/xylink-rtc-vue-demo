@@ -23,6 +23,8 @@ export const DEFAULT_LOCAL_USER = {
   muteVideo: false,
   muteAudio: false,
   extUserId: '',
+  /** 使用 @xylink/meetingkit React 组件入会 */
+  useMeetingKit: true,
 };
 
 export const DEFAULT_CALL_INFO = {

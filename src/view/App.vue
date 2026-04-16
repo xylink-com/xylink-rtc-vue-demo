@@ -1,8 +1,15 @@
 <template>
   <div id="app">
-    <div id="container" class="container">
+    <MeetingKitHost
+      v-if="meetingKitActive"
+      class="meeting-kit-layer"
+      :join-config="meetingKitJoinConfig"
+      @ended="onMeetingKitEnded"
+      @error="onMeetingKitError"
+    />
+    <div id="container" class="vue-container">
       <Login
-        v-if="!callMeeting && !callLoading"
+        v-if="!callMeeting && !callLoading && !meetingKitActive"
         :user="user"
         :isThird="setting.isThird"
         @submitForm="submitForm"
@@ -188,6 +195,7 @@ import { getLayoutIndexByRotateInfo, getScreenInfo, calculateBaseLayoutList, get
 import { isPc, isSupportMobileJoinMeeting } from '@/utils/browser';
 import { WindowResize } from '@/utils/resize';
 import { STORAGE_KEY } from '@/utils/enum';
+import MeetingKitHost from './components/MeetingKit/MeetingKitHost.vue';
 
 const user = store.get('xy-user') || DEFAULT_LOCAL_USER;
 
@@ -200,6 +208,7 @@ export default {
   name: 'App',
   components: {
     Login,
+    MeetingKitHost,
     Loading,
     Barrage,
     InOutReminder,
@@ -318,6 +327,8 @@ export default {
         meeting: false, // 会议室 录制权限
         control: false, // 会控上报录制权限
       },
+      meetingKitActive: false,
+      meetingKitJoinConfig: null,
     };
   },
   beforeMount() {
@@ -364,7 +375,27 @@ export default {
         return;
       }
 
+      if (values.useMeetingKit) {
+        this.meetingKitJoinConfig = {
+          user: { ...values },
+          setting: { ...this.setting },
+          server: SERVER,
+          account: ACCOUNT,
+        };
+        this.meetingKitActive = true;
+        return;
+      }
+
       this.join();
+    },
+    onMeetingKitEnded() {
+      this.meetingKitActive = false;
+      this.meetingKitJoinConfig = null;
+    },
+    onMeetingKitError(err) {
+      this.meetingKitActive = false;
+      this.meetingKitJoinConfig = null;
+      message.info((err && err.message) || 'MeetingKit 入会失败，请检查账号与会议号');
     },
     // 加入会议
     async join() {
@@ -1371,4 +1402,11 @@ export default {
 </script>
 <style lang="scss">
 @import '@/assets/style/index.scss';
+
+.meeting-kit-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+}
 </style>

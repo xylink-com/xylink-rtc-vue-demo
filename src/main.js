@@ -1,6 +1,7 @@
 import Vue from "vue";
 import "./plugins/element.js";
 import App from "./view/App.vue";
+import "@xylink/meetingkit/css/style.css";
 import "./assets/style/global.scss";
 import "./assets/style/mobile.scss";
 import SvgIcon from "./components/Svg/index.vue";
